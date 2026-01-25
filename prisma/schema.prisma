@@ -1,0 +1,372 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  USER
+  COACH
+  ADMIN
+}
+
+enum SubscriptionTier {
+  FREE
+  PRO
+  ELITE
+}
+
+enum AnalysisStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum PlanStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+
+enum MediaType {
+  VIDEO
+  IMAGE
+}
+
+// ============================================
+// USER & AUTH
+// ============================================
+
+model User {
+  id            String           @id @default(cuid())
+  email         String           @unique
+  name          String?
+  password      String
+  image         String?
+  role          UserRole         @default(USER)
+  subscription  SubscriptionTier @default(FREE)
+
+  favoriteSports  UserSport[]
+  preferredAngles String[]       @default([])
+
+  analyses        Analysis[]
+  trainingPlans   TrainingPlan[]
+  progressLogs    ProgressLog[]
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  lastLoginAt     DateTime?
+
+  @@map("users")
+}
+
+model UserSport {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sportId   String
+  sport     Sport    @relation(fields: [sportId], references: [id])
+  level     String?
+  yearsExp  Int?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, sportId])
+  @@map("user_sports")
+}
+
+// ============================================
+// SPORTS CATALOG
+// ============================================
+
+model Sport {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String      @unique
+  description String?
+  icon        String?
+  isActive    Boolean     @default(true)
+  order       Int         @default(0)
+
+  techniques  Technique[]
+  users       UserSport[]
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("sports")
+}
+
+model Technique {
+  id           String    @id @default(cuid())
+  sportId      String
+  sport        Sport     @relation(fields: [sportId], references: [id], onDelete: Cascade)
+  slug         String
+  name         String
+  description  String?
+  difficulty   Int       @default(1)
+
+  correctForm  Json?
+  commonErrors Json?
+  keyPoints    String[]
+
+  variants     Variant[]
+  analyses     Analysis[]
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([sportId, slug])
+  @@map("techniques")
+}
+
+model Variant {
+  id             String    @id @default(cuid())
+  techniqueId    String
+  technique      Technique @relation(fields: [techniqueId], references: [id], onDelete: Cascade)
+  slug           String
+  name           String
+  description    String?
+
+  correctForm    Json?
+  keyDifferences String[]
+
+  analyses       Analysis[]
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([techniqueId, slug])
+  @@map("variants")
+}
+
+// ============================================
+// ANALYSIS
+// ============================================
+
+model Analysis {
+  id            String         @id @default(cuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  techniqueId   String
+  technique     Technique      @relation(fields: [techniqueId], references: [id])
+  variantId     String?
+  variant       Variant?       @relation(fields: [variantId], references: [id])
+
+  mediaItems    MediaItem[]
+
+  status        AnalysisStatus @default(PENDING)
+  errorMessage  String?
+  processingMs  Int?
+
+  overallScore  Float?
+  aiResponse    Json?
+  summary       String?
+  strengths     String[]       @default([])
+  priorityFocus String?
+
+  issues        Issue[]
+
+  trainingPlan  TrainingPlan?
+
+  previousAnalysisId String?   @unique
+  previousAnalysis   Analysis? @relation("ProgressComparison", fields: [previousAnalysisId], references: [id])
+  nextAnalysis       Analysis? @relation("ProgressComparison")
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([techniqueId])
+  @@map("analyses")
+}
+
+model MediaItem {
+  id           String    @id @default(cuid())
+  analysisId   String
+  analysis     Analysis  @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  type         MediaType
+  url          String
+  thumbnailUrl String?
+  filename     String
+  fileSize     Int
+  duration     Int?
+  angle        String?
+
+  frameUrls    String[]  @default([])
+
+  createdAt    DateTime  @default(now())
+
+  @@map("media_items")
+}
+
+model Issue {
+  id          String     @id @default(cuid())
+  analysisId  String
+  analysis    Analysis   @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  category    String
+  title       String
+  description String
+  severity    Severity
+
+  correction  String
+  drills      String[]
+
+  timestamp   Float?
+  frameUrl    String?
+
+  exercises   ExerciseIssue[]
+
+  createdAt   DateTime   @default(now())
+
+  @@index([analysisId])
+  @@map("issues")
+}
+
+// ============================================
+// TRAINING PLANS
+// ============================================
+
+model TrainingPlan {
+  id            String       @id @default(cuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  analysisId    String       @unique
+  analysis      Analysis     @relation(fields: [analysisId], references: [id])
+
+  title         String
+  description   String?
+  durationDays  Int
+  difficulty    Int          @default(1)
+
+  status        PlanStatus   @default(ACTIVE)
+
+  exercises     Exercise[]
+  progressLogs  ProgressLog[]
+
+  startedAt     DateTime?
+  completedAt   DateTime?
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([userId, status])
+  @@map("training_plans")
+}
+
+model Exercise {
+  id              String          @id @default(cuid())
+  trainingPlanId  String
+  trainingPlan    TrainingPlan    @relation(fields: [trainingPlanId], references: [id], onDelete: Cascade)
+
+  name            String
+  description     String
+  instructions    String
+
+  dayNumber       Int
+  orderInDay      Int
+
+  sets            Int?
+  reps            Int?
+  durationMins    Int?
+  restSeconds     Int?
+
+  videoUrl        String?
+  imageUrls       String[]        @default([])
+
+  frequency       String
+
+  targetIssues    ExerciseIssue[]
+  progressLogs    ProgressLog[]
+
+  createdAt       DateTime        @default(now())
+
+  @@index([trainingPlanId, dayNumber])
+  @@map("exercises")
+}
+
+model ExerciseIssue {
+  id          String   @id @default(cuid())
+  exerciseId  String
+  exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  issueId     String
+  issue       Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+
+  @@unique([exerciseId, issueId])
+  @@map("exercise_issues")
+}
+
+model ProgressLog {
+  id              String       @id @default(cuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trainingPlanId  String
+  trainingPlan    TrainingPlan @relation(fields: [trainingPlanId], references: [id], onDelete: Cascade)
+  exerciseId      String?
+  exercise        Exercise?    @relation(fields: [exerciseId], references: [id])
+
+  date            DateTime     @db.Date
+  completed       Boolean      @default(false)
+  setsCompleted   Int?
+  repsCompleted   Int?
+  durationMins    Int?
+
+  difficulty      Int?
+  notes           String?
+
+  createdAt       DateTime     @default(now())
+
+  @@unique([trainingPlanId, exerciseId, date])
+  @@index([userId, date])
+  @@map("progress_logs")
+}
+
+// ============================================
+// EXERCISE LIBRARY
+// ============================================
+
+model ExerciseTemplate {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  instructions String
+
+  category    String
+  targetAreas String[]
+  sportSlugs  String[]
+
+  defaultSets Int?
+  defaultReps Int?
+  defaultDurationMins Int?
+
+  videoUrl    String?
+  imageUrls   String[] @default([])
+
+  isActive    Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("exercise_templates")
+}
