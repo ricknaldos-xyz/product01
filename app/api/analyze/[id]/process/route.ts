@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { openai } from '@/lib/openai/client'
+import { getOpenAIClient } from '@/lib/openai/client'
 import { buildTennisPrompt } from '@/lib/openai/prompts/tennis'
 
 export async function POST(
@@ -74,7 +74,7 @@ export async function POST(
       const imageUrls = analysis.mediaItems.map((item) => item.url)
 
       // Call OpenAI Vision API
-      const response = await openai.chat.completions.create({
+      const response = await getOpenAIClient().chat.completions.create({
         model: 'gpt-4o',
         max_tokens: 4096,
         response_format: { type: 'json_object' },
