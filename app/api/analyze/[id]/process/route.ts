@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getOpenAIClient } from '@/lib/openai/client'
 import { buildTennisPrompt } from '@/lib/openai/prompts/tennis'
+import { sendAnalysisCompleteEmail } from '@/lib/email'
 
 export async function POST(
   request: NextRequest,
@@ -156,8 +157,24 @@ export async function POST(
           issues: {
             orderBy: { severity: 'desc' },
           },
+          user: {
+            select: { email: true, name: true, emailNotifications: true },
+          },
         },
       })
+
+      // Send email notification (non-blocking)
+      if (updatedAnalysis?.user?.emailNotifications && updatedAnalysis.user.email) {
+        sendAnalysisCompleteEmail(
+          updatedAnalysis.user.email,
+          updatedAnalysis.user.name || 'Deportista',
+          updatedAnalysis.technique.name,
+          updatedAnalysis.overallScore || 0,
+          updatedAnalysis.id
+        ).catch((error) => {
+          console.error('Failed to send analysis complete email:', error)
+        })
+      }
 
       return NextResponse.json(updatedAnalysis)
     } catch (error) {

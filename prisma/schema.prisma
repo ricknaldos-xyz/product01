@@ -63,6 +63,15 @@ model User {
   role          UserRole         @default(USER)
   subscription  SubscriptionTier @default(FREE)
 
+  // Stripe fields
+  stripeCustomerId       String?   @unique
+  stripeSubscriptionId   String?
+  stripeCurrentPeriodEnd DateTime?
+
+  // Email notification preferences
+  emailNotifications Boolean @default(true)
+  reminderTime       String? // HH:mm format for daily reminders
+
   favoriteSports  UserSport[]
   preferredAngles String[]       @default([])
 

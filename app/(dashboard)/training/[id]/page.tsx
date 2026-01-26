@@ -9,9 +9,9 @@ import {
   Dumbbell,
   Clock,
   CheckCircle,
-  Circle,
 } from 'lucide-react'
-import { cn, formatDate } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
+import { ExerciseItem } from './exercise-item'
 
 async function getTrainingPlan(id: string, userId: string) {
   return prisma.trainingPlan.findFirst({
@@ -147,84 +147,13 @@ export default async function TrainingPlanDetailPage({
               <h3 className="font-semibold">Dia {day}</h3>
             </div>
             <div className="divide-y divide-border">
-              {exercises.map((exercise) => {
-                const isCompleted = exercise.progressLogs.length > 0
-
-                return (
-                  <div
-                    key={exercise.id}
-                    className={cn(
-                      'p-5',
-                      isCompleted && 'bg-green-50/50'
-                    )}
-                  >
-                    <div className="flex items-start gap-4">
-                      <div
-                        className={cn(
-                          'w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
-                          isCompleted
-                            ? 'bg-green-100 text-green-600'
-                            : 'bg-muted'
-                        )}
-                      >
-                        {isCompleted ? (
-                          <CheckCircle className="h-4 w-4" />
-                        ) : (
-                          <Circle className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium">{exercise.name}</h4>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {exercise.description}
-                        </p>
-
-                        <div className="flex flex-wrap gap-3 mt-3 text-sm">
-                          {exercise.sets && (
-                            <span className="bg-muted px-2 py-1 rounded">
-                              {exercise.sets} series
-                            </span>
-                          )}
-                          {exercise.reps && (
-                            <span className="bg-muted px-2 py-1 rounded">
-                              {exercise.reps} repeticiones
-                            </span>
-                          )}
-                          {exercise.durationMins && (
-                            <span className="bg-muted px-2 py-1 rounded">
-                              {exercise.durationMins} minutos
-                            </span>
-                          )}
-                          <span className="bg-primary/10 text-primary px-2 py-1 rounded">
-                            {exercise.frequency === 'daily'
-                              ? 'Diario'
-                              : exercise.frequency === '3x_week'
-                              ? '3x semana'
-                              : '2x semana'}
-                          </span>
-                        </div>
-
-                        {exercise.instructions && (
-                          <div className="mt-3 p-3 bg-muted/50 rounded-lg">
-                            <p className="text-sm">{exercise.instructions}</p>
-                          </div>
-                        )}
-
-                        {exercise.targetIssues.length > 0 && (
-                          <div className="mt-3">
-                            <span className="text-xs text-muted-foreground">
-                              Corrige:{' '}
-                              {exercise.targetIssues
-                                .map((ti) => ti.issue.title)
-                                .join(', ')}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
+              {exercises.map((exercise) => (
+                <ExerciseItem
+                  key={exercise.id}
+                  exercise={exercise}
+                  trainingPlanId={plan.id}
+                />
+              ))}
             </div>
           </div>
         ))}

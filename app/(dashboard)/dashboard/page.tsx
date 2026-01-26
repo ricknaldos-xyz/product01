@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Video, History, Dumbbell, TrendingUp, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { formatRelativeTime } from '@/lib/utils'
+import { DashboardCharts } from '@/components/dashboard/DashboardCharts'
 
 async function getStats(userId: string) {
   const [analysesCount, plansCount, completedPlans, recentAnalyses] =
@@ -75,6 +76,9 @@ export default async function DashboardPage() {
           <p className="text-muted-foreground text-sm">Planes completados</p>
         </div>
       </div>
+
+      {/* Charts */}
+      <DashboardCharts />
 
       {/* Recent Analyses */}
       <div>
