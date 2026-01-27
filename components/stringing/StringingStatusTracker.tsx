@@ -22,18 +22,18 @@ interface TimelineStep {
 const HOME_STEPS: TimelineStep[] = [
   { key: 'CONFIRMED', label: 'Confirmado', timestampKey: 'confirmedAt' },
   { key: 'PICKUP_SCHEDULED', label: 'Recojo programado' },
-  { key: 'RECEIVED', label: 'Recibido en taller', timestampKey: 'receivedAt' },
+  { key: 'RECEIVED_AT_WORKSHOP', label: 'Recibido en taller', timestampKey: 'receivedAt' },
   { key: 'IN_PROGRESS', label: 'En proceso' },
-  { key: 'COMPLETED', label: 'Completado', timestampKey: 'completedAt' },
-  { key: 'IN_TRANSIT', label: 'En camino' },
+  { key: 'STRINGING_COMPLETED', label: 'Encordado completado', timestampKey: 'completedAt' },
+  { key: 'OUT_FOR_DELIVERY', label: 'En camino' },
   { key: 'DELIVERED', label: 'Entregado', timestampKey: 'deliveredAt' },
 ]
 
 const WORKSHOP_STEPS: TimelineStep[] = [
   { key: 'CONFIRMED', label: 'Confirmado', timestampKey: 'confirmedAt' },
-  { key: 'RECEIVED', label: 'Recibido en taller', timestampKey: 'receivedAt' },
+  { key: 'RECEIVED_AT_WORKSHOP', label: 'Recibido en taller', timestampKey: 'receivedAt' },
   { key: 'IN_PROGRESS', label: 'En proceso' },
-  { key: 'COMPLETED', label: 'Completado', timestampKey: 'completedAt' },
+  { key: 'STRINGING_COMPLETED', label: 'Encordado completado', timestampKey: 'completedAt' },
   { key: 'READY_FOR_PICKUP', label: 'Listo para recoger' },
   { key: 'DELIVERED', label: 'Entregado', timestampKey: 'deliveredAt' },
 ]

@@ -39,8 +39,8 @@ interface StringingOrderDetail {
   contactPhone: string
   preferredPickupDate: string | null
   servicePriceCents: number
-  deliveryPriceCents: number
-  stringCostCents: number
+  pickupFeeCents: number
+  stringPriceCents: number
   totalCents: number
   confirmedAt: string | null
   receivedAt: string | null
@@ -53,26 +53,26 @@ const STATUS_LABELS: Record<string, string> = {
   PENDING_PAYMENT: 'Pendiente de pago',
   CONFIRMED: 'Confirmado',
   PICKUP_SCHEDULED: 'Recojo programado',
-  RECEIVED: 'Recibido en taller',
+  RECEIVED_AT_WORKSHOP: 'Recibido en taller',
   IN_PROGRESS: 'En proceso',
-  COMPLETED: 'Completado',
-  IN_TRANSIT: 'En camino',
+  STRINGING_COMPLETED: 'Encordado completado',
+  OUT_FOR_DELIVERY: 'En camino',
   READY_FOR_PICKUP: 'Listo para recoger',
   DELIVERED: 'Entregado',
-  CANCELLED: 'Cancelado',
+  STRINGING_CANCELLED: 'Cancelado',
 }
 
 const STATUS_VARIANT: Record<string, 'default' | 'primary' | 'success' | 'warning' | 'destructive'> = {
   PENDING_PAYMENT: 'warning',
   CONFIRMED: 'primary',
   PICKUP_SCHEDULED: 'primary',
-  RECEIVED: 'primary',
+  RECEIVED_AT_WORKSHOP: 'primary',
   IN_PROGRESS: 'primary',
-  COMPLETED: 'success',
-  IN_TRANSIT: 'primary',
+  STRINGING_COMPLETED: 'success',
+  OUT_FOR_DELIVERY: 'primary',
   READY_FOR_PICKUP: 'success',
   DELIVERED: 'success',
-  CANCELLED: 'destructive',
+  STRINGING_CANCELLED: 'destructive',
 }
 
 export default function PedidoDetailPage() {
@@ -293,12 +293,12 @@ export default function PedidoDetailPage() {
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Delivery</span>
-            <span>{order.deliveryPriceCents === 0 ? 'Gratis' : formatPrice(order.deliveryPriceCents)}</span>
+            <span>{order.pickupFeeCents === 0 ? 'Gratis' : formatPrice(order.pickupFeeCents)}</span>
           </div>
-          {order.stringCostCents > 0 && (
+          {order.stringPriceCents > 0 && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Cuerda</span>
-              <span>{formatPrice(order.stringCostCents)}</span>
+              <span>{formatPrice(order.stringPriceCents)}</span>
             </div>
           )}
           <hr className="border-glass" />

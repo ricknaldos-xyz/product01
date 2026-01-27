@@ -24,26 +24,26 @@ const STATUS_LABELS: Record<string, string> = {
   PENDING_PAYMENT: 'Pendiente de pago',
   CONFIRMED: 'Confirmado',
   PICKUP_SCHEDULED: 'Recojo programado',
-  RECEIVED: 'Recibido',
+  RECEIVED_AT_WORKSHOP: 'Recibido',
   IN_PROGRESS: 'En proceso',
-  COMPLETED: 'Completado',
-  IN_TRANSIT: 'En camino',
+  STRINGING_COMPLETED: 'Completado',
+  OUT_FOR_DELIVERY: 'En camino',
   READY_FOR_PICKUP: 'Listo para recoger',
   DELIVERED: 'Entregado',
-  CANCELLED: 'Cancelado',
+  STRINGING_CANCELLED: 'Cancelado',
 }
 
 const STATUS_VARIANT: Record<string, 'default' | 'primary' | 'success' | 'warning' | 'destructive'> = {
   PENDING_PAYMENT: 'warning',
   CONFIRMED: 'primary',
   PICKUP_SCHEDULED: 'primary',
-  RECEIVED: 'primary',
+  RECEIVED_AT_WORKSHOP: 'primary',
   IN_PROGRESS: 'primary',
-  COMPLETED: 'success',
-  IN_TRANSIT: 'primary',
+  STRINGING_COMPLETED: 'success',
+  OUT_FOR_DELIVERY: 'primary',
   READY_FOR_PICKUP: 'success',
   DELIVERED: 'success',
-  CANCELLED: 'destructive',
+  STRINGING_CANCELLED: 'destructive',
 }
 
 export function StringingOrderCard({ order }: StringingOrderCardProps) {
