@@ -6,8 +6,12 @@ export default auth((req) => {
   const { pathname } = req.nextUrl
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/', '/login', '/register']
+  const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/pricing']
   const isPublicRoute = publicRoutes.includes(pathname)
+
+  // Pattern-based public routes (dynamic segments)
+  const publicPatterns = ['/reset-password/', '/verify-email/']
+  const isPublicPattern = publicPatterns.some((pattern) => pathname.startsWith(pattern))
 
   // API routes that don't require authentication
   const publicApiRoutes = ['/api/auth']
@@ -19,7 +23,7 @@ export default auth((req) => {
   }
 
   // If user is not logged in and trying to access protected routes
-  if (!isLoggedIn && !isPublicRoute && !isPublicApiRoute) {
+  if (!isLoggedIn && !isPublicRoute && !isPublicPattern && !isPublicApiRoute) {
     const loginUrl = new URL('/login', req.nextUrl)
     loginUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(loginUrl)
