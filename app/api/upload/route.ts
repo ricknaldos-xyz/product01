@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
-import { put } from '@vercel/blob'
+import { writeFile, mkdir } from 'fs/promises'
+import { existsSync } from 'fs'
+import path from 'path'
 
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024 // 100MB
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -65,14 +67,37 @@ export async function POST(request: NextRequest) {
     const ext = file.name.split('.').pop()?.toLowerCase() || 'bin'
     const uniqueName = `${timestamp}-${random}.${ext}`
 
-    // Upload to Vercel Blob
-    const blob = await put(`analyses/${session.user.id}/${uniqueName}`, file, {
-      access: 'public',
-      addRandomSuffix: false,
-    })
+    let fileUrl: string
+
+    // Check if Vercel Blob is configured
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      // Use Vercel Blob
+      const { put } = await import('@vercel/blob')
+      const blob = await put(`analyses/${session.user.id}/${uniqueName}`, file, {
+        access: 'public',
+        addRandomSuffix: false,
+      })
+      fileUrl = blob.url
+    } else {
+      // Use local file storage for development
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads', session.user.id)
+
+      // Create directory if it doesn't exist
+      if (!existsSync(uploadDir)) {
+        await mkdir(uploadDir, { recursive: true })
+      }
+
+      // Write file to local storage
+      const filePath = path.join(uploadDir, uniqueName)
+      const buffer = Buffer.from(await file.arrayBuffer())
+      await writeFile(filePath, buffer)
+
+      // Return local URL
+      fileUrl = `/uploads/${session.user.id}/${uniqueName}`
+    }
 
     return NextResponse.json({
-      url: blob.url,
+      url: fileUrl,
       filename: file.name,
       size: file.size,
       type: isVideo ? 'VIDEO' : 'IMAGE',

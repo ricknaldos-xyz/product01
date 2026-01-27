@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma'
 import { getGeminiClient } from '@/lib/gemini/client'
 import { buildTennisPrompt } from '@/lib/openai/prompts/tennis'
 import { sendAnalysisCompleteEmail } from '@/lib/email'
+import { readFile } from 'fs/promises'
+import path from 'path'
 
 export const maxDuration = 300 // 5 minutes for video processing
 
@@ -94,14 +96,24 @@ export async function POST(
       for (const item of analysis.mediaItems) {
         console.log(`Processing ${item.type}: ${item.filename}`)
 
-        // Download file from Vercel Blob
-        const response = await fetch(item.url)
-        if (!response.ok) {
-          console.error(`Failed to download file: ${item.url}`)
-          continue
+        let buffer: ArrayBuffer
+
+        // Check if it's a local file or remote URL
+        if (item.url.startsWith('/uploads/')) {
+          // Local file - read from filesystem
+          const filePath = path.join(process.cwd(), 'public', item.url)
+          const fileBuffer = await readFile(filePath)
+          buffer = fileBuffer.buffer.slice(fileBuffer.byteOffset, fileBuffer.byteOffset + fileBuffer.byteLength)
+        } else {
+          // Remote URL - fetch from network
+          const response = await fetch(item.url)
+          if (!response.ok) {
+            console.error(`Failed to download file: ${item.url}`)
+            continue
+          }
+          buffer = await response.arrayBuffer()
         }
 
-        const buffer = await response.arrayBuffer()
         const base64 = Buffer.from(buffer).toString('base64')
 
         // Determine mime type
