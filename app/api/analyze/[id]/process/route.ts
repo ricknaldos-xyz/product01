@@ -85,7 +85,7 @@ export async function POST(
       }
 
       const genAI = getGeminiClient()
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' })
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
       // Prepare content parts for Gemini
       const contentParts: Array<{
