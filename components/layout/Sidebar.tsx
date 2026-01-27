@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { GlassButton } from '@/components/ui/glass-button'
 import {
   Target,
   LayoutDashboard,
@@ -50,10 +51,12 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-card border-r border-border">
+    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 glass-light border-r border-glass">
       {/* Logo */}
-      <div className="flex items-center gap-2 px-6 py-5 border-b border-border">
-        <Target className="h-8 w-8 text-primary" />
+      <div className="flex items-center gap-2 px-6 py-5 border-b border-glass">
+        <div className="glass-primary border-glass rounded-xl p-2">
+          <Target className="h-6 w-6 text-primary" />
+        </div>
         <span className="text-xl font-bold">SportTech</span>
       </div>
 
@@ -67,10 +70,10 @@ export function Sidebar() {
               href={item.href}
               data-tour={item.tourId}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-[var(--duration-normal)]',
                 isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                  ? 'glass-primary border-glass text-primary shadow-glass'
+                  : 'text-muted-foreground hover:glass-ultralight hover:text-foreground'
               )}
             >
               <item.icon className="h-5 w-5" />
@@ -82,14 +85,13 @@ export function Sidebar() {
       </nav>
 
       {/* Quick Actions */}
-      <div className="p-4 border-t border-border">
-        <Link
-          href="/analyze"
-          className="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground px-4 py-2.5 rounded-lg hover:bg-primary/90 transition-colors font-medium"
-        >
-          <Video className="h-4 w-4" />
-          Analizar Video
-        </Link>
+      <div className="p-4 border-t border-glass">
+        <GlassButton variant="solid" className="w-full" asChild>
+          <Link href="/analyze">
+            <Video className="h-4 w-4 mr-2" />
+            Analizar Video
+          </Link>
+        </GlassButton>
       </div>
     </aside>
   )

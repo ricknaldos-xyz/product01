@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
+import { GlassCard } from '@/components/ui/glass-card'
 
 interface ActivityDay {
   date: string
@@ -16,11 +17,11 @@ interface ActivityLog {
 }
 
 function getIntensityClass(count: number): string {
-  if (count === 0) return 'bg-muted'
-  if (count === 1) return 'bg-green-200'
-  if (count === 2) return 'bg-green-300'
-  if (count <= 4) return 'bg-green-400'
-  return 'bg-green-500'
+  if (count === 0) return 'glass-ultralight border-glass'
+  if (count === 1) return 'bg-success/30 border border-success/20'
+  if (count === 2) return 'bg-success/50 border border-success/30'
+  if (count <= 4) return 'bg-success/70 border border-success/40'
+  return 'bg-success border border-success/50'
 }
 
 function getMonthLabels(): string[] {
@@ -83,9 +84,9 @@ export function ActivityHeatmap() {
 
   if (loading) {
     return (
-      <div className="bg-card border border-border rounded-xl p-6">
-        <div className="h-32 bg-muted rounded animate-pulse" />
-      </div>
+      <GlassCard intensity="light" padding="lg">
+        <div className="h-32 glass-ultralight rounded-xl animate-pulse" />
+      </GlassCard>
     )
   }
 
@@ -117,7 +118,7 @@ export function ActivityHeatmap() {
   const monthLabels = getMonthLabels()
 
   return (
-    <div className="bg-card border border-border rounded-xl p-6">
+    <GlassCard intensity="light" padding="lg">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-semibold">Actividad</h2>
         <span className="text-sm text-muted-foreground">
@@ -159,10 +160,11 @@ export function ActivityHeatmap() {
                   <div
                     key={`${weekIndex}-${dayIndex}`}
                     className={cn(
-                      'w-[14px] h-[14px] rounded-sm',
+                      'w-[14px] h-[14px] rounded-sm transition-all duration-[var(--duration-fast)]',
                       day.count === -1
                         ? 'bg-transparent'
-                        : getIntensityClass(day.count)
+                        : getIntensityClass(day.count),
+                      day.count > 0 && 'hover:scale-125'
                     )}
                     title={
                       day.count >= 0
@@ -193,6 +195,6 @@ export function ActivityHeatmap() {
           <span>Mas</span>
         </div>
       </div>
-    </div>
+    </GlassCard>
   )
 }

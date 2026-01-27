@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { Flame, Snowflake, Trophy } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { GlassCard } from '@/components/ui/glass-card'
+import { GlassBadge } from '@/components/ui/glass-badge'
 
 interface UserStreak {
   id: string
@@ -55,7 +57,7 @@ export function StreakWidget({ compact = false }: StreakWidgetProps) {
     return (
       <div
         className={cn(
-          'bg-muted/50 rounded-lg animate-pulse',
+          'glass-ultralight border-glass rounded-xl animate-pulse',
           compact ? 'h-10 w-20' : 'h-24 w-full'
         )}
       />
@@ -68,15 +70,9 @@ export function StreakWidget({ compact = false }: StreakWidgetProps) {
 
   if (compact) {
     return (
-      <div
-        className={cn(
-          'flex items-center gap-2 px-3 py-2 rounded-lg',
-          isAtRisk
-            ? 'bg-orange-100 text-orange-700'
-            : streak.currentStreak > 0
-            ? 'bg-primary/10 text-primary'
-            : 'bg-muted text-muted-foreground'
-        )}
+      <GlassBadge
+        variant={isAtRisk ? 'warning' : streak.currentStreak > 0 ? 'primary' : 'default'}
+        className="gap-2"
       >
         <Flame
           className={cn(
@@ -85,38 +81,35 @@ export function StreakWidget({ compact = false }: StreakWidgetProps) {
           )}
         />
         <span className="font-semibold">{streak.currentStreak}</span>
-      </div>
+      </GlassBadge>
     )
   }
 
   return (
-    <div
+    <GlassCard
+      intensity={isAtRisk ? 'medium' : streak.currentStreak > 0 ? 'primary' : 'light'}
+      padding="md"
       className={cn(
-        'rounded-xl p-4 border',
-        isAtRisk
-          ? 'bg-orange-50 border-orange-200'
-          : streak.currentStreak > 0
-          ? 'bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20'
-          : 'bg-muted/50 border-border'
+        isAtRisk && 'border-warning/30'
       )}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              'w-12 h-12 rounded-full flex items-center justify-center',
+              'w-12 h-12 rounded-full border-glass flex items-center justify-center',
               isAtRisk
-                ? 'bg-orange-100'
+                ? 'bg-warning/20'
                 : streak.currentStreak > 0
-                ? 'bg-primary/20'
-                : 'bg-muted'
+                ? 'glass-primary'
+                : 'glass-ultralight'
             )}
           >
             <Flame
               className={cn(
                 'h-6 w-6',
                 isAtRisk
-                  ? 'text-orange-600'
+                  ? 'text-warning'
                   : streak.currentStreak > 0
                   ? 'text-primary animate-pulse'
                   : 'text-muted-foreground'
@@ -137,19 +130,19 @@ export function StreakWidget({ compact = false }: StreakWidgetProps) {
             <span>Mejor: {streak.longestStreak}</span>
           </div>
           {streak.freezesAvailable > 0 && (
-            <div className="flex items-center gap-1 text-sm text-blue-600">
-              <Snowflake className="h-4 w-4" />
-              <span>{streak.freezesAvailable} freeze</span>
-            </div>
+            <GlassBadge variant="default" className="text-blue-600">
+              <Snowflake className="h-3 w-3 mr-1" />
+              {streak.freezesAvailable} freeze
+            </GlassBadge>
           )}
         </div>
       </div>
 
       {isAtRisk && (
-        <p className="text-sm text-orange-700 mt-3">
+        <p className="text-sm text-warning mt-3">
           Tu racha esta en riesgo. Completa una actividad hoy para mantenerla.
         </p>
       )}
-    </div>
+    </GlassCard>
   )
 }

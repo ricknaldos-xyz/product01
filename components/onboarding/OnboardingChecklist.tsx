@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { GlassButton } from '@/components/ui/glass-button'
+import { GlassCard } from '@/components/ui/glass-card'
 import { useOnboardingStore } from '@/stores/onboardingStore'
 import { CheckCircle, Circle, ChevronRight, X, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -49,23 +50,25 @@ export function OnboardingChecklist({
   }
 
   return (
-    <div className="bg-card border border-border rounded-xl overflow-hidden">
+    <GlassCard intensity="light" padding="none" className="overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-5 py-4">
+      <div className="glass-primary px-5 py-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <div className="glass-light border-glass rounded-full p-1.5">
+              <Sparkles className="h-4 w-4 text-primary" />
+            </div>
             <h3 className="font-semibold">Primeros pasos</h3>
           </div>
           <button
             onClick={() => setIsDismissed(true)}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+          <div className="flex-1 h-2 glass-ultralight border-glass rounded-full overflow-hidden">
             <div
               className="h-full bg-primary rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
@@ -78,17 +81,19 @@ export function OnboardingChecklist({
       </div>
 
       {/* Steps */}
-      <div className="divide-y divide-border">
+      <div className="divide-y divide-glass-border-light">
         {steps.map((step) => (
           <div
             key={step.id}
             className={cn(
-              'flex items-center gap-4 px-5 py-3 transition-colors',
-              step.completed ? 'bg-muted/30' : 'hover:bg-muted/50'
+              'flex items-center gap-4 px-5 py-3 transition-all duration-[var(--duration-normal)]',
+              step.completed ? 'glass-ultralight' : 'hover:glass-ultralight'
             )}
           >
             {step.completed ? (
-              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+              <div className="bg-success/20 rounded-full p-0.5">
+                <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
+              </div>
             ) : (
               <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             )}
@@ -106,15 +111,15 @@ export function OnboardingChecklist({
               </p>
             </div>
             {!step.completed && step.href && (
-              <Button variant="ghost" size="sm" asChild>
+              <GlassButton variant="ghost" size="sm" asChild>
                 <Link href={step.href}>
                   <ChevronRight className="h-4 w-4" />
                 </Link>
-              </Button>
+              </GlassButton>
             )}
           </div>
         ))}
       </div>
-    </div>
+    </GlassCard>
   )
 }

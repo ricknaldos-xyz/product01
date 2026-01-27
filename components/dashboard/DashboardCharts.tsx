@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { ScoreChart } from '@/components/charts/ScoreChart'
 import { ActivityChart } from '@/components/charts/ActivityChart'
+import { GlassCard } from '@/components/ui/glass-card'
 import { Loader2 } from 'lucide-react'
 
 interface ChartData {
@@ -36,34 +37,34 @@ export function DashboardCharts() {
   if (loading) {
     return (
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="bg-card border border-border rounded-xl p-6">
+        <GlassCard intensity="light" padding="lg">
           <div className="h-[300px] flex items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-6">
+        </GlassCard>
+        <GlassCard intensity="light" padding="lg">
           <div className="h-[300px] flex items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
-        </div>
+        </GlassCard>
       </div>
     )
   }
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      <div className="bg-card border border-border rounded-xl p-6">
+      <GlassCard intensity="light" padding="lg">
         <ScoreChart
           data={data?.scoreData || []}
           title="Puntuaciones Recientes"
         />
-      </div>
-      <div className="bg-card border border-border rounded-xl p-6">
+      </GlassCard>
+      <GlassCard intensity="light" padding="lg">
         <ActivityChart
           data={data?.activityData || []}
           title="Actividad Ultimos 14 Dias"
         />
-      </div>
+      </GlassCard>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
@@ -37,12 +38,15 @@ const glassCardVariants = cva(
 
 export interface GlassCardProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof glassCardVariants> {}
+    VariantProps<typeof glassCardVariants> {
+  asChild?: boolean
+}
 
 const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
-  ({ className, intensity, padding, hover, ...props }, ref) => {
+  ({ className, intensity, padding, hover, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : 'div'
     return (
-      <div
+      <Comp
         className={cn(glassCardVariants({ intensity, padding, hover, className }))}
         ref={ref}
         {...props}

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { GlassButton } from '@/components/ui/glass-button'
+import { GlassCard } from '@/components/ui/glass-card'
 import { AlertTriangle, Mail, X, Loader2, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -43,29 +44,30 @@ export function EmailVerificationBanner({ userEmail }: EmailVerificationBannerPr
   }
 
   return (
-    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+    <GlassCard intensity="medium" padding="md" className="border-warning/30 mb-6">
       <div className="flex items-start gap-3">
-        <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+        <div className="bg-warning/20 rounded-full p-1.5 flex-shrink-0">
+          <AlertTriangle className="h-4 w-4 text-warning" />
+        </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-medium text-amber-800">
+          <h3 className="text-sm font-medium">
             Verifica tu email
           </h3>
-          <p className="text-sm text-amber-700 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Por favor verifica tu email ({userEmail}) para acceder a todas las funciones.
             {isResent && (
-              <span className="flex items-center gap-1 mt-1 text-green-700">
+              <span className="flex items-center gap-1 mt-1 text-success">
                 <CheckCircle className="h-4 w-4" />
                 Email enviado. Revisa tu bandeja de entrada.
               </span>
             )}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <Button
+            <GlassButton
               size="sm"
               variant="outline"
               onClick={handleResendVerification}
               disabled={isLoading || isResent}
-              className="bg-white"
             >
               {isLoading ? (
                 <>
@@ -83,17 +85,17 @@ export function EmailVerificationBanner({ userEmail }: EmailVerificationBannerPr
                   Reenviar email
                 </>
               )}
-            </Button>
+            </GlassButton>
           </div>
         </div>
         <button
           onClick={() => setIsDismissed(true)}
-          className="text-amber-600 hover:text-amber-800 flex-shrink-0"
+          className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
           aria-label="Cerrar"
         >
           <X className="h-5 w-5" />
         </button>
       </div>
-    </div>
+    </GlassCard>
   )
 }
