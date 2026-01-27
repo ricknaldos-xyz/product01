@@ -219,6 +219,53 @@ enum DocumentStatus {
   FAILED
 }
 
+// ============================================
+// SHOP & STRINGING ENUMS
+// ============================================
+
+enum ProductCategory {
+  RACKETS
+  STRINGS
+  GRIPS
+  BAGS
+  SHOES
+  APPAREL
+  ACCESSORIES
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum StringingOrderStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  PICKUP_SCHEDULED
+  RECEIVED_AT_WORKSHOP
+  IN_PROGRESS
+  STRINGING_COMPLETED
+  READY_FOR_PICKUP
+  OUT_FOR_DELIVERY
+  DELIVERED
+  STRINGING_CANCELLED
+}
+
+enum DeliveryMode {
+  HOME_PICKUP_DELIVERY
+  WORKSHOP_DROP_PICKUP
+}
+
+enum StringingServiceType {
+  STANDARD
+  EXPRESS
+}
+
 enum ChunkCategory {
   THEORY
   EXERCISE
@@ -277,6 +324,12 @@ model User {
   playerProfile PlayerProfile?
   coachProfile  CoachProfile?
   notifications Notification[]
+
+  // Shop & Stringing
+  cart            Cart?
+  shopOrders      ShopOrder[]
+  stringingOrders StringingOrder[]
+  productReviews  ProductReview[]
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -1264,4 +1317,272 @@ model PeerReview {
 
   @@unique([verificationId, reviewerId])
   @@map("peer_reviews")
+}
+
+// ============================================
+// SHOP - PRODUCTS
+// ============================================
+
+model Product {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  name        String
+  description String
+  shortDesc   String?
+
+  category ProductCategory
+  brand    String
+  model    String?
+
+  // Pricing in centimos (PEN cents)
+  priceCents        Int
+  comparePriceCents Int? // "antes" price for discount display
+  costCents         Int? // internal cost
+
+  // Inventory
+  stock             Int @default(0)
+  sku               String? @unique
+  lowStockThreshold Int @default(5)
+
+  // Media
+  images       String[] @default([])
+  thumbnailUrl String?
+
+  // Tennis-specific attributes (JSON for flexibility)
+  attributes Json? // weight, headSize, stringPattern, gripSize, etc.
+
+  // Marketplace future: nullable vendorId
+  vendorId String?
+
+  // Status
+  isActive   Boolean @default(true)
+  isFeatured Boolean @default(false)
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+
+  cartItems  CartItem[]
+  orderItems ShopOrderItem[]
+  reviews    ProductReview[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category, isActive])
+  @@index([brand])
+  @@index([isFeatured])
+  @@map("products")
+}
+
+model ProductReview {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  rating            Int // 1-5
+  title             String?
+  comment           String?
+  isVerifiedPurchase Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, userId])
+  @@index([productId, createdAt])
+  @@map("product_reviews")
+}
+
+// ============================================
+// SHOP - CART
+// ============================================
+
+model Cart {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  items CartItem[]
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+  @@map("cart_items")
+}
+
+// ============================================
+// SHOP - ORDERS
+// ============================================
+
+model ShopOrder {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  orderNumber String @unique // e.g., "ORD-20260127-XXXX"
+
+  status OrderStatus @default(PENDING_PAYMENT)
+
+  // Amounts in centimos
+  subtotalCents Int
+  shippingCents Int @default(0)
+  discountCents Int @default(0)
+  totalCents    Int
+
+  // Shipping address
+  shippingName     String
+  shippingPhone    String
+  shippingAddress  String
+  shippingDistrict String
+  shippingCity     String  @default("Lima")
+  shippingNotes    String?
+
+  // Stripe
+  stripePaymentIntentId   String?
+  stripeCheckoutSessionId String?
+
+  // Marketplace future
+  vendorId String?
+
+  items ShopOrderItem[]
+
+  paidAt      DateTime?
+  shippedAt   DateTime?
+  deliveredAt DateTime?
+  cancelledAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@index([orderNumber])
+  @@map("shop_orders")
+}
+
+model ShopOrderItem {
+  id        String    @id @default(cuid())
+  orderId   String
+  order     ShopOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product   @relation(fields: [productId], references: [id])
+
+  quantity    Int
+  priceCents  Int    // snapshot at time of purchase
+  productName String // snapshot
+  productSlug String // snapshot
+
+  createdAt DateTime @default(now())
+
+  @@map("shop_order_items")
+}
+
+// ============================================
+// STRINGING SERVICE
+// ============================================
+
+model Workshop {
+  id        String  @id @default(cuid())
+  name      String
+  address   String
+  district  String
+  city      String  @default("Lima")
+  phone     String?
+  latitude  Float?
+  longitude Float?
+  isActive  Boolean @default(true)
+  isPartner Boolean @default(false) // own vs partner workshop
+
+  operatingHours Json? // { mon: "9:00-18:00", ... }
+
+  stringingOrders StringingOrder[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("workshops")
+}
+
+model StringingOrder {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  orderNumber String @unique // e.g., "STR-20260127-XXXX"
+
+  status       StringingOrderStatus @default(PENDING_PAYMENT)
+  serviceType  StringingServiceType @default(STANDARD)
+  deliveryMode DeliveryMode
+
+  // Racket info
+  racketBrand String
+  racketModel String
+  racketNotes String?
+
+  // String selection
+  stringName      String // e.g., "Yonex Poly Tour Pro 125"
+  stringProductId String? // optional link to shop Product
+  tensionMain     Int // in lbs
+  tensionCross    Int? // if different from main, in lbs
+
+  // Workshop
+  workshopId String?
+  workshop   Workshop? @relation(fields: [workshopId], references: [id])
+
+  // Pricing in centimos
+  servicePriceCents Int
+  stringPriceCents  Int @default(0) // if string included
+  pickupFeeCents    Int @default(0)
+  totalCents        Int
+
+  // Address (for home pickup/delivery)
+  pickupAddress    String?
+  pickupDistrict   String?
+  deliveryAddress  String?
+  deliveryDistrict String?
+  contactPhone     String
+
+  // Scheduling
+  preferredPickupDate     DateTime?
+  scheduledPickupDate     DateTime?
+  estimatedCompletionDate DateTime?
+
+  // Stripe
+  stripePaymentIntentId   String?
+  stripeCheckoutSessionId String?
+
+  // Tracking notes (admin sets these)
+  internalNotes String?
+
+  paidAt      DateTime?
+  confirmedAt DateTime?
+  receivedAt  DateTime?
+  completedAt DateTime?
+  deliveredAt DateTime?
+  cancelledAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@index([workshopId])
+  @@map("stringing_orders")
 }

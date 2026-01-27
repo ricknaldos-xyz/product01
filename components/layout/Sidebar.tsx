@@ -16,6 +16,8 @@ import {
   Swords,
   Flag,
   Users,
+  ShoppingBag,
+  Wrench,
 } from 'lucide-react'
 
 const navigation = [
@@ -66,6 +68,18 @@ const navigation = [
     href: '/community',
     icon: Users,
     tourId: 'community',
+  },
+  {
+    name: 'Tienda',
+    href: '/tienda',
+    icon: ShoppingBag,
+    tourId: 'shop',
+  },
+  {
+    name: 'Encordado',
+    href: '/encordado',
+    icon: Wrench,
+    tourId: 'stringing',
   },
   {
     name: 'Mi Perfil',
