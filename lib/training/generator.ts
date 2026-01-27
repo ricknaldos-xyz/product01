@@ -4,6 +4,7 @@ import { retrieveRelevantChunks } from '@/lib/rag/retriever'
 import { getGeminiClient } from '@/lib/gemini/client'
 import { enrichExercisesWithStructuredContent } from '@/lib/training/enrichment'
 import { generateExerciseImages } from '@/lib/training/image-generator'
+import { enrichExercisesWithVideos } from '@/lib/training/video-enrichment'
 import { buildPlanGenerationPrompt } from '@/lib/training/prompts/plan-generation'
 
 interface GeneratePlanOptions {
@@ -210,6 +211,20 @@ export async function generateTrainingPlan({
     )
   } catch (error) {
     console.warn('Exercise image generation failed:', error)
+  }
+
+  // Enrich exercises with YouTube demonstration videos
+  try {
+    await enrichExercisesWithVideos(
+      exercises.map((ex) => ({
+        id: ex.id,
+        name: ex.name,
+        description: ex.description,
+      })),
+      analysis.technique.sport.name
+    )
+  } catch (error) {
+    console.warn('Video enrichment failed:', error)
   }
 
   // Create exercise-issue links

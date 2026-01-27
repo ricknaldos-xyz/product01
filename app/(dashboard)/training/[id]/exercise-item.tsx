@@ -19,6 +19,7 @@ interface ExerciseItemProps {
     description: string
     instructions: string | null
     imageUrls: string[]
+    videoUrl: string | null
     sets: number | null
     reps: number | null
     durationMins: number | null
@@ -187,6 +188,20 @@ export function ExerciseItem({ exercise, trainingPlanId }: ExerciseItemProps) {
                     </h5>
                     <ExerciseSteps steps={structured.steps} />
                   </div>
+
+                  {/* YouTube video */}
+                  {exercise.videoUrl && (
+                    <div className="rounded-xl overflow-hidden border-glass">
+                      <iframe
+                        src={exercise.videoUrl}
+                        title={`Video: ${exercise.name}`}
+                        className="w-full aspect-video"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
 
                   {/* Details: key points, mistakes, equipment, muscles */}
                   <div className="p-4 glass-ultralight border-glass rounded-xl">
