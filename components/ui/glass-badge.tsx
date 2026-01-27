@@ -18,7 +18,7 @@ const glassBadgeVariants = cva(
         outline: 'border-glass-strong bg-transparent',
       },
       size: {
-        sm: 'px-2 py-0.5 text-[10px]',
+        sm: 'px-2.5 py-0.5 text-[11px]',
         default: 'px-3 py-1 text-xs',
         lg: 'px-4 py-1.5 text-sm',
       },

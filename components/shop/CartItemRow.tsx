@@ -62,11 +62,11 @@ export function CartItemRow({ item, onQuantityChange, onRemove }: CartItemRowPro
         <GlassButton
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-10 w-10"
           onClick={() => onQuantityChange(item.id, item.quantity - 1)}
           disabled={item.quantity <= 1}
         >
-          <Minus className="h-3 w-3" />
+          <Minus className="h-4 w-4" />
         </GlassButton>
         <span className="w-8 text-center text-sm font-medium tabular-nums">
           {item.quantity}
@@ -74,11 +74,11 @@ export function CartItemRow({ item, onQuantityChange, onRemove }: CartItemRowPro
         <GlassButton
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-10 w-10"
           onClick={() => onQuantityChange(item.id, item.quantity + 1)}
           disabled={item.quantity >= 10}
         >
-          <Plus className="h-3 w-3" />
+          <Plus className="h-4 w-4" />
         </GlassButton>
       </div>
 
@@ -91,7 +91,7 @@ export function CartItemRow({ item, onQuantityChange, onRemove }: CartItemRowPro
       <GlassButton
         variant="ghost"
         size="icon"
-        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+        className="h-10 w-10 text-muted-foreground hover:text-destructive"
         onClick={() => onRemove(item.id)}
       >
         <Trash2 className="h-4 w-4" />

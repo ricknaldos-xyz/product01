@@ -486,7 +486,7 @@ export default function AnalyzePage() {
             </div>
           ))}
         </div>
-        <div className="flex justify-between text-sm">
+        <div className="hidden sm:flex justify-between text-sm">
           {steps.map((s) => (
             <span
               key={s.id}
@@ -674,7 +674,7 @@ export default function AnalyzePage() {
             <VideoRequirements />
             <VideoGuidelines />
 
-            <div className="border-2 border-dashed border-glass rounded-xl p-8 text-center hover:border-primary/50 hover:glass-ultralight transition-all duration-[var(--duration-normal)] mt-4">
+            <div className="border-2 border-dashed border-glass rounded-xl p-4 sm:p-8 text-center hover:border-primary/50 hover:glass-ultralight transition-all duration-[var(--duration-normal)] mt-4">
               <input
                 type="file"
                 id="file-upload"

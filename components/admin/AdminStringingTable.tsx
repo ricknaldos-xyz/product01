@@ -54,7 +54,41 @@ const SERVICE_LABELS: Record<string, string> = {
 
 export default function AdminStringingTable({ orders, onViewDetail }: AdminStringingTableProps) {
   return (
-    <div className="overflow-x-auto">
+    <>
+      {/* Mobile card view */}
+      <div className="md:hidden space-y-3">
+        {orders.map((order) => (
+          <div
+            key={order.id}
+            className="p-4 glass-light border-glass rounded-xl space-y-2 cursor-pointer"
+            onClick={() => onViewDetail(order.id)}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-sm font-semibold">{order.orderNumber}</span>
+              <GlassBadge variant={STATUS_VARIANTS[order.status] || 'default'}>
+                {STATUS_LABELS[order.status] || order.status}
+              </GlassBadge>
+            </div>
+            <div className="text-sm">
+              <p className="font-medium">{order.user.name || 'Sin nombre'}</p>
+              <p className="text-muted-foreground text-xs">{order.user.email}</p>
+            </div>
+            <div className="text-sm">
+              <p>{order.racketBrand} {order.racketModel}</p>
+              <p className="text-xs text-muted-foreground">{SERVICE_LABELS[order.serviceType] || order.serviceType}</p>
+            </div>
+            <div className="flex items-center justify-end text-xs text-muted-foreground">
+              {new Date(order.createdAt).toLocaleDateString('es-PE')}
+            </div>
+          </div>
+        ))}
+        {orders.length === 0 && (
+          <p className="p-8 text-center text-muted-foreground">No se encontraron ordenes de encordado</p>
+        )}
+      </div>
+
+      {/* Desktop table view */}
+      <div className="hidden md:block overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-glass text-left">
@@ -103,6 +137,7 @@ export default function AdminStringingTable({ orders, onViewDetail }: AdminStrin
           )}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   )
 }

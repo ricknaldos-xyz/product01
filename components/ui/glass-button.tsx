@@ -21,11 +21,11 @@ const glassButtonVariants = cva(
           'bg-destructive/10 border border-destructive/20 text-destructive hover:bg-destructive/20 active:scale-[0.98]',
       },
       size: {
-        sm: 'h-9 px-4 text-xs',
+        sm: 'h-10 px-4 text-xs',
         default: 'h-11 px-6',
         lg: 'h-12 px-8 text-base',
         xl: 'h-14 px-10 text-lg',
-        icon: 'h-10 w-10',
+        icon: 'h-11 w-11',
       },
     },
     defaultVariants: {

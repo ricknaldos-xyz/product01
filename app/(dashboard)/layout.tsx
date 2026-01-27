@@ -7,26 +7,26 @@ import { Header } from '@/components/layout/Header'
 import { OnboardingProvider } from '@/components/onboarding/OnboardingProvider'
 import { CelebrationOverlay } from '@/components/gamification/CelebrationOverlay'
 import { useState } from 'react'
-import { X, Target } from 'lucide-react'
+import { X, Target, LayoutDashboard, Video, History, Dumbbell, User, Trophy, Swords, Flag, Users, ShoppingBag, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import {
-  LayoutDashboard,
-  Video,
-  History,
-  Dumbbell,
-  User,
-} from 'lucide-react'
+import { BottomNav } from '@/components/layout/BottomNav'
 
 const queryClient = new QueryClient()
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, tourId: 'dashboard' },
-  { name: 'Nuevo Analisis', href: '/analyze', icon: Video, tourId: 'new-analysis' },
-  { name: 'Mis Analisis', href: '/analyses', icon: History, tourId: 'analyses' },
-  { name: 'Entrenamiento', href: '/training', icon: Dumbbell, tourId: 'training' },
-  { name: 'Perfil', href: '/profile', icon: User, tourId: 'profile' },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Nuevo Analisis', href: '/analyze', icon: Video },
+  { name: 'Mis Analisis', href: '/analyses', icon: History },
+  { name: 'Entrenamiento', href: '/training', icon: Dumbbell },
+  { name: 'Rankings', href: '/rankings', icon: Trophy },
+  { name: 'Matchmaking', href: '/matchmaking', icon: Swords },
+  { name: 'Desafios', href: '/challenges', icon: Flag },
+  { name: 'Comunidad', href: '/community', icon: Users },
+  { name: 'Tienda', href: '/tienda', icon: ShoppingBag },
+  { name: 'Encordado', href: '/encordado', icon: Wrench },
+  { name: 'Mi Perfil', href: '/profile', icon: User },
 ]
 
 export default function DashboardLayout({
@@ -64,18 +64,18 @@ export default function DashboardLayout({
                     <X className="h-5 w-5" />
                   </button>
                 </div>
-                <nav className="px-3 py-4 space-y-1">
-                  {navigation.map((item) => {
-                    const isActive =
-                      pathname === item.href || pathname.startsWith(item.href + '/')
-                    return (
+                <nav className="px-3 py-4 space-y-1 overflow-y-auto flex-1">
+                  {navigation.map((item, index) => (
+                    <div key={item.name}>
+                      {(index === 4 || index === 10) && (
+                        <hr className="border-border my-2" />
+                      )}
                       <Link
-                        key={item.name}
                         href={item.href}
                         onClick={() => setMobileMenuOpen(false)}
                         className={cn(
                           'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                          isActive
+                          (pathname === item.href || pathname.startsWith(item.href + '/'))
                             ? 'bg-primary/10 text-primary'
                             : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
                         )}
@@ -83,8 +83,8 @@ export default function DashboardLayout({
                         <item.icon className="h-5 w-5" />
                         {item.name}
                       </Link>
-                    )
-                  })}
+                    </div>
+                  ))}
                 </nav>
               </div>
             </div>
@@ -93,7 +93,7 @@ export default function DashboardLayout({
           {/* Main content */}
           <div className="lg:pl-64">
             <Header onMenuClick={() => setMobileMenuOpen(true)} />
-            <main className="p-4 lg:p-6">
+            <main className="p-4 lg:p-6 pb-20 lg:pb-6">
               <OnboardingProvider isNewUser={true}>
                 {children}
               </OnboardingProvider>
@@ -102,6 +102,9 @@ export default function DashboardLayout({
 
           {/* Celebration Overlay */}
           <CelebrationOverlay />
+
+          {/* Bottom Navigation */}
+          <BottomNav />
         </div>
       </SessionProvider>
     </QueryClientProvider>

@@ -137,7 +137,7 @@ export function ProfileSetupForm({ initialData, isEdit }: ProfileSetupFormProps)
         </div>
 
         {/* Location */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="region">Departamento</Label>
             <select
@@ -213,7 +213,7 @@ export function ProfileSetupForm({ initialData, isEdit }: ProfileSetupFormProps)
         </div>
 
         {/* Hand & Backhand */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Mano dominante</Label>
             <div className="flex gap-2">
@@ -263,7 +263,7 @@ export function ProfileSetupForm({ initialData, isEdit }: ProfileSetupFormProps)
         </div>
 
         {/* Years Playing & Age Group */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="yearsPlaying">Anos jugando</Label>
             <GlassInput
