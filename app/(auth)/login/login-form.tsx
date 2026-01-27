@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { GlassButton } from '@/components/ui/glass-button'
+import { GlassInput } from '@/components/ui/glass-input'
+import { GlassCard } from '@/components/ui/glass-card'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
@@ -48,7 +49,7 @@ export function LoginForm() {
 
   return (
     <div className="w-full max-w-md">
-      <div className="bg-card rounded-xl border border-border p-8">
+      <GlassCard intensity="medium" padding="xl">
         <h1 className="text-2xl font-bold text-center mb-2">Iniciar sesion</h1>
         <p className="text-muted-foreground text-center mb-6">
           Ingresa tus credenciales para continuar
@@ -57,7 +58,7 @@ export function LoginForm() {
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
+            <GlassInput
               id="email"
               name="email"
               type="email"
@@ -72,12 +73,12 @@ export function LoginForm() {
               <Label htmlFor="password">Contrasena</Label>
               <Link
                 href="/forgot-password"
-                className="text-sm text-muted-foreground hover:text-primary"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Olvidaste tu contrasena?
               </Link>
             </div>
-            <Input
+            <GlassInput
               id="password"
               name="password"
               type="password"
@@ -87,7 +88,7 @@ export function LoginForm() {
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <GlassButton type="submit" variant="solid" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -96,7 +97,7 @@ export function LoginForm() {
             ) : (
               'Ingresar'
             )}
-          </Button>
+          </GlassButton>
         </form>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
@@ -105,7 +106,7 @@ export function LoginForm() {
             Registrate
           </Link>
         </p>
-      </div>
+      </GlassCard>
     </div>
   )
 }

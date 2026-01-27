@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { GlassButton } from '@/components/ui/glass-button'
+import { GlassInput } from '@/components/ui/glass-input'
+import { GlassCard } from '@/components/ui/glass-card'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { Loader2, ArrowLeft, CheckCircle, XCircle } from 'lucide-react'
@@ -66,22 +67,22 @@ export default function ResetPasswordPage() {
   if (isSuccess) {
     return (
       <div className="w-full max-w-md">
-        <div className="bg-card rounded-xl border border-border p-8">
+        <GlassCard intensity="medium" padding="xl">
           <div className="text-center">
-            <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="h-6 w-6 text-green-600" />
+            <div className="mx-auto w-12 h-12 bg-success/20 border border-success/30 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="h-6 w-6 text-success" />
             </div>
             <h1 className="text-2xl font-bold mb-2">Contrasena actualizada</h1>
             <p className="text-muted-foreground mb-6">
               Tu contrasena ha sido restablecida exitosamente. Ya puedes iniciar sesion con tu nueva contrasena.
             </p>
-            <Link href="/login">
-              <Button className="w-full">
+            <GlassButton variant="solid" className="w-full" asChild>
+              <Link href="/login">
                 Iniciar sesion
-              </Button>
-            </Link>
+              </Link>
+            </GlassButton>
           </div>
-        </div>
+        </GlassCard>
       </div>
     )
   }
@@ -89,37 +90,37 @@ export default function ResetPasswordPage() {
   if (error && (error.includes('expirado') || error.includes('utilizado') || error.includes('no encontrado'))) {
     return (
       <div className="w-full max-w-md">
-        <div className="bg-card rounded-xl border border-border p-8">
+        <GlassCard intensity="medium" padding="xl">
           <div className="text-center">
-            <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <XCircle className="h-6 w-6 text-red-600" />
+            <div className="mx-auto w-12 h-12 bg-destructive/20 border border-destructive/30 rounded-full flex items-center justify-center mb-4">
+              <XCircle className="h-6 w-6 text-destructive" />
             </div>
             <h1 className="text-2xl font-bold mb-2">Enlace invalido</h1>
             <p className="text-muted-foreground mb-6">
               {error}
             </p>
             <div className="space-y-3">
-              <Link href="/forgot-password">
-                <Button className="w-full">
+              <GlassButton variant="solid" className="w-full" asChild>
+                <Link href="/forgot-password">
                   Solicitar nuevo enlace
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button variant="ghost" className="w-full">
+                </Link>
+              </GlassButton>
+              <GlassButton variant="ghost" className="w-full" asChild>
+                <Link href="/login">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Volver a iniciar sesion
-                </Button>
-              </Link>
+                </Link>
+              </GlassButton>
             </div>
           </div>
-        </div>
+        </GlassCard>
       </div>
     )
   }
 
   return (
     <div className="w-full max-w-md">
-      <div className="bg-card rounded-xl border border-border p-8">
+      <GlassCard intensity="medium" padding="xl">
         <h1 className="text-2xl font-bold text-center mb-2">
           Crear nueva contrasena
         </h1>
@@ -130,7 +131,7 @@ export default function ResetPasswordPage() {
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="password">Nueva contrasena</Label>
-            <Input
+            <GlassInput
               id="password"
               name="password"
               type="password"
@@ -143,7 +144,7 @@ export default function ResetPasswordPage() {
 
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirmar contrasena</Label>
-            <Input
+            <GlassInput
               id="confirmPassword"
               name="confirmPassword"
               type="password"
@@ -155,10 +156,10 @@ export default function ResetPasswordPage() {
           </div>
 
           {error && !error.includes('expirado') && !error.includes('utilizado') && (
-            <p className="text-sm text-red-500">{error}</p>
+            <p className="text-sm text-destructive">{error}</p>
           )}
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <GlassButton type="submit" variant="solid" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -167,18 +168,18 @@ export default function ResetPasswordPage() {
             ) : (
               'Actualizar contrasena'
             )}
-          </Button>
+          </GlassButton>
         </form>
 
         <div className="mt-6">
-          <Link href="/login">
-            <Button variant="ghost" className="w-full">
+          <GlassButton variant="ghost" className="w-full" asChild>
+            <Link href="/login">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Volver a iniciar sesion
-            </Button>
-          </Link>
+            </Link>
+          </GlassButton>
         </div>
-      </div>
+      </GlassCard>
     </div>
   )
 }

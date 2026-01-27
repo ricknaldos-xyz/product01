@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { GlassButton } from '@/components/ui/glass-button'
+import { GlassCard } from '@/components/ui/glass-card'
 import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 
 type VerificationState = 'loading' | 'success' | 'error'
@@ -51,15 +52,17 @@ export default function VerifyEmailPage() {
   if (state === 'loading') {
     return (
       <div className="w-full max-w-md">
-        <div className="bg-card rounded-xl border border-border p-8">
+        <GlassCard intensity="medium" padding="xl">
           <div className="text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+            <div className="glass-primary border-glass rounded-full p-4 w-fit mx-auto mb-4">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
             <h1 className="text-2xl font-bold mb-2">Verificando email...</h1>
             <p className="text-muted-foreground">
               Espera un momento mientras verificamos tu email.
             </p>
           </div>
-        </div>
+        </GlassCard>
       </div>
     )
   }
@@ -67,49 +70,49 @@ export default function VerifyEmailPage() {
   if (state === 'success') {
     return (
       <div className="w-full max-w-md">
-        <div className="bg-card rounded-xl border border-border p-8">
+        <GlassCard intensity="medium" padding="xl">
           <div className="text-center">
-            <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="h-6 w-6 text-green-600" />
+            <div className="mx-auto w-12 h-12 bg-success/20 border border-success/30 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="h-6 w-6 text-success" />
             </div>
             <h1 className="text-2xl font-bold mb-2">Email verificado</h1>
             <p className="text-muted-foreground mb-6">
               Tu email ha sido verificado exitosamente. Seras redirigido al dashboard en unos segundos.
             </p>
-            <Link href="/dashboard">
-              <Button className="w-full">
+            <GlassButton variant="solid" className="w-full" asChild>
+              <Link href="/dashboard">
                 Ir al Dashboard
-              </Button>
-            </Link>
+              </Link>
+            </GlassButton>
           </div>
-        </div>
+        </GlassCard>
       </div>
     )
   }
 
   return (
     <div className="w-full max-w-md">
-      <div className="bg-card rounded-xl border border-border p-8">
+      <GlassCard intensity="medium" padding="xl">
         <div className="text-center">
-          <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-            <XCircle className="h-6 w-6 text-red-600" />
+          <div className="mx-auto w-12 h-12 bg-destructive/20 border border-destructive/30 rounded-full flex items-center justify-center mb-4">
+            <XCircle className="h-6 w-6 text-destructive" />
           </div>
           <h1 className="text-2xl font-bold mb-2">Error de verificacion</h1>
           <p className="text-muted-foreground mb-6">
             {error}
           </p>
           <div className="space-y-3">
-            <Link href="/dashboard">
-              <Button className="w-full">
+            <GlassButton variant="solid" className="w-full" asChild>
+              <Link href="/dashboard">
                 Ir al Dashboard
-              </Button>
-            </Link>
+              </Link>
+            </GlassButton>
             <p className="text-sm text-muted-foreground">
               Puedes solicitar un nuevo enlace de verificacion desde tu perfil.
             </p>
           </div>
         </div>
-      </div>
+      </GlassCard>
     </div>
   )
 }

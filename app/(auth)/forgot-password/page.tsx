@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { GlassButton } from '@/components/ui/glass-button'
+import { GlassInput } from '@/components/ui/glass-input'
+import { GlassCard } from '@/components/ui/glass-card'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { Loader2, ArrowLeft, Mail, CheckCircle } from 'lucide-react'
@@ -43,17 +44,17 @@ export default function ForgotPasswordPage() {
   if (isSubmitted) {
     return (
       <div className="w-full max-w-md">
-        <div className="bg-card rounded-xl border border-border p-8">
+        <GlassCard intensity="medium" padding="xl">
           <div className="text-center">
-            <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="h-6 w-6 text-green-600" />
+            <div className="mx-auto w-12 h-12 bg-success/20 border border-success/30 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="h-6 w-6 text-success" />
             </div>
             <h1 className="text-2xl font-bold mb-2">Revisa tu email</h1>
             <p className="text-muted-foreground mb-6">
               Si existe una cuenta con <strong>{email}</strong>, recibiras instrucciones para restablecer tu contrasena.
             </p>
             <div className="space-y-3">
-              <Button
+              <GlassButton
                 variant="outline"
                 className="w-full"
                 onClick={() => {
@@ -63,23 +64,23 @@ export default function ForgotPasswordPage() {
               >
                 <Mail className="mr-2 h-4 w-4" />
                 Usar otro email
-              </Button>
-              <Link href="/login">
-                <Button variant="ghost" className="w-full">
+              </GlassButton>
+              <GlassButton variant="ghost" className="w-full" asChild>
+                <Link href="/login">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Volver a iniciar sesion
-                </Button>
-              </Link>
+                </Link>
+              </GlassButton>
             </div>
           </div>
-        </div>
+        </GlassCard>
       </div>
     )
   }
 
   return (
     <div className="w-full max-w-md">
-      <div className="bg-card rounded-xl border border-border p-8">
+      <GlassCard intensity="medium" padding="xl">
         <h1 className="text-2xl font-bold text-center mb-2">
           Olvidaste tu contrasena?
         </h1>
@@ -90,7 +91,7 @@ export default function ForgotPasswordPage() {
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
+            <GlassInput
               id="email"
               name="email"
               type="email"
@@ -102,7 +103,7 @@ export default function ForgotPasswordPage() {
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <GlassButton type="submit" variant="solid" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -111,18 +112,18 @@ export default function ForgotPasswordPage() {
             ) : (
               'Enviar instrucciones'
             )}
-          </Button>
+          </GlassButton>
         </form>
 
         <div className="mt-6">
-          <Link href="/login">
-            <Button variant="ghost" className="w-full">
+          <GlassButton variant="ghost" className="w-full" asChild>
+            <Link href="/login">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Volver a iniciar sesion
-            </Button>
-          </Link>
+            </Link>
+          </GlassButton>
         </div>
-      </div>
+      </GlassCard>
     </div>
   )
 }
