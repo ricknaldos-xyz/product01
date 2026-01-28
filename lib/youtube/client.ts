@@ -1,5 +1,25 @@
 const YOUTUBE_SEARCH_URL = 'https://www.googleapis.com/youtube/v3/search'
 
+// Trusted tennis coaching channel names (matched case-insensitively against channelTitle)
+// Using names instead of channel IDs because IDs can change and are hard to verify
+const TRUSTED_CHANNEL_NAMES = [
+  'essential tennis',
+  'top tennis training',
+  'intuitive tennis',
+  'tennis with masha',
+  'meike babel',
+  'mytennishq',
+  'tennis spin',
+  'tenis tips',
+  'feel tennis',
+  'tennis evolution',
+  'tomavitanza',
+  'tennis gate',
+  'patrick mouratoglou',
+  'functional tennis',
+  'tennis tv',
+]
+
 interface YouTubeSearchResponse {
   items?: Array<{
     id: {
@@ -7,12 +27,21 @@ interface YouTubeSearchResponse {
     }
     snippet: {
       title: string
+      channelId: string
+      channelTitle: string
     }
   }>
   error?: {
     code: number
     message: string
   }
+}
+
+function isTrustedChannel(channelTitle: string): boolean {
+  const normalized = channelTitle.toLowerCase().trim()
+  return TRUSTED_CHANNEL_NAMES.some(
+    (name) => normalized.includes(name) || name.includes(normalized)
+  )
 }
 
 export async function searchExerciseVideo(
@@ -24,19 +53,19 @@ export async function searchExerciseVideo(
     return null
   }
 
-  const query = `${exerciseName} ${sportName} ejercicio tutorial`
-
-  const params = new URLSearchParams({
-    part: 'snippet',
-    q: query,
-    type: 'video',
-    maxResults: '1',
-    videoEmbeddable: 'true',
-    relevanceLanguage: 'es',
-    key: apiKey,
-  })
+  // Bilingual query — "drill" works better than "ejercicio" for finding quality content
+  const query = `${exerciseName} ${sportName} drill tutorial`
 
   try {
+    const params = new URLSearchParams({
+      part: 'snippet',
+      q: query,
+      type: 'video',
+      maxResults: '8',
+      videoEmbeddable: 'true',
+      key: apiKey,
+    })
+
     const response = await fetch(`${YOUTUBE_SEARCH_URL}?${params}`)
 
     if (!response.ok) {
@@ -56,8 +85,13 @@ export async function searchExerciseVideo(
       return null
     }
 
-    const videoId = data.items[0].id.videoId
-    return `https://www.youtube.com/embed/${videoId}`
+    // Prioritize results from trusted coaching channels (matched by name)
+    const trustedResult = data.items.find((item) =>
+      isTrustedChannel(item.snippet.channelTitle)
+    )
+
+    const bestResult = trustedResult || data.items[0]
+    return `https://www.youtube.com/embed/${bestResult.id.videoId}`
   } catch (error) {
     console.error('YouTube search failed:', error)
     return null

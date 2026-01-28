@@ -73,5 +73,5 @@ function buildImagePrompt(
   description: string,
   sportName: string
 ): string {
-  return `Clean, modern fitness app illustration of a person performing the exercise "${exerciseName}" for ${sportName}. ${description}. Style: flat vector illustration, minimalist, vibrant colors on a white background, athletic figure in proper form, no text overlays. Similar to illustrations found in professional fitness and sports training apps.`
+  return `Instructional sports training diagram showing the exercise "${exerciseName}" for ${sportName}. ${description}. Style: clean line drawing on white background, similar to a sports coaching manual. Show the athlete's body position with clear anatomical outlines, directional arrows indicating movement and force direction, dotted lines showing the motion path. Use a single accent color (blue) for arrows and highlights. No background scenery, no text, no watermarks. The figure should demonstrate proper biomechanical form with emphasis on the key body positions for this specific drill.`
 }
