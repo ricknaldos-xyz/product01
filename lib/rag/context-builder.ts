@@ -34,7 +34,14 @@ export function buildRagContext(chunks: RetrievedChunk[]): string {
     }
   }
 
-  context += `\nUSA este material de referencia para enriquecer tu análisis con fundamentos teóricos y ejercicios reales cuando sea relevante. Prioriza ejercicios del material de referencia sobre ejercicios genéricos.\n`
+  context += `
+## INSTRUCCIONES IMPORTANTES SOBRE EL MATERIAL DE REFERENCIA:
+1. DEBES usar este material como BASE para tu análisis
+2. Los ejercicios correctivos DEBEN ser tomados de este material cuando estén disponibles
+3. Las correcciones técnicas DEBEN estar fundamentadas en la teoría del material
+4. NO inventes ejercicios genéricos si hay ejercicios específicos en el material
+5. Cita la fuente cuando uses información del material de referencia
+`
 
   return context
 }

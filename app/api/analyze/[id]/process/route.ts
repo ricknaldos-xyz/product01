@@ -112,16 +112,29 @@ export async function POST(
       // Retrieve RAG context from knowledge base
       let ragContext = ''
       try {
-        const retrievalQuery = `${analysis.technique.name} ${analysis.variant?.name || ''} técnica biomecánica errores ejercicios`
+        const retrievalQuery = `${analysis.technique.name} ${analysis.variant?.name || ''} técnica biomecánica errores comunes corrección ejercicios`
+        console.log('[process] RAG query:', retrievalQuery)
+
         const ragChunks = await retrieveRelevantChunks(retrievalQuery, {
           sportSlug: analysis.technique.sport.slug,
           technique: analysis.technique.slug,
-          limit: 5,
-          threshold: 0.3,
+          limit: 8,  // More context for better analysis
+          threshold: 0.4,  // Higher threshold for more relevant results
         })
+
+        console.log('[process] RAG chunks retrieved:', ragChunks.length)
+        if (ragChunks.length > 0) {
+          console.log('[process] RAG top results:', ragChunks.slice(0, 3).map(c => ({
+            similarity: c.similarity.toFixed(3),
+            category: c.category,
+            source: c.documentFilename,
+          })))
+        }
+
         ragContext = buildRagContext(ragChunks)
+        console.log('[process] RAG context length:', ragContext.length, 'chars')
       } catch (error) {
-        console.warn('RAG retrieval skipped:', error)
+        console.warn('[process] RAG retrieval failed:', error)
       }
 
       // Build prompt based on sport and technique
