@@ -140,7 +140,7 @@ export async function POST(
 
       const genAI = getGeminiClient()
       const model = genAI.getGenerativeModel({
-        model: 'gemini-2.5-flash-lite',
+        model: 'gemini-2.5-flash',
         safetySettings: SPORTS_SAFETY_SETTINGS,
       })
 
