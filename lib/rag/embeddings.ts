@@ -1,29 +1,61 @@
-import { getGeminiClient } from '@/lib/gemini/client'
+const EMBEDDING_MODEL = 'gemini-embedding-001'
+const OUTPUT_DIMENSIONS = 768  // Match pgvector column: vector(768)
+const BATCH_SIZE = 5  // Small batches to avoid rate limits
+const DELAY_MS = 1500  // 1.5s delay between batches (fits within 100 RPM)
 
-const EMBEDDING_MODEL = 'text-embedding-004'
-const BATCH_SIZE = 20
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function getApiKey(): string {
+  const key = process.env.GOOGLE_AI_API_KEY?.trim()
+  if (!key) throw new Error('GOOGLE_AI_API_KEY is not configured')
+  return key
+}
+
+async function callEmbedApi(text: string): Promise<number[]> {
+  const apiKey = getApiKey()
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:embedContent?key=${apiKey}`
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: `models/${EMBEDDING_MODEL}`,
+      content: { parts: [{ text }] },
+      outputDimensionality: OUTPUT_DIMENSIONS,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`[${response.status} ${response.statusText}] ${errorText}`)
+  }
+
+  const data = await response.json()
+  return data.embedding.values
+}
 
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const genAI = getGeminiClient()
-  const model = genAI.getGenerativeModel({ model: EMBEDDING_MODEL })
-  const result = await model.embedContent(text)
-  return result.embedding.values
+  return callEmbedApi(text)
 }
 
 export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
-  const genAI = getGeminiClient()
-  const model = genAI.getGenerativeModel({ model: EMBEDDING_MODEL })
   const results: number[][] = []
 
   for (let i = 0; i < texts.length; i += BATCH_SIZE) {
     const batch = texts.slice(i, i + BATCH_SIZE)
-    const batchResults = await Promise.all(
-      batch.map(async (text) => {
-        const result = await model.embedContent(text)
-        return result.embedding.values
-      })
-    )
-    results.push(...batchResults)
+
+    // Process sequentially within batch to control rate
+    for (const text of batch) {
+      const embedding = await callEmbedApi(text)
+      results.push(embedding)
+    }
+
+    // Delay between batches to respect rate limits
+    if (i + BATCH_SIZE < texts.length) {
+      await delay(DELAY_MS)
+    }
   }
 
   return results

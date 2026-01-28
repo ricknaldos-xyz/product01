@@ -2,7 +2,7 @@
 CREATE EXTENSION IF NOT EXISTS vector;
 
 -- Add embedding column to document_chunks table
--- Uses 768 dimensions (Google Gemini text-embedding-004)
+-- Uses 768 dimensions (Google Gemini gemini-embedding-001 with outputDimensionality=768)
 ALTER TABLE document_chunks ADD COLUMN IF NOT EXISTS embedding vector(768);
 
 -- Create HNSW index for fast approximate nearest neighbor search
