@@ -29,7 +29,7 @@ export async function enrichExercisesWithStructuredContent(
   console.log(`Enriching ${uniqueExercises.length} unique exercises (from ${exercises.length} total)`)
 
   const genAI = getGeminiClient()
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' })
 
   // 2. Process in batches
   const enrichmentMap = new Map<string, StructuredExerciseData>()
