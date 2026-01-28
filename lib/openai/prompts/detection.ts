@@ -38,34 +38,35 @@ export function buildDetectionPrompt(
 
   return `Eres un clasificador experto de tecnicas de ${sportName}.
 
-Tu UNICA tarea es ver el video e identificar QUE TECNICA especifica esta ejecutando el jugador.
+ANTES DE RESPONDER, analiza el video paso a paso:
 
-COMO DISTINGUIR DERECHA vs REVES (MUY IMPORTANTE):
+PASO 1: Identifica si el jugador es DIESTRO o ZURDO
+- Mira que mano sostiene la raqueta principalmente
+- La mayoria de jugadores son diestros (mano derecha dominante)
 
-REVES A UNA MANO - caracteristicas visuales clave:
-- El jugador GIRA LA ESPALDA hacia la red/camara durante la preparacion
-- El hombro NO dominante (izquierdo para diestros) apunta hacia la red
-- El brazo dominante CRUZA el cuerpo hacia el lado opuesto
-- La mano NO dominante SUELTA la raqueta durante el swing
-- El brazo termina extendido hacia el lado opuesto del cuerpo
-- Se ve mas la ESPALDA del jugador que su pecho
+PASO 2: Observa de QUE LADO del cuerpo golpea la pelota
+- Si golpea del LADO DERECHO de su cuerpo (para un diestro) = DERECHA (forehand)
+- Si golpea del LADO IZQUIERDO de su cuerpo (para un diestro) = REVES (backhand)
 
-DERECHA - caracteristicas visuales clave:
-- El jugador mantiene el PECHO mas abierto hacia la red
-- La raqueta permanece del MISMO LADO que la mano dominante
-- Ambos hombros son visibles desde el frente
-- El brazo no cruza significativamente el cuerpo
+PASO 3: Para REVES, cuenta las manos en la raqueta durante el golpe
+- UNA sola mano = reves a una mano (one-handed-backhand)
+- DOS manos = reves a dos manos (two-handed-backhand)
 
-Para un jugador DIESTRO:
-- DERECHA: Golpe del LADO DERECHO, pecho visible
-- REVES: Golpe del LADO IZQUIERDO, espalda visible
+EJEMPLO VISUAL DE REVES A UNA MANO (diestro):
+- La pelota esta del lado IZQUIERDO del jugador
+- El brazo DERECHO cruza el cuerpo hacia la IZQUIERDA
+- Solo la mano DERECHA sostiene la raqueta
+- La ESPALDA del jugador esta mas visible que su pecho
 
-Para un jugador ZURDO es al reves.
+EJEMPLO VISUAL DE DERECHA (diestro):
+- La pelota esta del lado DERECHO del jugador
+- La raqueta se mueve en el lado DERECHO
+- El PECHO del jugador esta mas visible
 
 OTRAS TECNICAS:
-- SAQUE (serve): El jugador LANZA la pelota al aire con una mano y golpea DESDE ARRIBA. No hay pelota entrante.
-- VOLEA (volley): Golpe EN LA RED, la pelota NO BOTA. Movimiento corto tipo "punch".
-- REMATE (smash): Golpe SOBRE LA CABEZA respondiendo a una pelota alta/globo.
+- SAQUE (serve): El jugador LANZA la pelota al aire y golpea desde ARRIBA de la cabeza
+- VOLEA (volley): Golpe en la RED, la pelota NO BOTA
+- REMATE (smash): Golpe sobre la cabeza respondiendo a un globo
 
 TECNICAS DISPONIBLES:
 ${techniquesList}
@@ -77,7 +78,7 @@ Responde EXCLUSIVAMENTE en formato JSON valido:
   "technique": "<slug de la tecnica>",
   "variant": "<slug de variante o null>",
   "confidence": <numero entre 0.0 y 1.0>,
-  "reasoning": "<explicacion breve en espanol de por que identificaste esta tecnica>",
+  "reasoning": "Jugador [diestro/zurdo]. Golpea del lado [derecho/izquierdo] de su cuerpo. [X] mano(s) en raqueta. Por lo tanto es [tecnica].",
   "multipleDetected": false,
   "alternatives": []
 }
@@ -99,11 +100,12 @@ Si detectas MULTIPLES tecnicas diferentes en el video:
 
 REGLAS:
 1. Responde SOLO con el JSON, sin texto adicional
-2. Mira el video COMPLETO antes de decidir
-3. CLAVE para DERECHA vs REVES: observa la ESPALDA del jugador
-   - Si ves la ESPALDA/hombro girando hacia la camara = probablemente REVES
-   - Si ves el PECHO abierto hacia la camara = probablemente DERECHA
-4. Para REVES a UNA MANO: la mano no dominante SUELTA la raqueta, brazo completamente extendido
-5. Si ves un saque: el jugador LANZA la pelota hacia arriba, no hay pelota entrante
-6. Si no estas seguro (confidence < 0.6), explicalo en reasoning`
+2. Sigue los 3 PASOS de analisis antes de decidir
+3. En "reasoning" DEBES incluir:
+   - Si el jugador es diestro o zurdo
+   - De que LADO del cuerpo golpea (izquierdo o derecho)
+   - Cuantas manos tiene en la raqueta (si aplica)
+4. Si la pelota esta del lado IZQUIERDO de un diestro = es REVES (backhand), NO derecha
+5. Si solo hay UNA mano en la raqueta en un reves = es "one-handed-backhand"
+6. Si no estas seguro (confidence < 0.6), explicalo`
 }
