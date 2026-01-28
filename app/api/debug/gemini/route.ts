@@ -3,9 +3,9 @@ import { getGeminiClient, SPORTS_SAFETY_SETTINGS } from '@/lib/gemini/client'
 
 // Models to test in order of preference (based on account availability)
 const MODELS_TO_TEST = [
+  'gemini-3-flash',
   'gemini-2.5-flash',
   'gemini-2.5-flash-lite',
-  'gemini-3-flash',
 ]
 
 // Simple diagnostic endpoint to test Gemini connectivity
