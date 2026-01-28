@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
     console.log('[detect] Calling Gemini gemini-2.5-flash with', contentParts.length, 'parts')
     const genAI = getGeminiClient()
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
       safetySettings: SPORTS_SAFETY_SETTINGS,
     })
 
@@ -266,7 +266,14 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('[detect] UNCAUGHT ERROR:', error instanceof Error ? error.message : error)
-    console.error('[detect] Stack:', error instanceof Error ? error.stack : 'N/A')
+    // Check for rate limiting
+    const isRateLimit = error instanceof Error && error.message.includes('429')
+    if (isRateLimit) {
+      return NextResponse.json(
+        { error: 'El servicio de IA está temporalmente saturado. Intenta de nuevo en unos segundos.' },
+        { status: 429 }
+      )
+    }
     return NextResponse.json(
       { error: 'Error al detectar la técnica' },
       { status: 500 }
