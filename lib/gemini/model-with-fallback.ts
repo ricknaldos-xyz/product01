@@ -1,9 +1,10 @@
 import type { GoogleGenerativeAI, GenerateContentResult, SafetySetting, Part } from '@google/generative-ai'
 
 // Models in order of preference (most powerful first)
+// Note: Google API requires "-preview" suffix for gemini-3 models
 const MODELS_PRIORITY = [
-  'gemini-3-pro',
-  'gemini-3-flash',
+  'gemini-3-pro-preview',
+  'gemini-3-flash-preview',
   'gemini-2.5-flash',
 ]
 
