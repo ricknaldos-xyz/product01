@@ -41,13 +41,26 @@ export function buildDetectionPrompt(
 Tu UNICA tarea es ver el video e identificar QUE TECNICA especifica esta ejecutando el jugador.
 
 COMO DISTINGUIR DERECHA vs REVES (MUY IMPORTANTE):
-Para un jugador DIESTRO (derecha es mano dominante):
-- DERECHA (forehand): Golpe donde la raqueta esta del LADO DERECHO del cuerpo. El pecho del jugador mira hacia la red. La mano derecha lidera el golpe.
-- REVES (backhand): Golpe donde la raqueta esta del LADO IZQUIERDO del cuerpo. La espalda/hombro izquierdo apunta hacia la red. El brazo CRUZA el cuerpo.
-  - Reves a UNA mano: Solo la mano dominante sostiene la raqueta, el brazo se extiende completamente.
-  - Reves a DOS manos: Ambas manos en la raqueta durante todo el golpe.
 
-Para un jugador ZURDO es al reves: derecha del lado izquierdo, reves del lado derecho.
+REVES A UNA MANO - caracteristicas visuales clave:
+- El jugador GIRA LA ESPALDA hacia la red/camara durante la preparacion
+- El hombro NO dominante (izquierdo para diestros) apunta hacia la red
+- El brazo dominante CRUZA el cuerpo hacia el lado opuesto
+- La mano NO dominante SUELTA la raqueta durante el swing
+- El brazo termina extendido hacia el lado opuesto del cuerpo
+- Se ve mas la ESPALDA del jugador que su pecho
+
+DERECHA - caracteristicas visuales clave:
+- El jugador mantiene el PECHO mas abierto hacia la red
+- La raqueta permanece del MISMO LADO que la mano dominante
+- Ambos hombros son visibles desde el frente
+- El brazo no cruza significativamente el cuerpo
+
+Para un jugador DIESTRO:
+- DERECHA: Golpe del LADO DERECHO, pecho visible
+- REVES: Golpe del LADO IZQUIERDO, espalda visible
+
+Para un jugador ZURDO es al reves.
 
 OTRAS TECNICAS:
 - SAQUE (serve): El jugador LANZA la pelota al aire con una mano y golpea DESDE ARRIBA. No hay pelota entrante.
@@ -87,10 +100,10 @@ Si detectas MULTIPLES tecnicas diferentes en el video:
 REGLAS:
 1. Responde SOLO con el JSON, sin texto adicional
 2. Mira el video COMPLETO antes de decidir
-3. Para distinguir DERECHA vs REVES: mira de QUE LADO del cuerpo esta la raqueta al golpear
-   - Si la raqueta esta del lado de la mano dominante = DERECHA (forehand)
-   - Si la raqueta cruza al lado opuesto = REVES (backhand)
-4. Para REVES: identifica si es a una mano (un brazo extendido) o dos manos (ambas manos en raqueta)
+3. CLAVE para DERECHA vs REVES: observa la ESPALDA del jugador
+   - Si ves la ESPALDA/hombro girando hacia la camara = probablemente REVES
+   - Si ves el PECHO abierto hacia la camara = probablemente DERECHA
+4. Para REVES a UNA MANO: la mano no dominante SUELTA la raqueta, brazo completamente extendido
 5. Si ves un saque: el jugador LANZA la pelota hacia arriba, no hay pelota entrante
 6. Si no estas seguro (confidence < 0.6), explicalo en reasoning`
 }
