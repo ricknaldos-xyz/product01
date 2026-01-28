@@ -173,21 +173,22 @@ export default function AnalyzePage() {
 
     for (const file of files) {
       const isVideo = file.type.startsWith('video/')
-      const formData = new FormData()
-      formData.append('file', file)
 
-      const uploadRes = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
+      // Generate unique filename
+      const timestamp = Date.now()
+      const random = Math.random().toString(36).substring(2, 8)
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'bin'
+      const uniqueName = `analyses/${timestamp}-${random}.${ext}`
+
+      // Use client-side upload directly to Vercel Blob (bypasses server size limit)
+      const { upload } = await import('@vercel/blob/client')
+      const blob = await upload(uniqueName, file, {
+        access: 'public',
+        handleUploadUrl: '/api/upload/token',
       })
 
-      if (!uploadRes.ok) {
-        throw new Error('Error al subir archivo')
-      }
-
-      const uploadData = await uploadRes.json()
       mediaItems.push({
-        url: uploadData.url,
+        url: blob.url,
         type: isVideo ? 'VIDEO' : 'IMAGE',
         filename: file.name,
         size: file.size,

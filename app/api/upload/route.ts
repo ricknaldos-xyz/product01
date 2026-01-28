@@ -4,6 +4,9 @@ import { writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 
+// Note: For large files (>4MB), use /api/upload/token with client-side upload
+// This route is kept for backward compatibility with small files
+
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024 // 100MB
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB
 
