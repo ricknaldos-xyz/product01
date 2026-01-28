@@ -3,18 +3,26 @@ import { getGeminiClient, SPORTS_SAFETY_SETTINGS } from '@/lib/gemini/client'
 
 // Models to test in order of preference
 const MODELS_TO_TEST = [
+  'gemini-2.0-flash',
+  'gemini-1.5-pro-latest',
+  'gemini-1.5-flash-latest',
   'gemini-1.5-pro',
   'gemini-1.5-flash',
-  'gemini-2.0-flash-exp',
   'gemini-pro',
+  'gemini-pro-vision',
+  'models/gemini-2.0-flash',
+  'models/gemini-1.5-pro',
 ]
 
 // Simple diagnostic endpoint to test Gemini connectivity
 export async function GET() {
+  const apiKey = process.env.GOOGLE_AI_API_KEY || ''
   const diagnostics: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
-    apiKeyConfigured: !!process.env.GOOGLE_AI_API_KEY,
-    apiKeyLength: process.env.GOOGLE_AI_API_KEY?.length || 0,
+    apiKeyConfigured: !!apiKey,
+    apiKeyLength: apiKey.length,
+    apiKeyPrefix: apiKey.substring(0, 6) + '...',
+    apiKeyValid: apiKey.startsWith('AIza') && apiKey.length >= 39,
   }
 
   const modelResults: Record<string, { status: string; error?: string }> = {}
