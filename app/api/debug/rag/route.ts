@@ -71,13 +71,51 @@ export async function GET() {
       )
     }
 
+    // 4.5. Check if embeddings exist in chunks
+    try {
+      const embeddingCheck = await prisma.$queryRaw<[{ with_embeddings: bigint, without_embeddings: bigint }]>`
+        SELECT
+          COUNT(*) FILTER (WHERE embedding IS NOT NULL) as with_embeddings,
+          COUNT(*) FILTER (WHERE embedding IS NULL) as without_embeddings
+        FROM document_chunks
+      `
+      diagnostics.embeddings = {
+        withEmbeddings: Number(embeddingCheck[0].with_embeddings),
+        withoutEmbeddings: Number(embeddingCheck[0].without_embeddings),
+        status: embeddingCheck[0].with_embeddings > 0 ? 'OK' : 'MISSING'
+      }
+    } catch (embError) {
+      diagnostics.embeddings = {
+        status: 'ERROR',
+        error: embError instanceof Error ? embError.message : String(embError)
+      }
+    }
+
+    // 4.6. Check pgvector extension
+    try {
+      const extensionCheck = await prisma.$queryRaw<[{ installed: boolean }]>`
+        SELECT EXISTS(
+          SELECT 1 FROM pg_extension WHERE extname = 'vector'
+        ) as installed
+      `
+      diagnostics.pgvector = {
+        installed: extensionCheck[0].installed,
+        status: extensionCheck[0].installed ? 'OK' : 'NOT_INSTALLED'
+      }
+    } catch (pgError) {
+      diagnostics.pgvector = {
+        status: 'ERROR',
+        error: pgError instanceof Error ? pgError.message : String(pgError)
+      }
+    }
+
     // 5. Test vector search (pgvector)
     try {
       const testQuery = 'revés a una mano tenis técnica'
       const testResults = await retrieveRelevantChunks(testQuery, {
         sportSlug: 'tennis',
-        limit: 3,
-        threshold: 0.3
+        limit: 5,
+        threshold: 0.1  // Very low threshold to test if ANY results come back
       })
 
       diagnostics.vectorSearch = {
