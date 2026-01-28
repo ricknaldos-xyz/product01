@@ -157,10 +157,10 @@ export async function POST(request: NextRequest) {
     contentParts.push({ text: prompt })
 
     // Call Gemini for detection with retry on 429
-    console.log('[detect] Calling Gemini gemini-2.5-flash with', contentParts.length, 'parts')
+    console.log('[detect] Calling Gemini gemini-1.5-pro with', contentParts.length, 'parts')
     const genAI = getGeminiClient()
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-pro',
       safetySettings: SPORTS_SAFETY_SETTINGS,
     })
 

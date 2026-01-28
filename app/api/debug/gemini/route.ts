@@ -14,7 +14,7 @@ export async function GET() {
     diagnostics.clientCreated = true
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-pro',
       safetySettings: SPORTS_SAFETY_SETTINGS,
     })
     diagnostics.modelCreated = true
