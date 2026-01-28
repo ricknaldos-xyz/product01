@@ -91,14 +91,21 @@ export default function AdminPage() {
   const handleProcess = async (id: string) => {
     setProcessingIds((prev) => new Set(prev).add(id))
     try {
-      const res = await fetch(`/api/admin/documents/${id}/process`, {
-        method: 'POST',
+      const res = await fetch(`/api/admin/documents/${id}`, {
+        method: 'PATCH',
       })
       if (!res.ok) {
-        const data = await res.json()
-        toast.error(data.error || 'Error al procesar')
+        let errorMsg = 'Error al procesar'
+        try {
+          const data = await res.json()
+          errorMsg = data.error || errorMsg
+        } catch {
+          // Response may not have JSON body (e.g. 405)
+        }
+        toast.error(errorMsg)
       } else {
-        toast.success('Documento procesado correctamente')
+        const data = await res.json()
+        toast.success(data.message || 'Documento procesado correctamente')
       }
       await fetchDocuments()
     } catch (error) {

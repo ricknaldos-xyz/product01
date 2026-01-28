@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
 import { processDocument } from '@/lib/rag/processor'
 
 export const maxDuration = 300 // 5 minutes for large PDFs
@@ -21,29 +20,7 @@ export async function POST(
 
     const { id } = await params
 
-    // Check if document is FAILED but already has chunks with embeddings
-    // (e.g., a reprocess attempt hit rate limits but original data is intact)
-    const doc = await prisma.document.findUnique({
-      where: { id },
-      select: {
-        status: true,
-        _count: { select: { chunks: true } },
-      },
-    })
-
-    if (doc?.status === 'FAILED' && doc._count.chunks > 0) {
-      // Recover: mark as completed since chunks exist
-      await prisma.document.update({
-        where: { id },
-        data: { status: 'COMPLETED', errorMessage: null },
-      })
-      return NextResponse.json({
-        success: true,
-        message: `Documento recuperado (${doc._count.chunks} chunks existentes)`,
-      })
-    }
-
-    // Full processing for documents without chunks
+    // Process in the same request (within 5-minute limit)
     await processDocument(id)
 
     return NextResponse.json({ success: true, message: 'Documento procesado correctamente' })
