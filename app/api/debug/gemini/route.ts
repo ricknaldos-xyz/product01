@@ -1,17 +1,11 @@
 import { NextResponse } from 'next/server'
 import { getGeminiClient, SPORTS_SAFETY_SETTINGS } from '@/lib/gemini/client'
 
-// Models to test in order of preference
+// Models to test in order of preference (based on account availability)
 const MODELS_TO_TEST = [
-  'gemini-2.0-flash',
-  'gemini-1.5-pro-latest',
-  'gemini-1.5-flash-latest',
-  'gemini-1.5-pro',
-  'gemini-1.5-flash',
-  'gemini-pro',
-  'gemini-pro-vision',
-  'models/gemini-2.0-flash',
-  'models/gemini-1.5-pro',
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite',
+  'gemini-3-flash',
 ]
 
 // Simple diagnostic endpoint to test Gemini connectivity
