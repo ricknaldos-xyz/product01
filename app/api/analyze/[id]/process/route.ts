@@ -376,21 +376,36 @@ export async function POST(
 
       return NextResponse.json(updatedAnalysis)
     } catch (error) {
-      console.error('Processing error:', error)
+      const errorMsg = error instanceof Error ? error.message : String(error)
+      console.error('Processing error:', errorMsg)
 
       // Update status to failed
       await prisma.analysis.update({
         where: { id },
         data: {
           status: 'FAILED',
-          errorMessage:
-            error instanceof Error ? error.message : 'Error desconocido',
+          errorMessage: errorMsg.substring(0, 500),
           processingMs: Date.now() - startTime,
         },
       })
 
+      // Check for quota exhaustion vs temporary rate limit
+      if (errorMsg.includes('429')) {
+        const isQuotaExhausted = errorMsg.includes('quota') || errorMsg.includes('Quota')
+        if (isQuotaExhausted) {
+          return NextResponse.json(
+            { error: 'Cuota de IA agotada por hoy. La cuota se renueva a las 2:00 AM (hora Peru). Intenta mas tarde.' },
+            { status: 429 }
+          )
+        }
+        return NextResponse.json(
+          { error: 'Servicio de IA temporalmente ocupado. Espera 30 segundos e intenta de nuevo.' },
+          { status: 429 }
+        )
+      }
+
       return NextResponse.json(
-        { error: 'Error al procesar el analisis' },
+        { error: `Error al procesar: ${errorMsg.substring(0, 100)}` },
         { status: 500 }
       )
     }

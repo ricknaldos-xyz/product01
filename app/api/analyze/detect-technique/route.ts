@@ -287,17 +287,34 @@ export async function POST(request: NextRequest) {
       alternatives,
     })
   } catch (error) {
-    console.error('[detect] UNCAUGHT ERROR:', error instanceof Error ? error.message : error)
-    // Check for rate limiting
-    const isRateLimit = error instanceof Error && error.message.includes('429')
-    if (isRateLimit) {
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    console.error('[detect] UNCAUGHT ERROR:', errorMsg)
+
+    // Check for quota exhaustion vs temporary rate limit
+    if (errorMsg.includes('429')) {
+      const isQuotaExhausted = errorMsg.includes('quota') || errorMsg.includes('Quota')
+      if (isQuotaExhausted) {
+        return NextResponse.json(
+          { error: 'Cuota de IA agotada por hoy. La cuota se renueva a las 2:00 AM (hora Peru). Puedes intentar mas tarde o usar la seleccion manual de tecnica.' },
+          { status: 429 }
+        )
+      }
       return NextResponse.json(
-        { error: 'El servicio de IA está temporalmente saturado. Intenta de nuevo en unos segundos.' },
+        { error: 'Servicio de IA temporalmente ocupado. Espera 30 segundos e intenta de nuevo.' },
         { status: 429 }
       )
     }
+
+    // Check for network/fetch errors
+    if (errorMsg.includes('fetch') || errorMsg.includes('network') || errorMsg.includes('ECONNREFUSED')) {
+      return NextResponse.json(
+        { error: 'Error de conexion con el servicio de IA. Verifica tu conexion e intenta de nuevo.' },
+        { status: 503 }
+      )
+    }
+
     return NextResponse.json(
-      { error: 'Error al detectar la técnica' },
+      { error: `Error al detectar la tecnica: ${errorMsg.substring(0, 100)}` },
       { status: 500 }
     )
   }
