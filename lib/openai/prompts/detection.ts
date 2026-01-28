@@ -12,8 +12,8 @@ export function buildDetectionPrompt(
   // For tennis, add visual cues to help distinguish techniques
   const tennisVisualCues: Record<string, string> = {
     serve: 'SAQUE: Jugador lanza la pelota al aire con una mano, golpea desde arriba de la cabeza. Posicion inicial estatica, sin pelota entrante.',
-    forehand: 'DERECHA: Golpe del lado de la mano dominante (derecha para diestros). La raqueta viene desde atras del cuerpo hacia adelante. Pelota viene del oponente.',
-    backhand: 'REVES: Golpe del lado NO dominante (izquierda para diestros). Puede ser a una o dos manos. Pelota viene del oponente.',
+    forehand: 'DERECHA: Raqueta del MISMO LADO que la mano dominante. Para diestro: raqueta lado DERECHO, pecho hacia la red.',
+    backhand: 'REVES: Raqueta del LADO OPUESTO a la mano dominante. Para diestro: raqueta lado IZQUIERDO, espalda/hombro hacia la red. UNA MANO: brazo extendido solo. DOS MANOS: ambas manos en raqueta.',
     volley: 'VOLEA: Golpe en la RED, SIN que la pelota bote. Movimiento corto tipo "punch". Jugador cerca de la red.',
     return: 'DEVOLUCION: Respuesta al saque del oponente. Similar a derecha/reves pero desde la linea de fondo recibiendo un saque.',
     smash: 'REMATE/SMASH: Golpe aereo sobre la cabeza, similar al saque pero respondiendo a un globo. La pelota viene alta del oponente.',
@@ -40,11 +40,18 @@ export function buildDetectionPrompt(
 
 Tu UNICA tarea es ver el video e identificar QUE TECNICA especifica esta ejecutando el jugador.
 
-COMO DISTINGUIR LAS TECNICAS PRINCIPALES:
-- SAQUE (serve): El jugador LANZA la pelota al aire y golpea DESDE ARRIBA. No hay pelota entrante del oponente.
-- DERECHA (forehand): Golpe con la raqueta del LADO DOMINANTE (derecha para diestros). Pelota viene del otro lado.
-- REVES (backhand): Golpe del LADO NO DOMINANTE. Cuerpo gira hacia ese lado. Puede ser 1 o 2 manos.
-- VOLEA (volley): Golpe EN LA RED, la pelota NO BOTA. Movimiento corto.
+COMO DISTINGUIR DERECHA vs REVES (MUY IMPORTANTE):
+Para un jugador DIESTRO (derecha es mano dominante):
+- DERECHA (forehand): Golpe donde la raqueta esta del LADO DERECHO del cuerpo. El pecho del jugador mira hacia la red. La mano derecha lidera el golpe.
+- REVES (backhand): Golpe donde la raqueta esta del LADO IZQUIERDO del cuerpo. La espalda/hombro izquierdo apunta hacia la red. El brazo CRUZA el cuerpo.
+  - Reves a UNA mano: Solo la mano dominante sostiene la raqueta, el brazo se extiende completamente.
+  - Reves a DOS manos: Ambas manos en la raqueta durante todo el golpe.
+
+Para un jugador ZURDO es al reves: derecha del lado izquierdo, reves del lado derecho.
+
+OTRAS TECNICAS:
+- SAQUE (serve): El jugador LANZA la pelota al aire con una mano y golpea DESDE ARRIBA. No hay pelota entrante.
+- VOLEA (volley): Golpe EN LA RED, la pelota NO BOTA. Movimiento corto tipo "punch".
 - REMATE (smash): Golpe SOBRE LA CABEZA respondiendo a una pelota alta/globo.
 
 TECNICAS DISPONIBLES:
@@ -80,8 +87,10 @@ Si detectas MULTIPLES tecnicas diferentes en el video:
 REGLAS:
 1. Responde SOLO con el JSON, sin texto adicional
 2. Mira el video COMPLETO antes de decidir
-3. Enfocate en el GOLPE PRINCIPAL que se ejecuta
-4. Si ves un saque: el jugador LANZA la pelota, no hay pelota entrante
-5. Si ves derecha/reves: hay una pelota que VIENE del oponente
+3. Para distinguir DERECHA vs REVES: mira de QUE LADO del cuerpo esta la raqueta al golpear
+   - Si la raqueta esta del lado de la mano dominante = DERECHA (forehand)
+   - Si la raqueta cruza al lado opuesto = REVES (backhand)
+4. Para REVES: identifica si es a una mano (un brazo extendido) o dos manos (ambas manos en raqueta)
+5. Si ves un saque: el jugador LANZA la pelota hacia arriba, no hay pelota entrante
 6. Si no estas seguro (confidence < 0.6), explicalo en reasoning`
 }
