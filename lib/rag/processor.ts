@@ -117,11 +117,17 @@ export async function processDocument(documentId: string): Promise<void> {
   } catch (error) {
     console.error(`Document ${documentId} processing failed:`, error)
 
+    const rawMessage = error instanceof Error ? error.message : 'Error desconocido'
+    // Store a clean, user-friendly error message (max 300 chars)
+    const errorMessage = rawMessage.length > 300
+      ? rawMessage.substring(0, 297) + '...'
+      : rawMessage
+
     await prisma.document.update({
       where: { id: documentId },
       data: {
         status: 'FAILED',
-        errorMessage: error instanceof Error ? error.message : 'Error desconocido',
+        errorMessage,
       },
     })
 

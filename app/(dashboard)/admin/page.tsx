@@ -232,7 +232,9 @@ export default function AdminPage() {
                       <span>{doc._count.chunks} chunks</span>
                     </div>
                     {doc.errorMessage && (
-                      <p className="text-xs text-destructive mt-1">{doc.errorMessage}</p>
+                      <p className="text-xs text-destructive mt-1 line-clamp-2">
+                        {doc.errorMessage}
+                      </p>
                     )}
                   </div>
                   <GlassBadge variant={statusConf.variant}>
