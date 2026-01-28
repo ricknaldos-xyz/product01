@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { getGeminiClient, SPORTS_SAFETY_SETTINGS } from '@/lib/gemini/client'
+import { getGeminiClient, SPORTS_SAFETY_SETTINGS, uploadToGemini } from '@/lib/gemini/client'
 import { buildTennisPrompt } from '@/lib/openai/prompts/tennis'
 import { sendAnalysisCompleteEmail } from '@/lib/email'
 import { recalculateSkillScore } from '@/lib/skill-score'
@@ -145,33 +145,29 @@ export async function POST(
       })
 
       // Prepare content parts for Gemini
-      const contentParts: Array<{
-        inlineData: { mimeType: string; data: string }
-      } | { text: string }> = []
+      const contentParts: Array<
+        | { fileData: { mimeType: string; fileUri: string } }
+        | { inlineData: { mimeType: string; data: string } }
+        | { text: string }
+      > = []
 
       // Process each media item
       for (const item of analysis.mediaItems) {
         console.log(`Processing ${item.type}: ${item.filename}`)
 
-        let buffer: ArrayBuffer
+        let buffer: Buffer
 
         // Check if it's a local file or remote URL
         if (item.url.startsWith('/uploads/')) {
-          // Local file - read from filesystem
-          const filePath = path.join(process.cwd(), 'public', item.url)
-          const fileBuffer = await readFile(filePath)
-          buffer = fileBuffer.buffer.slice(fileBuffer.byteOffset, fileBuffer.byteOffset + fileBuffer.byteLength)
+          buffer = await readFile(path.join(process.cwd(), 'public', item.url))
         } else {
-          // Remote URL - fetch from network
           const response = await fetch(item.url)
           if (!response.ok) {
             console.error(`Failed to download file: ${item.url}`)
             continue
           }
-          buffer = await response.arrayBuffer()
+          buffer = Buffer.from(await response.arrayBuffer())
         }
-
-        const base64 = Buffer.from(buffer).toString('base64')
 
         // Determine mime type
         let mimeType: string
@@ -191,12 +187,15 @@ export async function POST(
             : 'image/jpeg'
         }
 
-        contentParts.push({
-          inlineData: {
-            mimeType,
-            data: base64,
-          },
-        })
+        // Use File API for videos (too large for inline data), inline for images
+        if (item.type === 'VIDEO') {
+          console.log(`Uploading video to Gemini File API: ${item.filename}`)
+          const fileData = await uploadToGemini(buffer, mimeType, item.filename)
+          contentParts.push({ fileData })
+        } else {
+          const base64 = buffer.toString('base64')
+          contentParts.push({ inlineData: { mimeType, data: base64 } })
+        }
       }
 
       if (contentParts.length === 0) {

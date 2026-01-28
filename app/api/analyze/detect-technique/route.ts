@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { getGeminiClient, SPORTS_SAFETY_SETTINGS } from '@/lib/gemini/client'
+import { getGeminiClient, SPORTS_SAFETY_SETTINGS, uploadToGemini } from '@/lib/gemini/client'
 import { buildDetectionPrompt } from '@/lib/openai/prompts/detection'
 import { readFile } from 'fs/promises'
 import path from 'path'
 
 export const maxDuration = 120
-
-const ALLOWED_VIDEO_TYPES = [
-  'video/mp4',
-  'video/quicktime',
-  'video/webm',
-  'video/x-msvideo',
-]
 
 interface DetectionResult {
   technique: string
@@ -26,6 +19,23 @@ interface DetectionResult {
     variant: string | null
     confidence: number
   }>
+}
+
+function getMimeType(item: { type: string; filename: string }): string {
+  if (item.type === 'VIDEO') {
+    return item.filename.endsWith('.mov')
+      ? 'video/quicktime'
+      : item.filename.endsWith('.webm')
+      ? 'video/webm'
+      : item.filename.endsWith('.avi')
+      ? 'video/x-msvideo'
+      : 'video/mp4'
+  }
+  return item.filename.endsWith('.png')
+    ? 'image/png'
+    : item.filename.endsWith('.webp')
+    ? 'image/webp'
+    : 'image/jpeg'
 }
 
 export async function POST(request: NextRequest) {
@@ -91,49 +101,34 @@ export async function POST(request: NextRequest) {
       }))
     )
 
-    // Prepare video content for Gemini
+    // Upload files to Gemini File API and prepare content parts
     const contentParts: Array<
-      { inlineData: { mimeType: string; data: string } } | { text: string }
+      | { fileData: { mimeType: string; fileUri: string } }
+      | { inlineData: { mimeType: string; data: string } }
+      | { text: string }
     > = []
 
     for (const item of urls) {
-      let buffer: ArrayBuffer
+      const mimeType = getMimeType(item)
+      let buffer: Buffer
 
       if (item.url.startsWith('/uploads/')) {
-        const filePath = path.join(process.cwd(), 'public', item.url)
-        const fileBuffer = await readFile(filePath)
-        buffer = fileBuffer.buffer.slice(
-          fileBuffer.byteOffset,
-          fileBuffer.byteOffset + fileBuffer.byteLength
-        )
+        buffer = await readFile(path.join(process.cwd(), 'public', item.url))
       } else {
         const response = await fetch(item.url)
         if (!response.ok) continue
-        buffer = await response.arrayBuffer()
+        buffer = Buffer.from(await response.arrayBuffer())
       }
 
-      const base64 = Buffer.from(buffer).toString('base64')
-
-      let mimeType: string
+      // Use File API for videos (too large for inline data), inline for images
       if (item.type === 'VIDEO') {
-        mimeType = item.filename.endsWith('.mov')
-          ? 'video/quicktime'
-          : item.filename.endsWith('.webm')
-          ? 'video/webm'
-          : item.filename.endsWith('.avi')
-          ? 'video/x-msvideo'
-          : 'video/mp4'
+        console.log(`Uploading video to Gemini File API: ${item.filename}`)
+        const fileData = await uploadToGemini(buffer, mimeType, item.filename)
+        contentParts.push({ fileData })
       } else {
-        mimeType = item.filename.endsWith('.png')
-          ? 'image/png'
-          : item.filename.endsWith('.webp')
-          ? 'image/webp'
-          : 'image/jpeg'
+        const base64 = buffer.toString('base64')
+        contentParts.push({ inlineData: { mimeType, data: base64 } })
       }
-
-      contentParts.push({
-        inlineData: { mimeType, data: base64 },
-      })
     }
 
     if (contentParts.length === 0) {
@@ -151,6 +146,7 @@ export async function POST(request: NextRequest) {
       model: 'gemini-2.5-flash',
       safetySettings: SPORTS_SAFETY_SETTINGS,
     })
+    console.log('Sending to Gemini for technique detection...')
     const result = await model.generateContent(contentParts)
 
     // Check if response was blocked by safety filters
