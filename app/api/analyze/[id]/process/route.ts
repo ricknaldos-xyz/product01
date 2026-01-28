@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getGeminiClient, SPORTS_SAFETY_SETTINGS } from '@/lib/gemini/client'
+import { generateWithFallback } from '@/lib/gemini/model-with-fallback'
 import { buildTennisPrompt } from '@/lib/openai/prompts/tennis'
 import { sendAnalysisCompleteEmail } from '@/lib/email'
 import { recalculateSkillScore } from '@/lib/skill-score'
@@ -139,10 +140,6 @@ export async function POST(
       }
 
       const genAI = getGeminiClient()
-      const model = genAI.getGenerativeModel({
-        model: 'gemini-2.5-flash',
-        safetySettings: SPORTS_SAFETY_SETTINGS,
-      })
 
       // Prepare content parts for Gemini (inline base64)
       const contentParts: Array<
@@ -206,27 +203,13 @@ export async function POST(
 
       console.log('[process] Sending to Gemini for analysis...')
 
-      // Call Gemini API with retry on 429
-      let result
-      for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-          result = await model.generateContent(contentParts)
-          break
-        } catch (err) {
-          const is429 = err instanceof Error && err.message.includes('429')
-          if (is429 && attempt < 2) {
-            const waitSec = (attempt + 1) * 15
-            console.log(`[process] Rate limited, retrying in ${waitSec}s (attempt ${attempt + 1}/3)`)
-            await new Promise((r) => setTimeout(r, waitSec * 1000))
-          } else {
-            throw err
-          }
-        }
-      }
-
-      if (!result) {
-        throw new Error('No se pudo obtener respuesta del modelo de IA')
-      }
+      // Call Gemini API with automatic model fallback
+      const { result, modelUsed } = await generateWithFallback(
+        genAI,
+        contentParts,
+        SPORTS_SAFETY_SETTINGS
+      )
+      console.log('[process] Using model:', modelUsed)
 
       // Check if response was blocked by safety filters
       const blockReason = result.response.promptFeedback?.blockReason
