@@ -17,6 +17,7 @@ import { DashboardCharts } from '@/components/dashboard/DashboardCharts'
 import { EmailVerificationBanner } from '@/components/banners/EmailVerificationBanner'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import { StreakWidget } from '@/components/gamification/StreakWidget'
+import { GoalWidget } from '@/components/goals/GoalWidget'
 import { RecentBadgesCard } from '@/components/dashboard/RecentBadgesCard'
 import { ActivityHeatmap } from '@/components/gamification/ActivityHeatmap'
 
@@ -76,6 +77,9 @@ export default async function DashboardPage() {
 
       {/* Streak Widget */}
       <StreakWidget />
+
+      {/* Goal Widget */}
+      <GoalWidget />
 
       {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

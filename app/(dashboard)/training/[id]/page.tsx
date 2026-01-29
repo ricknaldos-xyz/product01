@@ -33,6 +33,7 @@ import {
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { ExerciseItem } from './exercise-item'
+import { CoachCTA } from '@/components/coach/CoachCTA'
 
 async function getTrainingPlan(id: string, userId: string) {
   return prisma.trainingPlan.findFirst({
@@ -212,6 +213,9 @@ export default async function TrainingPlanDetailPage({
           </GlassButton>
         </GlassCard>
       )}
+
+      {/* Coach CTA */}
+      <CoachCTA context="training" />
 
       {/* Link to Analysis */}
       <GlassCard intensity="ultralight" padding="lg" className="text-center">

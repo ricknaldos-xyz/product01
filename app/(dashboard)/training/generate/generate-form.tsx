@@ -26,6 +26,7 @@ export function GeneratePlanForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const analysisId = searchParams.get('analysisId')
+  const goalId = searchParams.get('goalId')
   const [generating, setGenerating] = useState(false)
   const [weeks, setWeeks] = useState(4)
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null)
@@ -68,6 +69,7 @@ export function GeneratePlanForm() {
         body: JSON.stringify({
           analysisId,
           durationWeeks: weeks,
+          ...(goalId && { goalId }),
         }),
       })
 

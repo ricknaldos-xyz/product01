@@ -331,6 +331,12 @@ model User {
   stringingOrders StringingOrder[]
   productReviews  ProductReview[]
 
+  // Courts
+  courtBookings CourtBooking[]
+
+  // Goals
+  improvementGoals ImprovementGoal[]
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   lastLoginAt DateTime?
@@ -390,6 +396,7 @@ model Technique {
   variants        Variant[]
   analyses        Analysis[]
   techniqueScores TechniqueScore[]
+  goals           GoalTechnique[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -454,6 +461,8 @@ model Analysis {
   previousAnalysisId String?   @unique
   previousAnalysis   Analysis? @relation("ProgressComparison", fields: [previousAnalysisId], references: [id])
   nextAnalysis       Analysis? @relation("ProgressComparison")
+
+  goals GoalAnalysis[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -532,6 +541,9 @@ model TrainingPlan {
   // Coach assignment
   coachAssignment   CoachAssignedPlan?
   assignedByCoachId String?
+
+  // Goals
+  goals GoalTrainingPlan[]
 
   startedAt   DateTime?
   completedAt DateTime?
@@ -1599,4 +1611,159 @@ model StringingOrder {
   @@index([status])
   @@index([workshopId])
   @@map("stringing_orders")
+}
+
+// ==========================================
+// COURTS & BOOKINGS
+// ==========================================
+
+enum CourtSurface {
+  HARD
+  CLAY
+  GRASS
+  SYNTHETIC
+}
+
+enum CourtType {
+  INDOOR
+  OUTDOOR
+  COVERED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Court {
+  id             String       @id @default(cuid())
+  name           String
+  description    String?
+  address        String
+  district       String
+  city           String       @default("Lima")
+  country        String       @default("PE")
+  phone          String?
+  whatsapp       String?
+  website        String?
+  imageUrl       String?
+  latitude       Float?
+  longitude      Float?
+  surface        CourtSurface @default(HARD)
+  courtType      CourtType    @default(OUTDOOR)
+  hourlyRate     Float?
+  currency       String       @default("PEN")
+  amenities      String[]
+  isActive       Boolean      @default(true)
+  operatingHours Json?
+  bookings       CourtBooking[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([city, district, isActive])
+  @@index([surface])
+  @@map("courts")
+}
+
+model CourtBooking {
+  id        String        @id @default(cuid())
+  courtId   String
+  court     Court         @relation(fields: [courtId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  startTime String
+  endTime   String
+  status    BookingStatus @default(PENDING)
+  notes     String?
+  createdAt DateTime      @default(now())
+
+  @@index([courtId, date])
+  @@index([userId])
+  @@map("court_bookings")
+}
+
+// ============================================
+// IMPROVEMENT GOALS
+// ============================================
+
+enum GoalType {
+  TECHNIQUE
+  SCORE_TARGET
+  TIER_TARGET
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  ABANDONED
+}
+
+model ImprovementGoal {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type        GoalType
+  title       String
+  description String?
+
+  targetScore Float?
+  targetTier  SkillTier?
+
+  baselineScore   Float?
+  currentScore    Float?
+  progressPercent Float?    @default(0)
+
+  roadmap Json?
+
+  status      GoalStatus @default(ACTIVE)
+  completedAt DateTime?
+  abandonedAt DateTime?
+
+  techniques    GoalTechnique[]
+  trainingPlans GoalTrainingPlan[]
+  analyses      GoalAnalysis[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, createdAt])
+  @@map("improvement_goals")
+}
+
+model GoalTechnique {
+  id          String          @id @default(cuid())
+  goalId      String
+  goal        ImprovementGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  techniqueId String
+  technique   Technique       @relation(fields: [techniqueId], references: [id], onDelete: Cascade)
+
+  @@unique([goalId, techniqueId])
+  @@map("goal_techniques")
+}
+
+model GoalTrainingPlan {
+  id             String          @id @default(cuid())
+  goalId         String
+  goal           ImprovementGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  trainingPlanId String
+  trainingPlan   TrainingPlan    @relation(fields: [trainingPlanId], references: [id], onDelete: Cascade)
+
+  @@unique([goalId, trainingPlanId])
+  @@map("goal_training_plans")
+}
+
+model GoalAnalysis {
+  id         String          @id @default(cuid())
+  goalId     String
+  goal       ImprovementGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  analysisId String
+  analysis   Analysis        @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  scoreDelta Float?
+
+  @@unique([goalId, analysisId])
+  @@map("goal_analyses")
 }

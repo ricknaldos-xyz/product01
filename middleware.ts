@@ -14,7 +14,7 @@ export default auth((req) => {
   const isPublicPattern = publicPatterns.some((pattern) => pathname.startsWith(pattern))
 
   // API routes that don't require authentication
-  const publicApiRoutes = ['/api/auth', '/api/public', '/api/shop/products', '/api/stringing/workshops', '/api/stringing/coverage', '/api/cron', '/api/rankings']
+  const publicApiRoutes = ['/api/auth', '/api/public', '/api/shop/products', '/api/stringing/workshops', '/api/stringing/coverage', '/api/cron', '/api/rankings', '/api/courts']
   const isPublicApiRoute = publicApiRoutes.some((route) => pathname.startsWith(route))
 
   // If user is logged in and trying to access auth pages, redirect to dashboard

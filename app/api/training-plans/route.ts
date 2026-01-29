@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { generateTrainingPlan } from '@/lib/training/generator'
+import { linkTrainingPlanToGoal } from '@/lib/goals/progress'
 import { z } from 'zod'
 
 const createPlanSchema = z.object({
   analysisId: z.string(),
   durationWeeks: z.number().min(1).max(12).optional().default(4),
+  goalId: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -31,6 +33,13 @@ export async function POST(request: NextRequest) {
       userId: session.user.id,
       durationWeeks: validated.data.durationWeeks,
     })
+
+    // Link to goal if provided (non-blocking)
+    if (validated.data.goalId && plan?.id) {
+      linkTrainingPlanToGoal(session.user.id, plan.id, validated.data.goalId).catch((error) => {
+        console.error('Failed to link training plan to goal:', error)
+      })
+    }
 
     return NextResponse.json(plan, { status: 201 })
   } catch (error) {

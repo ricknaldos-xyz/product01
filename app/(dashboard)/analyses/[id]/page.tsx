@@ -39,6 +39,7 @@ import { cn, formatDate } from '@/lib/utils'
 import { RetryAnalysisButton } from '@/components/analysis/RetryAnalysisButton'
 import { ScoreContext } from '@/components/analysis/ScoreContext'
 import { SeverityExplainer } from '@/components/analysis/SeverityExplainer'
+import { CoachCTA } from '@/components/coach/CoachCTA'
 
 async function getAnalysis(id: string, userId: string) {
   return prisma.analysis.findFirst({
@@ -296,6 +297,9 @@ export default async function AnalysisDetailPage({
               ))}
             </div>
           )}
+
+          {/* Coach CTA */}
+          <CoachCTA context="analysis" />
 
           {/* Training Plan CTA */}
           <GlassCard intensity="primary" padding="xl" className="text-center">

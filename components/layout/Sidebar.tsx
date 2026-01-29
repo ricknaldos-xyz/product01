@@ -24,6 +24,7 @@ import {
   Bell,
   GraduationCap,
   Shield,
+  MapPin,
 } from 'lucide-react'
 
 interface NavItem {
@@ -57,6 +58,12 @@ const mainNavigation: NavItem[] = [
     href: '/training',
     icon: Dumbbell,
     tourId: 'training',
+  },
+  {
+    name: 'Objetivos',
+    href: '/goals',
+    icon: Target,
+    tourId: 'goals',
   },
 ]
 
@@ -109,6 +116,12 @@ const communityNavigation: NavItem[] = [
 ]
 
 const servicesNavigation: NavItem[] = [
+  {
+    name: 'Canchas',
+    href: '/courts',
+    icon: MapPin,
+    tourId: 'courts',
+  },
   {
     name: 'Tienda',
     href: '/tienda',

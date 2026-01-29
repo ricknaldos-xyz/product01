@@ -6,6 +6,7 @@ import { generateWithFallback } from '@/lib/gemini/model-with-fallback'
 import { buildTennisPrompt } from '@/lib/openai/prompts/tennis'
 import { sendAnalysisCompleteEmail } from '@/lib/email'
 import { recalculateSkillScore } from '@/lib/skill-score'
+import { updateGoalProgress } from '@/lib/goals/progress'
 import { retrieveRelevantChunks } from '@/lib/rag/retriever'
 import { buildRagContext } from '@/lib/rag/context-builder'
 import { readFile } from 'fs/promises'
@@ -332,6 +333,11 @@ export async function POST(
       // Recalculate skill score (non-blocking)
       recalculateSkillScore(session.user.id).catch((error) => {
         console.error('Failed to recalculate skill score:', error)
+      })
+
+      // Update goal progress (non-blocking)
+      updateGoalProgress(session.user.id, id).catch((error) => {
+        console.error('Failed to update goal progress:', error)
       })
 
       // Log activity for streaks (non-blocking)
