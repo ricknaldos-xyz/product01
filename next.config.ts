@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' blob: data: *.public.blob.vercel-storage.com *.vercel-storage.com lh3.googleusercontent.com",
               "font-src 'self'",
-              "connect-src 'self' https://checkout.culqi.com *.upstash.io vitals.vercel-insights.com *.sentry.io *.public.blob.vercel-storage.com *.vercel-storage.com",
+              "connect-src 'self' https://checkout.culqi.com *.upstash.io vitals.vercel-insights.com *.sentry.io https://vercel.com *.public.blob.vercel-storage.com *.vercel-storage.com",
               "media-src 'self' blob: *.public.blob.vercel-storage.com *.vercel-storage.com",
               "frame-src 'self' https://checkout.culqi.com",
               "object-src 'none'",
