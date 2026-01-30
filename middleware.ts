@@ -47,6 +47,24 @@ export default auth((req) => {
     }
   }
 
+  // Coach route protection
+  const isCoachPage = pathname.startsWith('/coach')
+  const isCoachApi = pathname.startsWith('/api/coach')
+
+  if ((isCoachPage || isCoachApi) && isLoggedIn) {
+    const hasCoachProfile = (req.auth as { user?: { hasCoachProfile?: boolean } })?.user?.hasCoachProfile
+
+    if (!hasCoachProfile) {
+      if (isCoachApi) {
+        return NextResponse.json(
+          { error: 'Forbidden: Coach profile required' },
+          { status: 403 }
+        )
+      }
+      return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
+    }
+  }
+
   return NextResponse.next()
 })
 

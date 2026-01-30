@@ -8,49 +8,16 @@ import { GlassCard } from '@/components/ui/glass-card'
 import CulqiCheckout from '@/components/CulqiCheckout'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { PLANS } from '@/lib/plans'
 
-const plans = [
-  {
-    id: 'FREE',
-    name: 'Free',
-    description: 'Para comenzar',
-    price: 0,
-    features: [
-      '3 analisis por mes',
-      '1 plan de entrenamiento activo',
-      '1 deporte incluido',
-      'Soporte por email',
-    ],
-  },
-  {
-    id: 'PRO',
-    name: 'Pro',
-    description: 'Para deportistas serios',
-    price: 19.99,
-    popular: true,
-    features: [
-      'Analisis ilimitados',
-      'Planes de entrenamiento ilimitados',
-      '1 deporte incluido + deportes adicionales',
-      'Historial completo',
-      'Soporte prioritario',
-    ],
-  },
-  {
-    id: 'ELITE',
-    name: 'Elite',
-    description: 'Para profesionales',
-    price: 49.99,
-    features: [
-      'Todo en Pro',
-      'Analisis en video HD',
-      'Comparacion de progreso avanzada',
-      'Exportar informes PDF',
-      'Sesiones de coaching virtual',
-      'Soporte 24/7',
-    ],
-  },
-]
+const plans = Object.entries(PLANS).map(([id, plan]) => ({
+  id,
+  name: plan.name,
+  description: plan.description,
+  price: plan.price,
+  popular: id === 'PRO',
+  features: plan.features,
+}))
 
 export default function PricingPage() {
   const { data: session } = useSession()

@@ -1,19 +1,14 @@
 'use client'
 
+import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 import { GlassButton } from '@/components/ui/glass-button'
-import { Target, Video, ChevronRight, GraduationCap, Shield } from 'lucide-react'
+import { Target, Video, ChevronRight } from 'lucide-react'
 import { SidebarSportSelector } from '@/components/layout/SidebarSportSelector'
-import {
-  sportNavigation,
-  competitionNavigation,
-  globalNavigation,
-  profileNavigation,
-  type NavItem,
-} from '@/lib/navigation'
+import { getNavigationSections, type NavItem } from '@/lib/navigation'
 import { useSport } from '@/contexts/SportContext'
 
 function NavSection({ items, label }: { items: NavItem[]; label?: string }) {
@@ -55,27 +50,10 @@ function NavSection({ items, label }: { items: NavItem[]; label?: string }) {
 export function Sidebar() {
   const { data: session } = useSession()
   const { activeSport } = useSport()
-  const user = session?.user as { hasCoachProfile?: boolean; role?: string } | undefined
-
-  const roleNavigation: NavItem[] = []
-  if (user?.hasCoachProfile) {
-    roleNavigation.push({
-      name: 'Coach Dashboard',
-      href: '/coach/dashboard',
-      icon: GraduationCap,
-      tourId: 'coach-dashboard',
-    })
-  }
-  if (user?.role === 'ADMIN') {
-    roleNavigation.push({
-      name: 'Admin',
-      href: '/admin',
-      icon: Shield,
-      tourId: 'admin',
-    })
-  }
+  const user = session?.user as { hasPlayerProfile?: boolean; hasCoachProfile?: boolean; role?: string } | undefined
 
   const sportLabel = activeSport ? activeSport.name : 'Mi Deporte'
+  const sections = getNavigationSections(user, sportLabel)
 
   return (
     <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 glass-light border-r border-glass">
@@ -94,30 +72,25 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-2 space-y-4 overflow-y-auto">
-        <NavSection items={sportNavigation} label={sportLabel} />
-        <hr className="border-glass mx-2" />
-        <NavSection items={competitionNavigation} label="Competencia" />
-        <hr className="border-glass mx-2" />
-        <NavSection items={globalNavigation} label="General" />
-        {roleNavigation.length > 0 && (
-          <>
-            <hr className="border-glass mx-2" />
-            <NavSection items={roleNavigation} label="Gestion" />
-          </>
-        )}
-        <hr className="border-glass mx-2" />
-        <NavSection items={profileNavigation} />
+        {sections.map((section, idx) => (
+          <React.Fragment key={idx}>
+            {idx > 0 && <hr className="border-glass mx-2" />}
+            <NavSection items={section.items} label={section.label} />
+          </React.Fragment>
+        ))}
       </nav>
 
       {/* Quick Actions */}
-      <div className="p-4 border-t border-glass">
-        <GlassButton variant="solid" className="w-full" asChild>
-          <Link href="/analyze">
-            <Video className="h-4 w-4 mr-2" />
-            Analizar Video
-          </Link>
-        </GlassButton>
-      </div>
+      {(user?.hasPlayerProfile || user?.hasCoachProfile) && (
+        <div className="p-4 border-t border-glass">
+          <GlassButton variant="solid" className="w-full" asChild>
+            <Link href="/analyze">
+              <Video className="h-4 w-4 mr-2" />
+              Analizar Video
+            </Link>
+          </GlassButton>
+        </div>
+      )}
     </aside>
   )
 }

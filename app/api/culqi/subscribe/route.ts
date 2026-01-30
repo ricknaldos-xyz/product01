@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
-import { getCulqiClient, PLANS } from '@/lib/culqi'
+import { getCulqiClient, CULQI_PLAN_IDS } from '@/lib/culqi'
+import { PLANS } from '@/lib/plans'
 import { z } from 'zod'
 
 const subscribeSchema = z.object({
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     const { plan, tokenId } = parsed.data
 
     const selectedPlan = PLANS[plan]
-    const planId = selectedPlan.culqiPlanId
+    const planId = CULQI_PLAN_IDS[plan]
     if (!planId) {
       return NextResponse.json({ error: 'Plan no tiene ID de Culqi configurado' }, { status: 400 })
     }

@@ -8,46 +8,25 @@ import { OnboardingProvider } from '@/components/onboarding/OnboardingProvider'
 import { CelebrationOverlay } from '@/components/gamification/CelebrationOverlay'
 import { SportProvider } from '@/contexts/SportContext'
 import { useState } from 'react'
-import { X, Target, GraduationCap, Shield } from 'lucide-react'
+import { X, Target } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { SidebarSportSelector } from '@/components/layout/SidebarSportSelector'
-import {
-  sportNavigation,
-  competitionNavigation,
-  globalNavigation,
-  profileNavigation,
-  type NavItem,
-} from '@/lib/navigation'
+import { getNavigationSections } from '@/lib/navigation'
 import { useSport } from '@/contexts/SportContext'
 
 function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname()
   const { data: session } = useSession()
   const { activeSport } = useSport()
-  const user = session?.user as { hasCoachProfile?: boolean; role?: string } | undefined
-
-  const roleNavigation: NavItem[] = []
-  if (user?.hasCoachProfile) {
-    roleNavigation.push({ name: 'Coach Dashboard', href: '/coach/dashboard', icon: GraduationCap, tourId: 'coach-dashboard' })
-  }
-  if (user?.role === 'ADMIN') {
-    roleNavigation.push({ name: 'Admin', href: '/admin', icon: Shield, tourId: 'admin' })
-  }
+  const user = session?.user as { hasPlayerProfile?: boolean; hasCoachProfile?: boolean; role?: string } | undefined
 
   if (!open) return null
 
   const sportLabel = activeSport ? activeSport.name : 'Mi Deporte'
-
-  const sections = [
-    { items: sportNavigation, label: sportLabel },
-    { items: competitionNavigation, label: 'Competencia' },
-    { items: globalNavigation, label: 'General' },
-    ...(roleNavigation.length > 0 ? [{ items: roleNavigation, label: 'Gestion' }] : []),
-    { items: profileNavigation },
-  ]
+  const sections = getNavigationSections(user, sportLabel)
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden">

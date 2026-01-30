@@ -15,6 +15,10 @@ import {
   ShoppingBag,
   Wrench,
   User,
+  GraduationCap,
+  Shield,
+  BarChart3,
+  UserCheck,
 } from 'lucide-react'
 
 export interface NavItem {
@@ -51,6 +55,59 @@ export const globalNavigation: NavItem[] = [
 export const profileNavigation: NavItem[] = [
   { name: 'Mi Perfil', href: '/profile', icon: User, tourId: 'profile' },
 ]
+
+export const coachNavigation: NavItem[] = [
+  { name: 'Coach Dashboard', href: '/coach/dashboard', icon: GraduationCap, tourId: 'coach-dashboard' },
+  { name: 'Mis Alumnos', href: '/coach/students', icon: Users, tourId: 'coach-students' },
+]
+
+export const adminNavigation: NavItem[] = [
+  { name: 'Admin Panel', href: '/admin', icon: Shield, tourId: 'admin' },
+  { name: 'Usuarios', href: '/admin/users', icon: Users, tourId: 'admin-users' },
+  { name: 'Analiticas', href: '/admin/analytics', icon: BarChart3, tourId: 'admin-analytics' },
+  { name: 'Verificar Coaches', href: '/admin/coaches', icon: UserCheck, tourId: 'admin-coaches' },
+]
+
+export interface NavSection {
+  items: NavItem[]
+  label?: string
+}
+
+interface SessionUser {
+  hasPlayerProfile?: boolean
+  hasCoachProfile?: boolean
+  role?: string
+}
+
+export function getNavigationSections(user: SessionUser | undefined, sportLabel: string): NavSection[] {
+  const sections: NavSection[] = []
+
+  // Sport section: available if user has player or coach profile
+  if (user?.hasPlayerProfile || user?.hasCoachProfile) {
+    sections.push({ items: sportNavigation, label: sportLabel })
+  }
+
+  // Competition: available to all authenticated users
+  sections.push({ items: competitionNavigation, label: 'Competencia' })
+
+  // General
+  sections.push({ items: globalNavigation, label: 'General' })
+
+  // Coach management
+  if (user?.hasCoachProfile) {
+    sections.push({ items: coachNavigation, label: 'Gestion Coach' })
+  }
+
+  // Admin
+  if (user?.role === 'ADMIN') {
+    sections.push({ items: adminNavigation, label: 'Administracion' })
+  }
+
+  // Profile (always last)
+  sections.push({ items: profileNavigation })
+
+  return sections
+}
 
 export const SPORT_EMOJI: Record<string, string> = {
   tennis: '🎾',
