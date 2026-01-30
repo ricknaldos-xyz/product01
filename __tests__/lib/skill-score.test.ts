@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getTierFromScore, getTierColor, getTierLabel } from '@/lib/skill-score'
+import { getTierFromScore, getTierColor, getTierLabel, getTechniqueTier, getTechniqueTierLabel, getTechniqueTierColor, getCategoryGroup, getNextTierThreshold } from '@/lib/skill-score'
 
 describe('getTierFromScore', () => {
   it('returns UNRANKED for null score', () => {
@@ -144,5 +144,84 @@ describe('getTierLabel', () => {
 
   it('returns Sin clasificar for UNRANKED', () => {
     expect(getTierLabel('UNRANKED')).toBe('Sin clasificar')
+  })
+})
+
+describe('getTechniqueTier', () => {
+  it('returns DIAMANTE for score >= 85', () => {
+    expect(getTechniqueTier(85)).toBe('DIAMANTE')
+    expect(getTechniqueTier(100)).toBe('DIAMANTE')
+  })
+
+  it('returns PLATINO for score 70-84', () => {
+    expect(getTechniqueTier(70)).toBe('PLATINO')
+    expect(getTechniqueTier(84)).toBe('PLATINO')
+  })
+
+  it('returns ORO for score 55-69', () => {
+    expect(getTechniqueTier(55)).toBe('ORO')
+    expect(getTechniqueTier(69)).toBe('ORO')
+  })
+
+  it('returns PLATA for score 40-54', () => {
+    expect(getTechniqueTier(40)).toBe('PLATA')
+    expect(getTechniqueTier(54)).toBe('PLATA')
+  })
+
+  it('returns BRONCE for score < 40', () => {
+    expect(getTechniqueTier(0)).toBe('BRONCE')
+    expect(getTechniqueTier(39)).toBe('BRONCE')
+  })
+})
+
+describe('getTechniqueTierLabel', () => {
+  it('returns correct labels', () => {
+    expect(getTechniqueTierLabel('DIAMANTE')).toBe('Diamante')
+    expect(getTechniqueTierLabel('PLATINO')).toBe('Platino')
+    expect(getTechniqueTierLabel('ORO')).toBe('Oro')
+    expect(getTechniqueTierLabel('PLATA')).toBe('Plata')
+    expect(getTechniqueTierLabel('BRONCE')).toBe('Bronce')
+  })
+})
+
+describe('getTechniqueTierColor', () => {
+  it('returns correct colors', () => {
+    expect(getTechniqueTierColor('DIAMANTE')).toBe('text-violet-500')
+    expect(getTechniqueTierColor('PLATINO')).toBe('text-cyan-500')
+    expect(getTechniqueTierColor('ORO')).toBe('text-yellow-500')
+    expect(getTechniqueTierColor('PLATA')).toBe('text-slate-400')
+    expect(getTechniqueTierColor('BRONCE')).toBe('text-amber-600')
+  })
+})
+
+describe('getCategoryGroup', () => {
+  it('returns correct category groups', () => {
+    expect(getCategoryGroup('PRIMERA_A')).toBe('1ra')
+    expect(getCategoryGroup('PRIMERA_B')).toBe('1ra')
+    expect(getCategoryGroup('SEGUNDA_A')).toBe('2da')
+    expect(getCategoryGroup('SEGUNDA_B')).toBe('2da')
+    expect(getCategoryGroup('TERCERA_A')).toBe('3ra')
+    expect(getCategoryGroup('TERCERA_B')).toBe('3ra')
+    expect(getCategoryGroup('CUARTA_A')).toBe('4ta')
+    expect(getCategoryGroup('CUARTA_B')).toBe('4ta')
+    expect(getCategoryGroup('QUINTA_A')).toBe('5ta')
+    expect(getCategoryGroup('QUINTA_B')).toBe('5ta')
+    expect(getCategoryGroup('UNRANKED')).toBe('')
+  })
+})
+
+describe('getNextTierThreshold', () => {
+  it('returns next tier for QUINTA_B', () => {
+    const result = getNextTierThreshold('QUINTA_B')
+    expect(result).toEqual({ nextTier: 'QUINTA_A', threshold: 10 })
+  })
+
+  it('returns next tier for CUARTA_A', () => {
+    const result = getNextTierThreshold('CUARTA_A')
+    expect(result).toEqual({ nextTier: 'TERCERA_B', threshold: 40 })
+  })
+
+  it('returns null for PRIMERA_A (top tier)', () => {
+    expect(getNextTierThreshold('PRIMERA_A')).toBeNull()
   })
 })

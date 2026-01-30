@@ -8,8 +8,10 @@ import { TierBadge } from '@/components/player/TierBadge'
 import { RankingHero } from '@/components/rankings/RankingHero'
 import { TopPodium } from '@/components/rankings/TopPodium'
 import { CategoryExplainer } from '@/components/rankings/CategoryExplainer'
-import { Trophy, Medal, ChevronLeft, ChevronRight, Loader2, AlertTriangle } from 'lucide-react'
+import { RankingTable, type RankingEntry } from '@/components/rankings/RankingTable'
+import { Trophy, Medal, ChevronLeft, ChevronRight, Loader2, AlertTriangle, Search } from 'lucide-react'
 import { useSport } from '@/contexts/SportContext'
+import { useSession } from 'next-auth/react'
 import type { SkillTier } from '@prisma/client'
 
 interface RankingPlayer {
@@ -25,6 +27,7 @@ interface RankingPlayer {
   countryRank: number | null
   matchesPlayed: number
   matchesWon: number
+  previousRank: number | null
 }
 
 interface MyPosition {
@@ -47,6 +50,7 @@ const CATEGORY_FILTERS: { value: string; label: string }[] = [
 
 export default function RankingsPage() {
   const { activeSport } = useSport()
+  const { data: session } = useSession()
   const [rankings, setRankings] = useState<RankingPlayer[]>([])
   const [myPosition, setMyPosition] = useState<MyPosition | null>(null)
   const [loading, setLoading] = useState(true)
@@ -54,11 +58,21 @@ export default function RankingsPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [categoryFilter, setCategoryFilter] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery)
+      setPage(1)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
 
   useEffect(() => {
     fetchRankings()
     fetchMyPosition()
-  }, [page, categoryFilter, activeSport?.slug])
+  }, [page, categoryFilter, activeSport?.slug, debouncedSearch])
 
   async function fetchRankings() {
     setLoading(true)
@@ -71,6 +85,7 @@ export default function RankingsPage() {
         sport: activeSport?.slug || 'tennis',
       })
       if (categoryFilter) params.set('skillTier', categoryFilter)
+      if (debouncedSearch) params.set('search', debouncedSearch)
 
       const res = await fetch(`/api/rankings?${params}`)
       if (!res.ok) throw new Error('Failed to fetch')
@@ -144,77 +159,37 @@ export default function RankingsPage() {
         </div>
       )}
 
-      {/* Rankings List (from #4 when unfiltered, from #1 when filtered) */}
-      {!error && <GlassCard intensity="light" padding="none">
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        ) : listPlayers.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            No hay jugadores clasificados aun
-          </div>
-        ) : (
-          <div className="divide-y divide-glass-border-light">
-            {listPlayers.map((player) => (
-              <div
-                key={player.userId}
-                className="flex items-center gap-4 px-5 py-3 hover:glass-ultralight transition-all"
-              >
-                {/* Rank */}
-                <div className="w-10 text-center flex-shrink-0">
-                  {player.rank <= 3 ? (
-                    <Medal className={`h-6 w-6 mx-auto ${
-                      player.rank === 1 ? 'text-yellow-500' :
-                      player.rank === 2 ? 'text-slate-400' :
-                      'text-amber-600'
-                    }`} />
-                  ) : (
-                    <span className="text-lg font-bold text-muted-foreground">
-                      {player.rank}
-                    </span>
-                  )}
-                </div>
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <input
+          type="text"
+          placeholder="Buscar jugador..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-glass-light border border-glass text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+        />
+      </div>
 
-                {/* Player Info */}
-                <div className="relative h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
-                  {player.avatarUrl ? (
-                    <Image src={player.avatarUrl} alt="" fill className="object-cover" />
-                  ) : (
-                    <span className="text-sm font-bold text-primary">
-                      {(player.displayName || '?').charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium text-sm truncate">
-                      {player.displayName || 'Jugador'}
-                    </p>
-                    <TierBadge tier={player.skillTier} size="sm" />
-                  </div>
-                  {player.region && (
-                    <p className="text-xs text-muted-foreground truncate">
-                      {[player.city, player.region].filter(Boolean).join(', ')}
-                    </p>
-                  )}
-                </div>
-
-                {/* Score */}
-                <div className="text-right flex-shrink-0">
-                  <p className="font-bold tabular-nums">
-                    {player.effectiveScore?.toFixed(1) || '--'}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {player.matchesPlayed} partidos
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </GlassCard>}
+      {/* Rankings Table */}
+      {!error && (
+        <RankingTable
+          rankings={listPlayers.map(p => ({
+            rank: p.rank,
+            userId: p.userId,
+            displayName: p.displayName,
+            avatarUrl: p.avatarUrl,
+            region: p.region,
+            city: p.city,
+            skillTier: p.skillTier,
+            effectiveScore: p.effectiveScore,
+            matchesPlayed: p.matchesPlayed,
+            previousRank: p.previousRank,
+          }))}
+          loading={loading}
+          currentUserId={session?.user?.id}
+        />
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (

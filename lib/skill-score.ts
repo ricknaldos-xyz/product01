@@ -273,8 +273,8 @@ export async function recalculateSkillScore(userId: string): Promise<void> {
 
       for (const [, data] of techniqueMap) {
         const weight = data.weight ?? DEFAULT_WEIGHT
-        const bestScore = Math.max(...data.scores)
-        weightedSum += weight * bestScore
+        const avgScore = data.scores.reduce((a, b) => a + b, 0) / data.scores.length
+        weightedSum += weight * avgScore
         totalWeight += weight
       }
 

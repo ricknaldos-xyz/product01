@@ -22,6 +22,7 @@ export interface RankingEntry {
 interface RankingTableProps {
   rankings: RankingEntry[]
   loading: boolean
+  currentUserId?: string
 }
 
 function RankMovement({ rank, previousRank }: { rank: number; previousRank: number | null }) {
@@ -46,7 +47,7 @@ function RankMovement({ rank, previousRank }: { rank: number; previousRank: numb
   )
 }
 
-export function RankingTable({ rankings, loading }: RankingTableProps) {
+export function RankingTable({ rankings, loading, currentUserId }: RankingTableProps) {
   if (loading) {
     return (
       <GlassCard intensity="light" padding="lg">
@@ -84,7 +85,7 @@ export function RankingTable({ rankings, loading }: RankingTableProps) {
         {rankings.map((player) => (
           <div
             key={player.userId}
-            className="grid grid-cols-[3rem_1fr_auto_5rem_3rem] items-center gap-3 px-4 py-3 hover:bg-glass-light/50 transition-colors"
+            className={`grid grid-cols-[3rem_1fr_auto_5rem_3rem] items-center gap-3 px-4 py-3 hover:bg-glass-light/50 transition-colors ${player.userId === currentUserId ? 'bg-primary/5 ring-1 ring-primary/20 rounded-lg' : ''}`}
           >
             {/* Rank */}
             <div className="flex items-center justify-center">

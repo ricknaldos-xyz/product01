@@ -604,11 +604,19 @@ Analiza las imagenes proporcionadas y responde EXCLUSIVAMENTE en formato JSON va
 }
 \`\`\`
 
-REGLAS IMPORTANTES:
-1. Responde SOLO con el JSON, sin texto adicional antes o despues
+RUBRICA DE PUNTUACION:
+- 9-10: Tecnica profesional o semi-profesional. Biomecanica casi perfecta. Solo micro-ajustes.
+- 7-8: Tecnica solida con fundamentos correctos. Errores menores que no afectan la efectividad general.
+- 5-6: Tecnica funcional pero con errores visibles. Fundamentos presentes pero inconsistentes.
+- 3-4: Tecnica en desarrollo. Errores significativos en fundamentos basicos.
+- 1-2: Principiante. Mecanica basica ausente o incorrecta.
+
+REGLAS:
+1. Responde SOLO con el JSON, sin texto adicional
 2. Se especifico y tecnico en las descripciones
-3. Los drills deben ser ejercicios practicos y realizables sin equipo especial
-4. Si no puedes identificar problemas claros, indica un score alto (8-10) y menos issues
+3. Los drills deben ser ejercicios practicos sin equipo especial
+4. Evalua lo que VES, no supongas. Si la calidad del video no permite evaluar un aspecto, omitelo del score
 5. Ordena los issues de mayor a menor severidad
-6. Minimo 1 issue, maximo 5 issues`
+6. Minimo 1 issue, maximo 5 issues
+7. El overallScore debe ser un numero con 1 decimal (ej: 6.5, 7.0, 8.5)`
 }

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { TierBadge } from '@/components/player/TierBadge'
-import { Share2, Loader2 } from 'lucide-react'
+import { Share2, Loader2, TrendingUp, TrendingDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { useSport } from '@/contexts/SportContext'
 import {
@@ -24,6 +24,7 @@ interface MyPositionData {
   countryRank: number | null
   totalInCountry: number
   totalInTier: number
+  previousRank?: number | null
   techniqueBreakdown?: { technique: { name: string; slug: string }; bestScore: number }[]
 }
 
@@ -123,6 +124,15 @@ export function RankingHero() {
             <span className="text-3xl font-bold">
               #{data.countryRank || '--'}
             </span>
+            {data.previousRank != null && data.countryRank != null && data.previousRank !== data.countryRank && (
+              <span className={`flex items-center gap-0.5 text-sm ${data.previousRank > data.countryRank ? 'text-emerald-500' : 'text-red-500'}`}>
+                {data.previousRank > data.countryRank ? (
+                  <><TrendingUp className="h-4 w-4" /><span>{data.previousRank - data.countryRank}</span></>
+                ) : (
+                  <><TrendingDown className="h-4 w-4" /><span>{data.countryRank - data.previousRank}</span></>
+                )}
+              </span>
+            )}
             <TierBadge tier={data.skillTier} />
           </div>
           <p className="text-sm text-muted-foreground mt-1">

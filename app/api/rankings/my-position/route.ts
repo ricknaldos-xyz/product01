@@ -84,6 +84,26 @@ export async function GET(request: NextRequest) {
       orderBy: { bestScore: 'desc' },
     })
 
+    // Get ranking record for previousRank
+    const rankingRecord = await prisma.ranking.findFirst({
+      where: {
+        profileId: profile.id,
+        sportId: sport.id,
+        period: 'MONTHLY',
+        category: 'COUNTRY',
+      },
+      select: { previousRank: true },
+    })
+
+    // Compute score variance for confidence indicator
+    let scoreVariance: number | null = null
+    if (techniqueScores.length >= 2) {
+      const scores = techniqueScores.map(t => t.bestScore)
+      const mean = scores.reduce((a, b) => a + b, 0) / scores.length
+      const variance = scores.reduce((sum, s) => sum + (s - mean) ** 2, 0) / scores.length
+      scoreVariance = Math.round(Math.sqrt(variance) * 10) / 10
+    }
+
     // Count total players in same country for this sport
     const totalInCountry = await prisma.sportProfile.count({
       where: {
@@ -119,6 +139,8 @@ export async function GET(request: NextRequest) {
       country: profile.country,
       totalInCountry,
       totalInTier,
+      previousRank: rankingRecord?.previousRank ?? null,
+      scoreVariance,
       techniqueBreakdown: techniqueScores.map((ts) => ({
         technique: { name: ts.technique.name, slug: ts.technique.slug },
         bestScore: ts.bestScore,

@@ -22,9 +22,9 @@ interface TopPodiumProps {
 
 const MEDAL_COLORS = ['text-yellow-500', 'text-slate-400', 'text-amber-600']
 const PEDESTAL_STYLES = [
-  'h-20 bg-yellow-500/20',
-  'h-14 bg-slate-400/20',
-  'h-10 bg-amber-600/20',
+  'h-14 sm:h-20 bg-yellow-500/20',
+  'h-10 sm:h-14 bg-slate-400/20',
+  'h-7 sm:h-10 bg-amber-600/20',
 ]
 
 export function TopPodium({ players }: TopPodiumProps) {
@@ -39,7 +39,6 @@ export function TopPodium({ players }: TopPodiumProps) {
       <div className="grid grid-cols-3 gap-2 items-end pt-4">
         {ordered.map((player, displayIdx) => {
           const rankIdx = orderIndices[displayIdx]
-          const avatarSize = rankIdx === 0 ? 56 : 44
           const isCenter = rankIdx === 0
 
           return (
@@ -53,10 +52,8 @@ export function TopPodium({ players }: TopPodiumProps) {
 
               {/* Avatar */}
               <div
-                className="relative rounded-full bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0 mb-2 ring-2 ring-offset-2 ring-offset-background"
+                className={`relative rounded-full bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0 mb-2 ring-2 ring-offset-2 ring-offset-background ${isCenter ? 'w-10 h-10 sm:w-14 sm:h-14' : 'w-9 h-9 sm:w-11 sm:h-11'}`}
                 style={{
-                  width: avatarSize,
-                  height: avatarSize,
                   borderColor: rankIdx === 0 ? 'rgb(234 179 8)' : rankIdx === 1 ? 'rgb(148 163 184)' : 'rgb(217 119 6)',
                 }}
               >
@@ -75,7 +72,7 @@ export function TopPodium({ players }: TopPodiumProps) {
               </div>
 
               {/* Name */}
-              <p className="text-xs font-medium truncate w-full max-w-[100px] group-hover:text-primary transition-colors">
+              <p className="text-xs font-medium truncate w-full max-w-[80px] sm:max-w-[100px] group-hover:text-primary transition-colors">
                 {player.displayName || 'Jugador'}
               </p>
 

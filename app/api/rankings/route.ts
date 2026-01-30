@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const skillTierParam = searchParams.get('skillTier')
     const ageGroup = searchParams.get('ageGroup')
     const sportSlug = searchParams.get('sport') || 'tennis'
+    const search = searchParams.get('search')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
     const skip = (page - 1) * limit
@@ -38,6 +39,7 @@ export async function GET(request: NextRequest) {
         visibility: { not: 'PRIVATE' as const },
         country,
         ...(ageGroup ? { ageGroup } : {}),
+        ...(search ? { displayName: { contains: search, mode: 'insensitive' as const } } : {}),
       },
     }
 
@@ -75,6 +77,22 @@ export async function GET(request: NextRequest) {
       prisma.sportProfile.count({ where }),
     ])
 
+    // Get Ranking records for previousRank data
+    const profileIds = sportProfiles.map(sp => sp.profile.userId)
+    const rankings_db = await prisma.ranking.findMany({
+      where: {
+        profile: { userId: { in: profileIds } },
+        sportId: sport.id,
+        period: 'MONTHLY',
+        category: 'COUNTRY',
+      },
+      select: {
+        profile: { select: { userId: true } },
+        previousRank: true,
+      },
+    })
+    const previousRankMap = new Map(rankings_db.map(r => [r.profile.userId, r.previousRank]))
+
     const rankings = sportProfiles.map((sp, index) => ({
       rank: skip + index + 1,
       userId: sp.profile.userId,
@@ -91,6 +109,7 @@ export async function GET(request: NextRequest) {
       matchesPlayed: sp.matchesPlayed,
       matchesWon: sp.matchesWon,
       ageGroup: sp.profile.ageGroup,
+      previousRank: previousRankMap.get(sp.profile.userId) ?? null,
     }))
 
     return NextResponse.json({

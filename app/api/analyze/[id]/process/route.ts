@@ -257,6 +257,9 @@ export async function POST(
         throw new Error('Formato de respuesta invalido')
       }
 
+      // Clamp score to [1.0, 10.0] with 1 decimal place
+      analysisResult.overallScore = Math.max(1, Math.min(10, Math.round(analysisResult.overallScore * 10) / 10))
+
       // Save results in transaction
       await prisma.$transaction(async (tx) => {
         // Update analysis
@@ -270,6 +273,7 @@ export async function POST(
             strengths: analysisResult.strengths || [],
             priorityFocus: analysisResult.priorityFocus || null,
             processingMs: Date.now() - startTime,
+            modelUsed,
           },
         })
 

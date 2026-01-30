@@ -8,9 +8,10 @@ interface ScoreContextProps {
   score: number
   averageScore?: number
   previousScore?: number
+  benchmarkScore?: number
 }
 
-const BENCHMARK_SCORE = 6.2 // Average score for recreational players
+const DEFAULT_BENCHMARK = 6.2 // Average score for recreational players
 
 function getScoreLabel(score: number): { label: string; color: string; description: string } {
   if (score >= 9) {
@@ -55,8 +56,8 @@ function getScoreLabel(score: number): { label: string; color: string; descripti
   }
 }
 
-export function ScoreContext({ score, averageScore, previousScore }: ScoreContextProps) {
-  const benchmark = averageScore || BENCHMARK_SCORE
+export function ScoreContext({ score, averageScore, previousScore, benchmarkScore }: ScoreContextProps) {
+  const benchmark = averageScore || benchmarkScore || DEFAULT_BENCHMARK
   const scoreInfo = getScoreLabel(score)
   const difference = score - benchmark
   const previousDifference = previousScore ? score - previousScore : null
