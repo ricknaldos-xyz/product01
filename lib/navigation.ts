@@ -65,7 +65,10 @@ export const adminNavigation: NavItem[] = [
   { name: 'Admin Panel', href: '/admin', icon: Shield, tourId: 'admin' },
   { name: 'Usuarios', href: '/admin/users', icon: Users, tourId: 'admin-users' },
   { name: 'Analiticas', href: '/admin/analytics', icon: BarChart3, tourId: 'admin-analytics' },
-  { name: 'Verificar Coaches', href: '/admin/coaches', icon: UserCheck, tourId: 'admin-coaches' },
+  { name: 'Coaches', href: '/admin/coaches', icon: UserCheck, tourId: 'admin-coaches' },
+  { name: 'Tienda', href: '/admin/tienda', icon: ShoppingBag, tourId: 'admin-shop' },
+  { name: 'Encordado', href: '/admin/encordado', icon: Wrench, tourId: 'admin-stringing' },
+  { name: 'Canchas', href: '/admin/courts', icon: MapPin, tourId: 'admin-courts' },
 ]
 
 export interface NavSection {
