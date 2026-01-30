@@ -6,9 +6,49 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Seeding database...')
 
-  // Create test user
   const hashedPassword = await bcrypt.hash('test1234', 10)
 
+  // ============================================
+  // USERS
+  // ============================================
+
+  // 1. Admin user
+  const adminUser = await prisma.user.upsert({
+    where: { email: 'admin@sporttech.pe' },
+    update: {},
+    create: {
+      email: 'admin@sporttech.pe',
+      name: 'Admin SportTech',
+      password: hashedPassword,
+      role: 'ADMIN',
+      accountType: 'PLAYER',
+      subscription: 'ELITE',
+      onboardingCompleted: true,
+      emailVerified: new Date(),
+      playerProfile: {
+        create: {
+          displayName: 'Admin',
+          country: 'PE',
+          region: 'Lima',
+          city: 'Lima',
+          playStyle: 'All-Court',
+          dominantHand: 'Derecha',
+          backhandType: 'Dos manos',
+          yearsPlaying: 15,
+          ageGroup: '26-35',
+          matchElo: 1800,
+          compositeScore: 85,
+          skillTier: 'DIAMANTE',
+          effectiveScore: 85,
+          totalAnalyses: 50,
+          totalTechniques: 12,
+        },
+      },
+    },
+  })
+  console.log('Created admin:', adminUser.email)
+
+  // 2. Player FREE
   const testUser = await prisma.user.upsert({
     where: { email: 'test@sporttech.pe' },
     update: {},
@@ -32,14 +72,150 @@ async function main() {
           yearsPlaying: 3,
           ageGroup: '18-25',
           matchElo: 1200,
+          compositeScore: 45,
+          skillTier: 'BRONCE',
+          effectiveScore: 45,
+          totalAnalyses: 5,
+          totalTechniques: 4,
         },
       },
     },
   })
-
   console.log('Created test user:', testUser.email)
 
-  // Create test coach
+  // 3. Player PRO
+  const proPlayer = await prisma.user.upsert({
+    where: { email: 'pro@sporttech.pe' },
+    update: {},
+    create: {
+      email: 'pro@sporttech.pe',
+      name: 'Carlos Mendoza',
+      password: hashedPassword,
+      role: 'USER',
+      subscription: 'PRO',
+      onboardingCompleted: true,
+      emailVerified: new Date(),
+      playerProfile: {
+        create: {
+          displayName: 'CarlosMTennis',
+          bio: 'Jugador de tenis competitivo. Busco mejorar mi reves.',
+          country: 'PE',
+          region: 'Lima',
+          city: 'Miraflores',
+          playStyle: 'Agresivo de fondo',
+          dominantHand: 'Derecha',
+          backhandType: 'Una mano',
+          yearsPlaying: 7,
+          ageGroup: '26-35',
+          matchElo: 1450,
+          compositeScore: 62,
+          skillTier: 'PLATA',
+          effectiveScore: 62,
+          totalAnalyses: 18,
+          totalTechniques: 8,
+          matchesPlayed: 12,
+          matchesWon: 8,
+          followersCount: 5,
+          followingCount: 3,
+        },
+      },
+    },
+  })
+  console.log('Created pro player:', proPlayer.email)
+
+  // 4. Player ELITE
+  const elitePlayer = await prisma.user.upsert({
+    where: { email: 'elite@sporttech.pe' },
+    update: {},
+    create: {
+      email: 'elite@sporttech.pe',
+      name: 'Maria Fernandez',
+      password: hashedPassword,
+      role: 'USER',
+      subscription: 'ELITE',
+      onboardingCompleted: true,
+      emailVerified: new Date(),
+      playerProfile: {
+        create: {
+          displayName: 'MariaFTennis',
+          bio: 'Ex top 10 nacional juvenil. Entreno 5 veces por semana.',
+          country: 'PE',
+          region: 'Lima',
+          city: 'San Isidro',
+          playStyle: 'Agresivo',
+          dominantHand: 'Derecha',
+          backhandType: 'Dos manos',
+          yearsPlaying: 12,
+          ageGroup: '18-25',
+          matchElo: 1650,
+          compositeScore: 78,
+          skillTier: 'ORO',
+          effectiveScore: 78,
+          totalAnalyses: 35,
+          totalTechniques: 12,
+          matchesPlayed: 25,
+          matchesWon: 19,
+          followersCount: 15,
+          followingCount: 8,
+        },
+      },
+    },
+  })
+  console.log('Created elite player:', elitePlayer.email)
+
+  // 5. Another player (padel focus)
+  const padelPlayer = await prisma.user.upsert({
+    where: { email: 'padel@sporttech.pe' },
+    update: {},
+    create: {
+      email: 'padel@sporttech.pe',
+      name: 'Andres Torres',
+      password: hashedPassword,
+      role: 'USER',
+      subscription: 'PRO',
+      onboardingCompleted: true,
+      emailVerified: new Date(),
+      playerProfile: {
+        create: {
+          displayName: 'AndresTorres',
+          bio: 'Jugador de padel amateur. Me encanta la estrategia.',
+          country: 'PE',
+          region: 'Lima',
+          city: 'La Molina',
+          playStyle: 'Defensivo',
+          dominantHand: 'Derecha',
+          backhandType: 'Dos manos',
+          yearsPlaying: 2,
+          ageGroup: '36-45',
+          matchElo: 1100,
+          compositeScore: 35,
+          skillTier: 'BRONCE',
+          effectiveScore: 35,
+          totalAnalyses: 8,
+          totalTechniques: 5,
+        },
+      },
+    },
+  })
+  console.log('Created padel player:', padelPlayer.email)
+
+  // 6. New user (no onboarding)
+  const newUser = await prisma.user.upsert({
+    where: { email: 'nuevo@sporttech.pe' },
+    update: {},
+    create: {
+      email: 'nuevo@sporttech.pe',
+      name: 'Usuario Nuevo',
+      password: hashedPassword,
+      role: 'USER',
+      subscription: 'FREE',
+      onboardingCompleted: false,
+      emailVerified: new Date(),
+    },
+  })
+  console.log('Created new user:', newUser.email)
+
+  // 7. Verified coach
   const testCoach = await prisma.user.upsert({
     where: { email: 'coach@sporttech.pe' },
     update: {},
@@ -63,12 +239,80 @@ async function main() {
           currency: 'PEN',
           isAvailable: true,
           country: 'PE',
+          city: 'Lima',
+          verificationStatus: 'VERIFIED',
+          verifiedAt: new Date(),
+          averageRating: 4.8,
+          totalReviews: 12,
         },
       },
     },
   })
-
   console.log('Created test coach:', testCoach.email)
+
+  // 8. Pending coach
+  const pendingCoach = await prisma.user.upsert({
+    where: { email: 'coach2@sporttech.pe' },
+    update: {},
+    create: {
+      email: 'coach2@sporttech.pe',
+      name: 'Laura Gomez',
+      password: hashedPassword,
+      role: 'COACH',
+      accountType: 'COACH',
+      subscription: 'PRO',
+      onboardingCompleted: true,
+      emailVerified: new Date(),
+      coachProfile: {
+        create: {
+          headline: 'Entrenadora de padel y tenis juvenil',
+          bio: 'Especialista en desarrollo de jugadores juveniles. 5 años de experiencia formando campeones.',
+          certifications: ['FPT Nivel 2'],
+          yearsExperience: 5,
+          specialties: ['Juveniles', 'Derecha', 'Táctica'],
+          hourlyRate: 60,
+          currency: 'PEN',
+          isAvailable: true,
+          country: 'PE',
+          city: 'Arequipa',
+          verificationStatus: 'PENDING_VERIFICATION',
+        },
+      },
+    },
+  })
+  console.log('Created pending coach:', pendingCoach.email)
+
+  // 9. Rejected coach
+  const rejectedCoach = await prisma.user.upsert({
+    where: { email: 'coach3@sporttech.pe' },
+    update: {},
+    create: {
+      email: 'coach3@sporttech.pe',
+      name: 'Pedro Ruiz',
+      password: hashedPassword,
+      role: 'COACH',
+      accountType: 'COACH',
+      subscription: 'FREE',
+      onboardingCompleted: true,
+      emailVerified: new Date(),
+      coachProfile: {
+        create: {
+          headline: 'Instructor de tenis recreativo',
+          bio: 'Clases para principiantes y nivel intermedio.',
+          certifications: [],
+          yearsExperience: 2,
+          specialties: ['Principiantes'],
+          hourlyRate: 40,
+          currency: 'PEN',
+          isAvailable: false,
+          country: 'PE',
+          city: 'Lima',
+          verificationStatus: 'REJECTED',
+        },
+      },
+    },
+  })
+  console.log('Created rejected coach:', rejectedCoach.email)
 
   // Create Tennis sport
   const tennis = await prisma.sport.upsert({
@@ -958,27 +1202,736 @@ async function main() {
 
   console.log('Created exercise templates')
 
-  // Create placeholder sports for future
+  // ============================================
+  // PADEL SPORT + TECHNIQUES
+  // ============================================
+
+  const padel = await prisma.sport.upsert({
+    where: { slug: 'padel' },
+    update: { isActive: true },
+    create: {
+      slug: 'padel',
+      name: 'Padel',
+      description: 'Deporte de raqueta que se juega en parejas en una cancha cerrada con paredes de cristal',
+      icon: 'padel',
+      isActive: true,
+      order: 2,
+    },
+  })
+  console.log('Created sport:', padel.name)
+
+  const padelTechniques = [
+    {
+      slug: 'bandeja',
+      name: 'Bandeja',
+      description: 'Golpe defensivo-ofensivo ejecutado por encima de la cabeza con efecto cortado',
+      difficulty: 3,
+      correctForm: {
+        stance: 'De lado a la red, pie contrario adelante',
+        grip: 'Continental',
+        contact: 'Por encima y ligeramente adelante de la cabeza',
+        followThrough: 'Corto, hacia abajo y al frente',
+      },
+      commonErrors: [
+        'Golpear de frente en vez de de lado',
+        'Contacto demasiado atras',
+        'No cortar la pelota',
+      ],
+      keyPoints: [
+        'Posicion lateral',
+        'Grip Continental',
+        'Efecto cortado',
+        'No retroceder a la pared',
+      ],
+      variants: [
+        {
+          slug: 'bandeja-plana',
+          name: 'Bandeja Plana',
+          description: 'Bandeja con menos corte para mayor velocidad',
+          correctForm: { contact: 'Mas plano, menos slice' },
+          keyDifferences: ['Mas velocidad', 'Menos control'],
+        },
+      ],
+    },
+    {
+      slug: 'vibora',
+      name: 'Vibora',
+      description: 'Golpe agresivo por encima de la cabeza con efecto lateral',
+      difficulty: 4,
+      correctForm: {
+        stance: 'De lado, peso en pierna trasera',
+        grip: 'Continental cerrado',
+        contact: 'Lateral, cortando de lado',
+        followThrough: 'Corto, hacia el lado contrario',
+      },
+      commonErrors: [
+        'No generar efecto lateral suficiente',
+        'Golpear demasiado fuerte sacrificando efecto',
+      ],
+      keyPoints: [
+        'Efecto lateral pronunciado',
+        'Salida de la pared impredecible',
+        'Ideal para ganar la red',
+      ],
+      variants: [],
+    },
+    {
+      slug: 'chiquita',
+      name: 'Chiquita',
+      description: 'Golpe suave y bajo que pasa la red con poca altura',
+      difficulty: 2,
+      correctForm: {
+        grip: 'Continental',
+        swing: 'Suave, de abajo hacia arriba',
+        contact: 'Bajo, a la altura de las rodillas',
+        target: 'A los pies de los rivales en la red',
+      },
+      commonErrors: [
+        'Elevar demasiado la pelota',
+        'No dirigir a los pies',
+      ],
+      keyPoints: [
+        'Pelota baja sobre la red',
+        'Dirigir a los pies',
+        'Toque suave',
+      ],
+      variants: [],
+    },
+    {
+      slug: 'globo-padel',
+      name: 'Globo',
+      description: 'Golpe alto que pasa por encima de los rivales en la red',
+      difficulty: 2,
+      correctForm: {
+        preparation: 'Identica al golpe normal para disfrazar',
+        contact: 'Cara abierta, cepillado ascendente',
+        trajectory: 'Alto y profundo al fondo de la pista',
+      },
+      commonErrors: [
+        'Globo corto que permite smash',
+        'No disfrazar la intencion',
+      ],
+      keyPoints: [
+        'Profundidad es clave',
+        'Disfrazar como golpe normal',
+        'Con topspin para que caiga rapido',
+      ],
+      variants: [
+        {
+          slug: 'globo-topspin',
+          name: 'Globo con Topspin',
+          description: 'Globo con efecto liftado que cae rapido',
+          correctForm: { spin: 'Cepillado ascendente pronunciado' },
+          keyDifferences: ['Cae mas rapido', 'Mas dificil de rematar'],
+        },
+      ],
+    },
+    {
+      slug: 'pared-padel',
+      name: 'Juego de Pared',
+      description: 'Golpes que utilizan las paredes de cristal como parte del juego',
+      difficulty: 3,
+      correctForm: {
+        reading: 'Leer el angulo de rebote de la pared',
+        positioning: 'Esperar detras del punto de rebote',
+        timing: 'Golpear despues del rebote de la pared',
+      },
+      commonErrors: [
+        'Posicionarse demasiado cerca de la pared',
+        'No leer el angulo de rebote',
+      ],
+      keyPoints: [
+        'Paciencia para esperar el rebote',
+        'Leer angulos de pared lateral y fondo',
+        'Posicionarse detras del rebote',
+      ],
+      variants: [
+        {
+          slug: 'pared-fondo',
+          name: 'Pared de Fondo',
+          description: 'Rebote en la pared trasera',
+          correctForm: { positioning: 'Esperar a que la pelota pase y rebote' },
+          keyDifferences: ['Rebote mas predecible', 'Mas tiempo de reaccion'],
+        },
+        {
+          slug: 'pared-lateral',
+          name: 'Pared Lateral',
+          description: 'Rebote en la pared del costado',
+          correctForm: { positioning: 'Moverse lateralmente con la pelota' },
+          keyDifferences: ['Angulo mas cerrado', 'Requiere ajuste rapido'],
+        },
+      ],
+    },
+  ]
+
+  for (const tech of padelTechniques) {
+    const technique = await prisma.technique.upsert({
+      where: { sportId_slug: { sportId: padel.id, slug: tech.slug } },
+      update: {
+        name: tech.name,
+        description: tech.description,
+        difficulty: tech.difficulty,
+        correctForm: tech.correctForm,
+        commonErrors: tech.commonErrors,
+        keyPoints: tech.keyPoints,
+      },
+      create: {
+        sportId: padel.id,
+        slug: tech.slug,
+        name: tech.name,
+        description: tech.description,
+        difficulty: tech.difficulty,
+        correctForm: tech.correctForm,
+        commonErrors: tech.commonErrors,
+        keyPoints: tech.keyPoints,
+      },
+    })
+
+    for (const variant of tech.variants) {
+      await prisma.variant.upsert({
+        where: { techniqueId_slug: { techniqueId: technique.id, slug: variant.slug } },
+        update: {
+          name: variant.name,
+          description: variant.description,
+          correctForm: variant.correctForm,
+          keyDifferences: variant.keyDifferences,
+        },
+        create: {
+          techniqueId: technique.id,
+          slug: variant.slug,
+          name: variant.name,
+          description: variant.description,
+          correctForm: variant.correctForm,
+          keyDifferences: variant.keyDifferences,
+        },
+      })
+    }
+  }
+  console.log('Created padel techniques')
+
+  // Placeholder sports
   const futureSports = [
-    { slug: 'golf', name: 'Golf', icon: 'golf', order: 2 },
-    { slug: 'basketball', name: 'Basketball', icon: 'basketball', order: 3 },
-    { slug: 'soccer', name: 'Futbol', icon: 'soccer', order: 4 },
+    { slug: 'pickleball', name: 'Pickleball', icon: 'pickleball', order: 3 },
+    { slug: 'golf', name: 'Golf', icon: 'golf', order: 4 },
+    { slug: 'basketball', name: 'Basketball', icon: 'basketball', order: 5 },
+    { slug: 'soccer', name: 'Futbol', icon: 'soccer', order: 6 },
   ]
 
   for (const sport of futureSports) {
     await prisma.sport.upsert({
       where: { slug: sport.slug },
       update: {},
+      create: { ...sport, isActive: false, description: 'Proximamente' },
+    })
+  }
+  console.log('Created placeholder sports')
+
+  // ============================================
+  // USER-SPORT ASSOCIATIONS
+  // ============================================
+
+  // Link players to their sports
+  const userSportPairs = [
+    { userId: testUser.id, sportId: tennis.id },
+    { userId: proPlayer.id, sportId: tennis.id },
+    { userId: elitePlayer.id, sportId: tennis.id },
+    { userId: padelPlayer.id, sportId: padel.id },
+    { userId: adminUser.id, sportId: tennis.id },
+    { userId: adminUser.id, sportId: padel.id },
+  ]
+
+  for (const us of userSportPairs) {
+    await prisma.userSport.upsert({
+      where: { userId_sportId: { userId: us.userId, sportId: us.sportId } },
+      update: {},
+      create: us,
+    })
+  }
+  console.log('Created user-sport associations')
+
+  // ============================================
+  // GAMIFICATION (streaks, badges)
+  // ============================================
+
+  // Get player profiles for relations
+  const profiles = await prisma.playerProfile.findMany({
+    select: { id: true, userId: true },
+  })
+  const profileByUser = Object.fromEntries(profiles.map(p => [p.userId, p.id]))
+
+  // Streaks
+  const streakData = [
+    { userId: testUser.id, currentStreak: 3, longestStreak: 7, lastActivityAt: new Date() },
+    { userId: proPlayer.id, currentStreak: 12, longestStreak: 30, lastActivityAt: new Date() },
+    { userId: elitePlayer.id, currentStreak: 45, longestStreak: 45, lastActivityAt: new Date() },
+    { userId: adminUser.id, currentStreak: 5, longestStreak: 15, lastActivityAt: new Date() },
+  ]
+
+  for (const s of streakData) {
+    await prisma.userStreak.upsert({
+      where: { userId: s.userId },
+      update: {},
+      create: s,
+    })
+  }
+  console.log('Created streaks')
+
+  // Badges
+  const badgeData: { userId: string; badgeType: import('@prisma/client').BadgeType }[] = [
+    { userId: testUser.id, badgeType: 'FIRST_ANALYSIS' },
+    { userId: proPlayer.id, badgeType: 'FIRST_ANALYSIS' },
+    { userId: proPlayer.id, badgeType: 'STREAK_7' },
+    { userId: proPlayer.id, badgeType: 'FIRST_MATCH' },
+    { userId: proPlayer.id, badgeType: 'TIER_PLATA' },
+    { userId: elitePlayer.id, badgeType: 'FIRST_ANALYSIS' },
+    { userId: elitePlayer.id, badgeType: 'STREAK_7' },
+    { userId: elitePlayer.id, badgeType: 'STREAK_30' },
+    { userId: elitePlayer.id, badgeType: 'FIRST_MATCH' },
+    { userId: elitePlayer.id, badgeType: 'TEN_MATCHES' },
+    { userId: elitePlayer.id, badgeType: 'TIER_BRONCE' },
+    { userId: elitePlayer.id, badgeType: 'TIER_PLATA' },
+    { userId: elitePlayer.id, badgeType: 'TIER_ORO' },
+    { userId: elitePlayer.id, badgeType: 'DEDICATION_30' },
+    { userId: adminUser.id, badgeType: 'FIRST_ANALYSIS' },
+    { userId: adminUser.id, badgeType: 'TIER_DIAMANTE' },
+  ]
+
+  for (const b of badgeData) {
+    await prisma.userBadge.upsert({
+      where: { userId_badgeType: { userId: b.userId, badgeType: b.badgeType } },
+      update: {},
+      create: b,
+    })
+  }
+  console.log('Created badges')
+
+  // ============================================
+  // SOCIAL (follows, feed, clubs)
+  // ============================================
+
+  // Follows
+  const followPairs = [
+    { followerId: profileByUser[proPlayer.id], followingId: profileByUser[elitePlayer.id] },
+    { followerId: profileByUser[proPlayer.id], followingId: profileByUser[testUser.id] },
+    { followerId: profileByUser[elitePlayer.id], followingId: profileByUser[proPlayer.id] },
+    { followerId: profileByUser[testUser.id], followingId: profileByUser[elitePlayer.id] },
+    { followerId: profileByUser[padelPlayer.id], followingId: profileByUser[elitePlayer.id] },
+  ]
+
+  for (const f of followPairs) {
+    await prisma.follow.upsert({
+      where: { followerId_followingId: { followerId: f.followerId, followingId: f.followingId } },
+      update: {},
+      create: f,
+    })
+  }
+  console.log('Created follows')
+
+  // Club
+  const club = await prisma.club.upsert({
+    where: { slug: 'lima-tennis-club' },
+    update: {},
+    create: {
+      name: 'Lima Tennis Club',
+      slug: 'lima-tennis-club',
+      description: 'Club de tenis para jugadores competitivos en Lima',
+      country: 'PE',
+      city: 'Lima',
+      ownerId: profileByUser[elitePlayer.id],
+      isPublic: true,
+      maxMembers: 50,
+    },
+  })
+
+  // Add club members
+  const clubMembers = [profileByUser[elitePlayer.id], profileByUser[proPlayer.id], profileByUser[testUser.id]]
+  for (const profileId of clubMembers) {
+    await prisma.clubMember.upsert({
+      where: { clubId_profileId: { clubId: club.id, profileId } },
+      update: {},
       create: {
-        ...sport,
-        isActive: false,
-        description: 'Proximamente',
+        clubId: club.id,
+        profileId,
+        role: profileId === profileByUser[elitePlayer.id] ? 'admin' : 'member',
       },
     })
   }
+  console.log('Created club:', club.name)
 
-  console.log('Created placeholder sports')
-  console.log('Seeding complete!')
+  // Feed items
+  const feedItems = [
+    {
+      profileId: profileByUser[elitePlayer.id],
+      type: 'TIER_PROMOTION' as const,
+      title: 'Ascendio a ORO',
+      description: 'Maria Fernandez alcanzo el tier Oro en Tenis',
+    },
+    {
+      profileId: profileByUser[proPlayer.id],
+      type: 'STREAK_MILESTONE' as const,
+      title: 'Racha de 7 dias',
+      description: 'Carlos Mendoza lleva 7 dias consecutivos de entrenamiento',
+    },
+    {
+      profileId: profileByUser[testUser.id],
+      type: 'ANALYSIS_COMPLETED' as const,
+      title: 'Analisis completado',
+      description: 'TestPlayer completo un analisis de Saque',
+    },
+  ]
+
+  for (const fi of feedItems) {
+    await prisma.feedItem.create({ data: fi })
+  }
+  console.log('Created feed items')
+
+  // ============================================
+  // COACH-STUDENT RELATIONSHIPS
+  // ============================================
+
+  const coachProfile = await prisma.coachProfile.findUnique({
+    where: { userId: testCoach.id },
+  })
+
+  if (coachProfile) {
+    const coachStudentPairs = [
+      { coachId: coachProfile.id, studentId: profileByUser[proPlayer.id], status: 'ACTIVE' as const, canViewAnalyses: true, canAssignPlans: true, startedAt: new Date() },
+      { coachId: coachProfile.id, studentId: profileByUser[testUser.id], status: 'PENDING_INVITE' as const, canViewAnalyses: true, canAssignPlans: false },
+    ]
+
+    for (const cs of coachStudentPairs) {
+      await prisma.coachStudent.upsert({
+        where: { coachId_studentId: { coachId: cs.coachId, studentId: cs.studentId } },
+        update: {},
+        create: cs,
+      })
+    }
+    console.log('Created coach-student relationships')
+  }
+
+  // ============================================
+  // PRODUCTS (SHOP)
+  // ============================================
+
+  const products = [
+    {
+      slug: 'babolat-pure-aero',
+      name: 'Babolat Pure Aero 2024',
+      description: 'La raqueta preferida de Rafael Nadal. Potencia y spin para jugadores agresivos de fondo.',
+      shortDesc: 'Raqueta de potencia con spin',
+      category: 'RACKETS' as const,
+      brand: 'Babolat',
+      model: 'Pure Aero',
+      priceCents: 89990,
+      comparePriceCents: 99990,
+      stock: 15,
+      sku: 'BAB-PA-2024',
+      attributes: { weight: 300, headSize: 100, stringPattern: '16x19', balance: 320, length: 685 },
+      isActive: true,
+      isFeatured: true,
+    },
+    {
+      slug: 'wilson-blade-v9',
+      name: 'Wilson Blade 98 V9',
+      description: 'Control y precision para jugadores avanzados. Tecnologia Countervail para absorcion de vibraciones.',
+      shortDesc: 'Raqueta de control para avanzados',
+      category: 'RACKETS' as const,
+      brand: 'Wilson',
+      model: 'Blade 98 V9',
+      priceCents: 84990,
+      stock: 8,
+      sku: 'WIL-BL98-V9',
+      attributes: { weight: 305, headSize: 98, stringPattern: '18x20', balance: 315, length: 685 },
+      isActive: true,
+      isFeatured: true,
+    },
+    {
+      slug: 'head-extreme-team',
+      name: 'Head Extreme Team 2024',
+      description: 'Raqueta versatil para jugadores intermedios. Spin y potencia equilibrados.',
+      shortDesc: 'Raqueta versatil para intermedios',
+      category: 'RACKETS' as const,
+      brand: 'Head',
+      model: 'Extreme Team',
+      priceCents: 54990,
+      stock: 20,
+      sku: 'HEAD-EXT-2024',
+      attributes: { weight: 275, headSize: 100, stringPattern: '16x19', balance: 325, length: 685 },
+      isActive: true,
+      isFeatured: false,
+    },
+    {
+      slug: 'luxilon-alu-power-125',
+      name: 'Luxilon ALU Power 125',
+      description: 'Cuerda de poliester de referencia mundial. Control y durabilidad excepcional.',
+      shortDesc: 'Cuerda de referencia para control',
+      category: 'STRINGS' as const,
+      brand: 'Luxilon',
+      model: 'ALU Power',
+      priceCents: 6990,
+      stock: 50,
+      sku: 'LUX-ALUP-125',
+      attributes: { gauge: '1.25mm', material: 'Co-Polyester', length: '12.2m' },
+      isActive: true,
+      isFeatured: true,
+    },
+    {
+      slug: 'yonex-poly-tour-pro',
+      name: 'Yonex Poly Tour Pro 125',
+      description: 'Cuerda de poliester suave con excelente sensacion y spin.',
+      shortDesc: 'Cuerda suave con buen spin',
+      category: 'STRINGS' as const,
+      brand: 'Yonex',
+      model: 'Poly Tour Pro',
+      priceCents: 5490,
+      stock: 35,
+      sku: 'YNX-PTP-125',
+      attributes: { gauge: '1.25mm', material: 'Polyester', length: '12m' },
+      isActive: true,
+      isFeatured: false,
+    },
+    {
+      slug: 'wilson-pro-overgrip-3pk',
+      name: 'Wilson Pro Overgrip 3-Pack',
+      description: 'El overgrip mas popular del mundo. Suave, absorbente y adhesivo.',
+      shortDesc: 'Pack de 3 overgrips',
+      category: 'GRIPS' as const,
+      brand: 'Wilson',
+      model: 'Pro Overgrip',
+      priceCents: 1990,
+      stock: 100,
+      sku: 'WIL-POG-3PK',
+      attributes: { quantity: 3, thickness: '0.6mm', color: 'Blanco' },
+      isActive: true,
+      isFeatured: false,
+    },
+    {
+      slug: 'babolat-pure-drive-bag',
+      name: 'Babolat Pure Drive Racket Holder x6',
+      description: 'Bolso termico para 6 raquetas con compartimento para zapatos.',
+      shortDesc: 'Bolso para 6 raquetas',
+      category: 'BAGS' as const,
+      brand: 'Babolat',
+      model: 'Pure Drive Bag',
+      priceCents: 29990,
+      stock: 10,
+      sku: 'BAB-PDB-6',
+      attributes: { capacity: '6 rackets', thermoGuard: true },
+      isActive: true,
+      isFeatured: false,
+    },
+    {
+      slug: 'asics-gel-resolution-9',
+      name: 'Asics Gel Resolution 9',
+      description: 'Zapatilla de tenis de alto rendimiento. Estabilidad y durabilidad en todas las superficies.',
+      shortDesc: 'Zapatilla de alto rendimiento',
+      category: 'SHOES' as const,
+      brand: 'Asics',
+      model: 'Gel Resolution 9',
+      priceCents: 59990,
+      stock: 12,
+      sku: 'ASI-GR9-BK',
+      attributes: { sizes: ['7', '8', '9', '10', '11'], surface: 'All Court' },
+      isActive: true,
+      isFeatured: true,
+    },
+  ]
+
+  for (const product of products) {
+    await prisma.product.upsert({
+      where: { slug: product.slug },
+      update: {},
+      create: product,
+    })
+  }
+  console.log('Created products:', products.length)
+
+  // ============================================
+  // COURTS
+  // ============================================
+
+  const courts = [
+    {
+      name: 'Club Tennis Las Terrazas',
+      description: 'Club con 8 canchas de arcilla y 2 de dura. Zona de descanso y cafeteria.',
+      address: 'Av. del Golf 555',
+      district: 'San Isidro',
+      city: 'Lima',
+      country: 'PE',
+      phone: '+51 1 421-5678',
+      whatsapp: '+51 999 888 777',
+      surface: 'CLAY' as const,
+      courtType: 'OUTDOOR' as const,
+      hourlyRate: 60,
+      amenities: ['Vestuarios', 'Duchas', 'Cafeteria', 'Estacionamiento', 'Iluminacion nocturna'],
+      isActive: true,
+    },
+    {
+      name: 'Padel Lima Center',
+      description: 'Centro de padel con 6 canchas cubiertas de cristal. Tienda y academia.',
+      address: 'Calle Los Pinos 123',
+      district: 'La Molina',
+      city: 'Lima',
+      country: 'PE',
+      phone: '+51 1 365-4321',
+      whatsapp: '+51 988 777 666',
+      surface: 'SYNTHETIC' as const,
+      courtType: 'COVERED' as const,
+      hourlyRate: 80,
+      amenities: ['Vestuarios', 'Tienda', 'Academia', 'Estacionamiento'],
+      isActive: true,
+    },
+    {
+      name: 'Sport Center Miraflores',
+      description: 'Cancha de tenis dura con iluminacion LED. Ideal para partidos nocturnos.',
+      address: 'Av. Benavides 1234',
+      district: 'Miraflores',
+      city: 'Lima',
+      country: 'PE',
+      phone: '+51 1 445-9876',
+      surface: 'HARD' as const,
+      courtType: 'OUTDOOR' as const,
+      hourlyRate: 45,
+      amenities: ['Iluminacion LED', 'Estacionamiento'],
+      isActive: true,
+    },
+    {
+      name: 'Tennis Indoor Surco',
+      description: 'Cancha techada para jugar sin importar el clima. Superficie sintetica de alta calidad.',
+      address: 'Av. Primavera 789',
+      district: 'Surco',
+      city: 'Lima',
+      country: 'PE',
+      surface: 'SYNTHETIC' as const,
+      courtType: 'INDOOR' as const,
+      hourlyRate: 90,
+      amenities: ['Aire acondicionado', 'Vestuarios', 'Agua gratis'],
+      isActive: true,
+    },
+  ]
+
+  for (const court of courts) {
+    // Use findFirst + create since Court has no unique slug
+    const existing = await prisma.court.findFirst({ where: { name: court.name } })
+    if (!existing) {
+      await prisma.court.create({ data: court })
+    }
+  }
+  console.log('Created courts:', courts.length)
+
+  // ============================================
+  // WORKSHOPS (STRINGING)
+  // ============================================
+
+  const workshops = [
+    {
+      name: 'SportTech Workshop Central',
+      address: 'Jr. de la Union 456',
+      district: 'Cercado de Lima',
+      city: 'Lima',
+      phone: '+51 1 332-4567',
+      isActive: true,
+      isPartner: false,
+      operatingHours: {
+        mon: '9:00-18:00', tue: '9:00-18:00', wed: '9:00-18:00',
+        thu: '9:00-18:00', fri: '9:00-18:00', sat: '9:00-13:00',
+      },
+    },
+    {
+      name: 'Encordados Pro - Miraflores',
+      address: 'Calle Schell 234',
+      district: 'Miraflores',
+      city: 'Lima',
+      phone: '+51 1 445-0011',
+      isActive: true,
+      isPartner: true,
+      operatingHours: {
+        mon: '10:00-19:00', tue: '10:00-19:00', wed: '10:00-19:00',
+        thu: '10:00-19:00', fri: '10:00-19:00', sat: '10:00-14:00',
+      },
+    },
+  ]
+
+  for (const ws of workshops) {
+    const existing = await prisma.workshop.findFirst({ where: { name: ws.name } })
+    if (!existing) {
+      await prisma.workshop.create({ data: ws })
+    }
+  }
+  console.log('Created workshops:', workshops.length)
+
+  // ============================================
+  // TOURNAMENT
+  // ============================================
+
+  const tournament = await prisma.tournament.upsert({
+    where: { slug: 'torneo-lima-open-2026' },
+    update: {},
+    create: {
+      name: 'Lima Open 2026',
+      slug: 'torneo-lima-open-2026',
+      description: 'Torneo abierto de tenis para jugadores de nivel Plata en adelante. 16 participantes.',
+      organizerId: profileByUser[elitePlayer.id],
+      clubId: club.id,
+      format: 'SINGLE_ELIMINATION',
+      maxPlayers: 16,
+      status: 'REGISTRATION',
+      minTier: 'PLATA',
+      country: 'PE',
+      registrationEnd: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks
+      startDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000), // 3 weeks
+      endDate: new Date(Date.now() + 23 * 24 * 60 * 60 * 1000),
+      venue: 'Club Tennis Las Terrazas',
+      city: 'Lima',
+    },
+  })
+
+  // Register participants
+  const participants = [profileByUser[elitePlayer.id], profileByUser[proPlayer.id]]
+  for (const profileId of participants) {
+    await prisma.tournamentParticipant.upsert({
+      where: { tournamentId_profileId: { tournamentId: tournament.id, profileId } },
+      update: {},
+      create: { tournamentId: tournament.id, profileId },
+    })
+  }
+  console.log('Created tournament:', tournament.name)
+
+  // ============================================
+  // NOTIFICATIONS
+  // ============================================
+
+  const notifications = [
+    { userId: proPlayer.id, type: 'BADGE_EARNED' as const, title: 'Nuevo badge!', body: 'Has ganado el badge Racha de 7 dias' },
+    { userId: proPlayer.id, type: 'COACH_INVITATION' as const, title: 'Invitacion de coach', body: 'Test Coach te ha invitado a ser su alumno' },
+    { userId: elitePlayer.id, type: 'TIER_PROMOTION' as const, title: 'Ascenso de tier!', body: 'Has subido al tier ORO' },
+    { userId: elitePlayer.id, type: 'NEW_FOLLOWER' as const, title: 'Nuevo seguidor', body: 'Carlos Mendoza te sigue ahora' },
+    { userId: testUser.id, type: 'CHALLENGE_RECEIVED' as const, title: 'Nuevo desafio', body: 'Carlos Mendoza te ha desafiado a un partido' },
+  ]
+
+  for (const notif of notifications) {
+    await prisma.notification.create({ data: notif })
+  }
+  console.log('Created notifications:', notifications.length)
+
+  // ============================================
+  // DONE
+  // ============================================
+
+  console.log('')
+  console.log('=== Seeding complete! ===')
+  console.log('')
+  console.log('Test credentials (password: test1234):')
+  console.log('  Admin:          admin@sporttech.pe')
+  console.log('  Player FREE:    test@sporttech.pe')
+  console.log('  Player PRO:     pro@sporttech.pe')
+  console.log('  Player ELITE:   elite@sporttech.pe')
+  console.log('  Player Padel:   padel@sporttech.pe')
+  console.log('  New User:       nuevo@sporttech.pe')
+  console.log('  Coach Verified: coach@sporttech.pe')
+  console.log('  Coach Pending:  coach2@sporttech.pe')
+  console.log('  Coach Rejected: coach3@sporttech.pe')
+  console.log('')
 }
 
 main()
