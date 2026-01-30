@@ -1,4 +1,4 @@
-export const TIER_ORDER = ['BRONCE', 'PLATA', 'ORO', 'PLATINO', 'DIAMANTE'] as const
+export const TIER_ORDER = ['QUINTA_B', 'QUINTA_A', 'CUARTA_B', 'CUARTA_A', 'TERCERA_B', 'TERCERA_A', 'SEGUNDA_B', 'SEGUNDA_A', 'PRIMERA_B', 'PRIMERA_A'] as const
 export type SkillTier = (typeof TIER_ORDER)[number]
 
 /**

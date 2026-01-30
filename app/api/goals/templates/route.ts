@@ -8,8 +8,8 @@ const TEMPLATES = [
   { type: 'TECHNIQUE', label: 'Mejorar mi revés', techniqueSlug: 'reves', icon: 'target' },
   { type: 'TECHNIQUE', label: 'Juego de red completo', techniqueSlugs: ['volea', 'remate', 'golpe-de-aproximacion'], icon: 'layers' },
   { type: 'SCORE_TARGET', label: 'Alcanzar 8/10', targetScore: 8, icon: 'trophy' },
-  { type: 'TIER_TARGET', label: 'Llegar a Oro', targetTier: 'ORO', icon: 'medal' },
-  { type: 'TIER_TARGET', label: 'Llegar a Platino', targetTier: 'PLATINO', icon: 'medal' },
+  { type: 'TIER_TARGET', label: 'Llegar a 3ra A', targetTier: 'TERCERA_A', icon: 'medal' },
+  { type: 'TIER_TARGET', label: 'Llegar a 2da B', targetTier: 'SEGUNDA_B', icon: 'medal' },
 ] as const
 
 // GET - Get predefined goal templates

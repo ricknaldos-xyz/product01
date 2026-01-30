@@ -4,11 +4,11 @@ import { GlassButton } from '@/components/ui/glass-button'
 
 const tierOptions = [
   { value: '', label: 'Todos' },
-  { value: 'DIAMANTE', label: 'Diamante' },
-  { value: 'PLATINO', label: 'Platino' },
-  { value: 'ORO', label: 'Oro' },
-  { value: 'PLATA', label: 'Plata' },
-  { value: 'BRONCE', label: 'Bronce' },
+  { value: 'PRIMERA_A,PRIMERA_B', label: '1ra' },
+  { value: 'SEGUNDA_A,SEGUNDA_B', label: '2da' },
+  { value: 'TERCERA_A,TERCERA_B', label: '3ra' },
+  { value: 'CUARTA_A,CUARTA_B', label: '4ta' },
+  { value: 'QUINTA_A,QUINTA_B', label: '5ta' },
 ]
 
 interface RankingFiltersProps {

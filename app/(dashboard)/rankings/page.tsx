@@ -5,7 +5,9 @@ import Image from 'next/image'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { TierBadge } from '@/components/player/TierBadge'
-import { PlayerCard } from '@/components/player/PlayerCard'
+import { RankingHero } from '@/components/rankings/RankingHero'
+import { TopPodium } from '@/components/rankings/TopPodium'
+import { CategoryExplainer } from '@/components/rankings/CategoryExplainer'
 import { Trophy, Medal, ChevronLeft, ChevronRight, Loader2, AlertTriangle } from 'lucide-react'
 import { useSport } from '@/contexts/SportContext'
 import type { SkillTier } from '@prisma/client'
@@ -34,13 +36,13 @@ interface MyPosition {
   totalInTier: number
 }
 
-const TIER_FILTERS: { value: string; label: string }[] = [
+const CATEGORY_FILTERS: { value: string; label: string }[] = [
   { value: '', label: 'Todos' },
-  { value: 'DIAMANTE', label: 'Diamante' },
-  { value: 'PLATINO', label: 'Platino' },
-  { value: 'ORO', label: 'Oro' },
-  { value: 'PLATA', label: 'Plata' },
-  { value: 'BRONCE', label: 'Bronce' },
+  { value: 'PRIMERA_A,PRIMERA_B', label: '1ra' },
+  { value: 'SEGUNDA_A,SEGUNDA_B', label: '2da' },
+  { value: 'TERCERA_A,TERCERA_B', label: '3ra' },
+  { value: 'CUARTA_A,CUARTA_B', label: '4ta' },
+  { value: 'QUINTA_A,QUINTA_B', label: '5ta' },
 ]
 
 export default function RankingsPage() {
@@ -51,12 +53,12 @@ export default function RankingsPage() {
   const [error, setError] = useState(false)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [tierFilter, setTierFilter] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
 
   useEffect(() => {
     fetchRankings()
     fetchMyPosition()
-  }, [page, tierFilter, activeSport?.slug])
+  }, [page, categoryFilter, activeSport?.slug])
 
   async function fetchRankings() {
     setLoading(true)
@@ -68,7 +70,7 @@ export default function RankingsPage() {
         limit: '20',
         sport: activeSport?.slug || 'tennis',
       })
-      if (tierFilter) params.set('skillTier', tierFilter)
+      if (categoryFilter) params.set('skillTier', categoryFilter)
 
       const res = await fetch(`/api/rankings?${params}`)
       if (!res.ok) throw new Error('Failed to fetch')
@@ -94,47 +96,34 @@ export default function RankingsPage() {
     }
   }
 
+  const isFiltered = categoryFilter !== ''
+  const podiumPlayers = rankings.slice(0, 3)
+  const listPlayers = isFiltered ? rankings : rankings.slice(3)
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
       <div className="flex items-center gap-3">
         <Trophy className="h-7 w-7 text-yellow-500" />
         <h1 className="text-2xl font-bold">Rankings Peru</h1>
       </div>
 
-      {/* My Position Card */}
-      {myPosition && myPosition.skillTier !== 'UNRANKED' && (
-        <GlassCard intensity="primary" padding="lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Tu posicion</p>
-              <div className="flex items-center gap-3 mt-1">
-                <span className="text-3xl font-bold">
-                  #{myPosition.countryRank || '--'}
-                </span>
-                <TierBadge tier={myPosition.skillTier} />
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                de {myPosition.totalInCountry} jugadores en Peru
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground">Score</p>
-              <p className="text-2xl font-bold tabular-nums">
-                {myPosition.effectiveScore?.toFixed(1) || '--'}
-              </p>
-            </div>
-          </div>
-        </GlassCard>
+      {/* Hero: self-contained, fetches own data */}
+      <RankingHero />
+
+      {/* Top 3 Podium (only when showing "Todos" unfiltered on page 1) */}
+      {!isFiltered && page === 1 && !loading && !error && (
+        <TopPodium players={podiumPlayers} />
       )}
 
-      {/* Filters */}
+      {/* Category filter tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2">
-        {TIER_FILTERS.map((filter) => (
+        {CATEGORY_FILTERS.map((filter) => (
           <GlassButton
             key={filter.value}
-            variant={tierFilter === filter.value ? 'solid' : 'outline'}
+            variant={categoryFilter === filter.value ? 'solid' : 'outline'}
             size="sm"
-            onClick={() => { setTierFilter(filter.value); setPage(1) }}
+            onClick={() => { setCategoryFilter(filter.value); setPage(1) }}
           >
             {filter.label}
           </GlassButton>
@@ -155,19 +144,19 @@ export default function RankingsPage() {
         </div>
       )}
 
-      {/* Rankings Table */}
+      {/* Rankings List (from #4 when unfiltered, from #1 when filtered) */}
       {!error && <GlassCard intensity="light" padding="none">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
-        ) : rankings.length === 0 ? (
+        ) : listPlayers.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             No hay jugadores clasificados aun
           </div>
         ) : (
           <div className="divide-y divide-glass-border-light">
-            {rankings.map((player) => (
+            {listPlayers.map((player) => (
               <div
                 key={player.userId}
                 className="flex items-center gap-4 px-5 py-3 hover:glass-ultralight transition-all"
@@ -251,6 +240,9 @@ export default function RankingsPage() {
           </GlassButton>
         </div>
       )}
+
+      {/* Category explainer */}
+      <CategoryExplainer currentTier={myPosition?.skillTier} />
     </div>
   )
 }

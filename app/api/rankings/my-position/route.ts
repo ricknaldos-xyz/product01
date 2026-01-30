@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
         },
       },
       select: {
+        id: true,
         compositeScore: true,
         effectiveScore: true,
         skillTier: true,
@@ -64,6 +65,24 @@ export async function GET(request: NextRequest) {
         totalInTier: 0,
       })
     }
+
+    // Get technique scores for breakdown
+    const techniqueScores = await prisma.techniqueScore.findMany({
+      where: {
+        profileId: profile.id,
+        sportProfileId: sportProfile.id,
+      },
+      select: {
+        bestScore: true,
+        technique: {
+          select: {
+            name: true,
+            slug: true,
+          },
+        },
+      },
+      orderBy: { bestScore: 'desc' },
+    })
 
     // Count total players in same country for this sport
     const totalInCountry = await prisma.sportProfile.count({
@@ -100,6 +119,10 @@ export async function GET(request: NextRequest) {
       country: profile.country,
       totalInCountry,
       totalInTier,
+      techniqueBreakdown: techniqueScores.map((ts) => ({
+        technique: { name: ts.technique.name, slug: ts.technique.slug },
+        bestScore: ts.bestScore,
+      })),
     })
   } catch (error) {
     logger.error('Get my position error:', error)

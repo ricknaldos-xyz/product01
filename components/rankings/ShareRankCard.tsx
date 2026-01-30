@@ -6,6 +6,7 @@ import { TierBadge } from '@/components/player/TierBadge'
 import { Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { SkillTier } from '@prisma/client'
+import { getTierLabel } from '@/lib/skill-score'
 
 interface ShareRankCardProps {
   rank: number | null
@@ -15,9 +16,10 @@ interface ShareRankCardProps {
 }
 
 export function ShareRankCard({ rank, displayName, skillTier, effectiveScore }: ShareRankCardProps) {
+  const tierLabel = getTierLabel(skillTier)
   const shareText = rank !== null
-    ? `Soy #${rank} en el ranking de tenis amateur de Peru. Mi puntaje es ${effectiveScore?.toFixed(1) ?? '--'}. Unete y compite conmigo!`
-    : `Estoy compitiendo en el ranking de tenis amateur de Peru. Unete y compite conmigo!`
+    ? `Soy #${rank} en la categoria ${tierLabel} del ranking de tenis de Peru. Mi puntaje es ${effectiveScore?.toFixed(1) ?? '--'}. Unete y compite conmigo!`
+    : `Estoy compitiendo en la categoria ${tierLabel} del ranking de tenis de Peru. Unete y compite conmigo!`
 
   async function handleShare() {
     if (navigator.share) {

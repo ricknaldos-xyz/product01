@@ -8,11 +8,16 @@ import { GoalType, GoalStatus, SkillTier } from '@prisma/client'
 import { getUserSubscription, checkActiveGoalsLimit } from '@/lib/subscription'
 
 const TIER_LABELS: Record<string, string> = {
-  BRONCE: 'Bronce',
-  PLATA: 'Plata',
-  ORO: 'Oro',
-  PLATINO: 'Platino',
-  DIAMANTE: 'Diamante',
+  QUINTA_B: '5ta B',
+  QUINTA_A: '5ta A',
+  CUARTA_B: '4ta B',
+  CUARTA_A: '4ta A',
+  TERCERA_B: '3ra B',
+  TERCERA_A: '3ra A',
+  SEGUNDA_B: '2da B',
+  SEGUNDA_A: '2da A',
+  PRIMERA_B: '1ra B',
+  PRIMERA_A: '1ra A',
 }
 
 const createGoalSchema = z.object({

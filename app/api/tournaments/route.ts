@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth'
 import { tournamentLimiter } from '@/lib/rate-limit'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
-import { Prisma, TournamentStatus } from '@prisma/client'
+import { Prisma, SkillTier, TournamentStatus } from '@prisma/client'
 import { z } from 'zod'
 
 const createTournamentSchema = z.object({
@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
         country: profile.country,
         registrationEnd: new Date(validated.data.registrationEnd),
         startDate: new Date(validated.data.startDate),
-        minTier: validated.data.minTier as 'BRONCE' | 'PLATA' | 'ORO' | 'PLATINO' | 'DIAMANTE' | undefined,
-        maxTier: validated.data.maxTier as 'BRONCE' | 'PLATA' | 'ORO' | 'PLATINO' | 'DIAMANTE' | undefined,
+        minTier: validated.data.minTier as SkillTier | undefined,
+        maxTier: validated.data.maxTier as SkillTier | undefined,
       },
     })
 

@@ -2,14 +2,19 @@ import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import { GoalStatus, GoalType, Prisma, SkillTier } from '@prisma/client'
 
-// Tier thresholds on 0-100 scale, matching lib/skill-score.ts
+// Category thresholds on 0-100 scale, matching lib/skill-score.ts
 const TIER_THRESHOLDS: Record<SkillTier, number> = {
   UNRANKED: 0,
-  BRONCE: 0,
-  PLATA: 40,
-  ORO: 55,
-  PLATINO: 70,
-  DIAMANTE: 85,
+  QUINTA_B: 0,
+  QUINTA_A: 10,
+  CUARTA_B: 20,
+  CUARTA_A: 30,
+  TERCERA_B: 40,
+  TERCERA_A: 50,
+  SEGUNDA_B: 60,
+  SEGUNDA_A: 70,
+  PRIMERA_B: 80,
+  PRIMERA_A: 90,
 }
 
 interface RoadmapStep {
@@ -168,7 +173,7 @@ export async function updateGoalProgress(
             )
 
             const targetThreshold = TIER_THRESHOLDS[goal.targetTier]
-            const baseThreshold = TIER_THRESHOLDS.BRONCE // 0
+            const baseThreshold = TIER_THRESHOLDS.QUINTA_B // 0
 
             if (targetThreshold <= baseThreshold) {
               progressPercent = 100

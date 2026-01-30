@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
-import { isPlayerTierAllowed } from '@/lib/tiers'
+import { isPlayerTierAllowed, TIER_ORDER } from '@/lib/tiers'
 
 // POST - Register for tournament
 export async function POST(
@@ -49,8 +49,8 @@ export async function POST(
 
     // Validate skill tier requirements
     if (!isPlayerTierAllowed(profile.skillTier, tournament.minTier, tournament.maxTier)) {
-      const playerTierIndex = ['BRONCE', 'PLATA', 'ORO', 'PLATINO', 'DIAMANTE'].indexOf(profile.skillTier)
-      const minIndex = tournament.minTier ? ['BRONCE', 'PLATA', 'ORO', 'PLATINO', 'DIAMANTE'].indexOf(tournament.minTier) : -1
+      const playerTierIndex = TIER_ORDER.indexOf(profile.skillTier as (typeof TIER_ORDER)[number])
+      const minIndex = tournament.minTier ? TIER_ORDER.indexOf(tournament.minTier as (typeof TIER_ORDER)[number]) : -1
       if (tournament.minTier && playerTierIndex < minIndex) {
         return NextResponse.json({ error: 'Tu nivel es menor al requerido' }, { status: 403 })
       }

@@ -579,7 +579,7 @@ export default function DocsPage() {
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              <strong>Skill Tiers:</strong> UNRANKED → BRONCE → PLATA → ORO → PLATINO → DIAMANTE
+              <strong>Skill Tiers (Categorías):</strong> UNRANKED → 5ta B → 5ta A → 4ta B → 4ta A → 3ra B → 3ra A → 2da B → 2da A → 1ra B → 1ra A
             </p>
           </Card>
 

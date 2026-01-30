@@ -24,11 +24,16 @@ export function SkillScoreDisplay({ score, tier, className }: SkillScoreDisplayP
   }
 
   const tierColors: Record<string, string> = {
-    BRONCE: 'text-amber-600',
-    PLATA: 'text-slate-500',
-    ORO: 'text-yellow-600',
-    PLATINO: 'text-cyan-600',
-    DIAMANTE: 'text-violet-600',
+    QUINTA_B: 'text-amber-500',
+    QUINTA_A: 'text-amber-600',
+    CUARTA_B: 'text-yellow-500',
+    CUARTA_A: 'text-yellow-600',
+    TERCERA_B: 'text-emerald-500',
+    TERCERA_A: 'text-emerald-600',
+    SEGUNDA_B: 'text-cyan-500',
+    SEGUNDA_A: 'text-cyan-600',
+    PRIMERA_B: 'text-violet-500',
+    PRIMERA_A: 'text-violet-600',
   }
 
   return (

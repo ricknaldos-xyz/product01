@@ -11,11 +11,16 @@ import type { SkillTier } from '@prisma/client'
 
 const tierOptions: { value: SkillTier; label: string }[] = [
   { value: 'UNRANKED', label: 'Sin clasificar' },
-  { value: 'BRONCE', label: 'Bronce' },
-  { value: 'PLATA', label: 'Plata' },
-  { value: 'ORO', label: 'Oro' },
-  { value: 'PLATINO', label: 'Platino' },
-  { value: 'DIAMANTE', label: 'Diamante' },
+  { value: 'QUINTA_B', label: '5ta B' },
+  { value: 'QUINTA_A', label: '5ta A' },
+  { value: 'CUARTA_B', label: '4ta B' },
+  { value: 'CUARTA_A', label: '4ta A' },
+  { value: 'TERCERA_B', label: '3ra B' },
+  { value: 'TERCERA_A', label: '3ra A' },
+  { value: 'SEGUNDA_B', label: '2da B' },
+  { value: 'SEGUNDA_A', label: '2da A' },
+  { value: 'PRIMERA_B', label: '1ra B' },
+  { value: 'PRIMERA_A', label: '1ra A' },
 ]
 
 export default function CreateTournamentPage() {

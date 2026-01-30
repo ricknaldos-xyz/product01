@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const country = searchParams.get('country') || 'PE'
-    const skillTier = searchParams.get('skillTier') as SkillTier | null
+    const skillTierParam = searchParams.get('skillTier')
     const ageGroup = searchParams.get('ageGroup')
     const sportSlug = searchParams.get('sport') || 'tennis'
     const page = parseInt(searchParams.get('page') || '1')
@@ -29,7 +29,11 @@ export async function GET(request: NextRequest) {
     const where = {
       sportId: sport.id,
       effectiveScore: { not: null },
-      skillTier: skillTier ? { equals: skillTier } : { not: 'UNRANKED' as SkillTier },
+      skillTier: skillTierParam
+        ? skillTierParam.includes(',')
+          ? { in: skillTierParam.split(',') as SkillTier[] }
+          : { equals: skillTierParam as SkillTier }
+        : { not: 'UNRANKED' as SkillTier },
       profile: {
         visibility: { not: 'PRIVATE' as const },
         country,
