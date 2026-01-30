@@ -29,7 +29,7 @@ interface CoachProfile {
   hourlyRate: number | null
   currency: string
   isAvailable: boolean
-  averageRating: number
+  averageRating: number | null
   totalReviews: number
   _count: { students: number }
   createdAt: string
@@ -253,7 +253,7 @@ export default function AdminCoachesPage() {
                     )}
                     <div className="flex items-center gap-1">
                       <Star className="h-3.5 w-3.5 text-yellow-500" />
-                      <span className="font-medium">{coach.averageRating.toFixed(1)}</span>
+                      <span className="font-medium">{coach.averageRating?.toFixed(1) ?? '0.0'}</span>
                       <span className="text-muted-foreground">({coach.totalReviews} resenas)</span>
                     </div>
                     <div className="flex items-center gap-1">
