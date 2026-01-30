@@ -20,9 +20,9 @@ describe('normalizeEmail', () => {
 })
 
 describe('validatePassword', () => {
-  it('returns null for valid password (8+ characters)', () => {
-    expect(validatePassword('12345678')).toBeNull()
-    expect(validatePassword('a very long password')).toBeNull()
+  it('returns null for valid password (meets all requirements)', () => {
+    expect(validatePassword('Password1')).toBeNull()
+    expect(validatePassword('A very l0ng password')).toBeNull()
   })
 
   it('returns error message for short password', () => {
@@ -31,7 +31,7 @@ describe('validatePassword', () => {
     expect(validatePassword('abc')).toBe('La contrasena debe tener al menos 8 caracteres')
   })
 
-  it('exactly 8 characters is valid', () => {
-    expect(validatePassword('abcdefgh')).toBeNull()
+  it('exactly 8 characters with all requirements is valid', () => {
+    expect(validatePassword('Abcdef1g')).toBeNull()
   })
 })

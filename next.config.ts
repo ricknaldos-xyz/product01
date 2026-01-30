@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
   images: {
@@ -43,7 +44,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' blob: data: *.public.blob.vercel-storage.com *.vercel-storage.com lh3.googleusercontent.com",
               "font-src 'self'",
-              "connect-src 'self' *.stripe.com *.upstash.io vitals.vercel-insights.com",
+              "connect-src 'self' *.stripe.com *.upstash.io vitals.vercel-insights.com *.sentry.io",
               "frame-src 'self' *.stripe.com",
               "object-src 'none'",
               "base-uri 'self'",
@@ -60,4 +61,19 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+export default withSentryConfig(nextConfig, {
+  // Suppress source map upload logs in CI
+  silent: true,
+
+  // Upload source maps for better stack traces
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+
+  // Only upload source maps when SENTRY_AUTH_TOKEN is set
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  // Hide source maps from users
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+})

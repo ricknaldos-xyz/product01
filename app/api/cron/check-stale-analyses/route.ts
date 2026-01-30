@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
+import { acquireCronLock, releaseCronLock } from '@/lib/cron-lock'
 
 const STALE_THRESHOLD_MS = 5 * 60 * 1000 // 5 minutes
 
@@ -9,6 +10,11 @@ export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const locked = await acquireCronLock('check-stale-analyses')
+  if (!locked) {
+    return NextResponse.json({ message: 'Job already running' }, { status: 200 })
   }
 
   try {
@@ -61,5 +67,7 @@ export async function GET(request: NextRequest) {
       { error: 'Error checking stale analyses' },
       { status: 500 }
     )
+  } finally {
+    await releaseCronLock('check-stale-analyses')
   }
 }

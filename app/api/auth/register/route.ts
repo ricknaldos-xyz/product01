@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { sendWelcomeEmail, sendEmailVerification } from '@/lib/email'
 import { generateToken } from '@/lib/tokens'
 import { registerLimiter } from '@/lib/rate-limit'
+import { normalizeEmail, validatePassword } from '@/lib/validation'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -35,7 +36,11 @@ export async function POST(request: NextRequest) {
     }
 
     const { name, password, accountType } = validated.data
-    const email = validated.data.email.toLowerCase()
+    const passwordError = validatePassword(password)
+    if (passwordError) {
+      return NextResponse.json({ error: passwordError }, { status: 400 })
+    }
+    const email = normalizeEmail(validated.data.email)
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({

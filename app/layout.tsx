@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'sonner'
+import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -29,6 +30,18 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'SportTech',
   },
+  openGraph: {
+    title: 'SportTech - Analisis Deportivo con IA',
+    description: 'Mejora tu tecnica deportiva con analisis de video impulsado por inteligencia artificial',
+    type: 'website',
+    locale: 'es_PE',
+    siteName: 'SportTech',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SportTech - Analisis Deportivo con IA',
+    description: 'Mejora tu tecnica deportiva con analisis de video impulsado por IA',
+  },
 }
 
 export default function RootLayout({
@@ -41,6 +54,7 @@ export default function RootLayout({
       <body className={inter.className}>
         {children}
         <Toaster position="top-right" richColors />
+        <ServiceWorkerRegister />
       </body>
     </html>
   )

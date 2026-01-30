@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { computeAllRankings } from '@/lib/rankings'
+import { acquireCronLock, releaseCronLock } from '@/lib/cron-lock'
+import { logger } from '@/lib/logger'
 
 // POST - Cron job to compute rankings daily
 export async function POST(request: NextRequest) {
@@ -10,11 +12,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    await computeAllRankings()
+    const locked = await acquireCronLock('compute-rankings')
+    if (!locked) {
+      return NextResponse.json({ message: 'Job already running' }, { status: 200 })
+    }
 
-    return NextResponse.json({ message: 'Rankings computed successfully' })
+    try {
+      await computeAllRankings()
+
+      return NextResponse.json({ message: 'Rankings computed successfully' })
+    } finally {
+      await releaseCronLock('compute-rankings')
+    }
   } catch (error) {
-    console.error('Compute rankings cron error:', error)
+    logger.error('Compute rankings cron error:', error)
     return NextResponse.json(
       { error: 'Error computing rankings' },
       { status: 500 }

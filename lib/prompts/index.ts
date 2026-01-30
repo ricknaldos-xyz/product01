@@ -1,6 +1,6 @@
 import type { PromptBuilder } from './base'
 import { JSON_OUTPUT_SCHEMA } from './base'
-import { buildTennisPrompt } from '@/lib/openai/prompts/tennis'
+import { buildTennisPrompt } from './tennis'
 import { buildPadelPrompt } from './padel'
 
 const BUILDERS: Record<string, PromptBuilder> = {

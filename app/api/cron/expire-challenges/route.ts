@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { acquireCronLock, releaseCronLock } from '@/lib/cron-lock'
+import { logger } from '@/lib/logger'
 
 // POST - Expire old pending challenges
 export async function POST(request: NextRequest) {
@@ -9,19 +11,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const result = await prisma.challenge.updateMany({
-      where: {
-        status: 'PENDING',
-        expiresAt: { lt: new Date() },
-      },
-      data: { status: 'EXPIRED' },
-    })
+    const locked = await acquireCronLock('expire-challenges')
+    if (!locked) {
+      return NextResponse.json({ message: 'Job already running' }, { status: 200 })
+    }
 
-    return NextResponse.json({
-      message: `Expired ${result.count} challenges`,
-    })
+    try {
+      const result = await prisma.challenge.updateMany({
+        where: {
+          status: 'PENDING',
+          expiresAt: { lt: new Date() },
+        },
+        data: { status: 'EXPIRED' },
+      })
+
+      return NextResponse.json({
+        message: `Expired ${result.count} challenges`,
+      })
+    } finally {
+      await releaseCronLock('expire-challenges')
+    }
   } catch (error) {
-    console.error('Expire challenges cron error:', error)
+    logger.error('Expire challenges cron error:', error)
     return NextResponse.json({ error: 'Error' }, { status: 500 })
   }
 }

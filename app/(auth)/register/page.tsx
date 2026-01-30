@@ -32,8 +32,8 @@ export default function RegisterPage() {
       return
     }
 
-    if (password.length < 8) {
-      toast.error('La contrasena debe tener al menos 8 caracteres')
+    if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+      toast.error('La contrasena debe tener al menos 8 caracteres, una mayuscula, una minuscula y un numero')
       setIsLoading(false)
       return
     }
@@ -156,6 +156,9 @@ export default function RegisterPage() {
               disabled={isLoading}
             />
           </div>
+          <p className="text-xs text-muted-foreground">
+            Minimo 8 caracteres, una mayuscula, una minuscula y un numero
+          </p>
 
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirmar contrasena</Label>

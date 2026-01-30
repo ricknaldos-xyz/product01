@@ -4,7 +4,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getGeminiClient, SPORTS_SAFETY_SETTINGS } from '@/lib/gemini/client'
 import { generateWithFallback } from '@/lib/gemini/model-with-fallback'
-import { buildDetectionPrompt } from '@/lib/openai/prompts/detection'
+import { buildDetectionPrompt } from '@/lib/prompts/detection'
 import { readFile } from 'fs/promises'
 import path from 'path'
 

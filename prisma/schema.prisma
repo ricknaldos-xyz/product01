@@ -1854,3 +1854,15 @@ model SportAddon {
   @@unique([userId, sportId])
   @@map("sport_addons")
 }
+
+// ============================================
+// CRON JOB LOCKS
+// ============================================
+
+model CronLock {
+  id        String   @id
+  lockedAt  DateTime @default(now())
+  expiresAt DateTime
+
+  @@map("cron_locks")
+}
