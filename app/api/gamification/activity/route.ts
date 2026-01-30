@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
     // Also update streak (best-effort, don't crash if it fails)
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000'
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL
       await fetch(`${baseUrl}/api/gamification/streak`, {
         method: 'POST',
         headers: {

@@ -47,7 +47,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+    const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL
+    if (!baseUrl) {
+      throw new Error('NEXTAUTH_URL or NEXT_PUBLIC_APP_URL must be configured')
+    }
     const checkoutSession = await createStringingCheckoutSession({
       orderId: order.id,
       orderNumber: order.orderNumber,
