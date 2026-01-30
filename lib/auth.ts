@@ -45,6 +45,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           include: {
             playerProfile: { select: { id: true } },
             coachProfile: { select: { id: true } },
+            providerApplications: {
+              where: { status: 'APPROVED' },
+              select: { type: true },
+            },
           },
         })
 
@@ -63,6 +67,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           data: { lastLoginAt: new Date() },
         })
 
+        const providerTypes = user.providerApplications.map((pa) => pa.type)
+
         return {
           id: user.id,
           email: user.email,
@@ -73,6 +79,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           accountType: user.accountType,
           hasPlayerProfile: !!user.playerProfile,
           hasCoachProfile: !!user.coachProfile,
+          isProvider: providerTypes.length > 0,
+          providerTypes,
         }
       },
     }),
@@ -87,6 +95,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.accountType = user.accountType
         token.hasPlayerProfile = user.hasPlayerProfile
         token.hasCoachProfile = user.hasCoachProfile
+        token.isProvider = user.isProvider
+        token.providerTypes = user.providerTypes
         token.lastRefresh = Date.now()
       } else if (!token.lastRefresh || Date.now() - token.lastRefresh > 5 * 60 * 1000) {
         // Re-fetch every 5 minutes to pick up role/subscription changes
@@ -99,14 +109,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               accountType: true,
               playerProfile: { select: { id: true } },
               coachProfile: { select: { id: true } },
+              providerApplications: {
+                where: { status: 'APPROVED' },
+                select: { type: true },
+              },
             },
           })
           if (dbUser) {
+            const refreshedProviderTypes = dbUser.providerApplications.map((pa) => pa.type)
             token.role = dbUser.role
             token.subscription = dbUser.subscription
             token.accountType = dbUser.accountType
             token.hasPlayerProfile = !!dbUser.playerProfile
             token.hasCoachProfile = !!dbUser.coachProfile
+            token.isProvider = refreshedProviderTypes.length > 0
+            token.providerTypes = refreshedProviderTypes
             token.lastRefresh = Date.now()
           }
         } catch {
@@ -123,6 +140,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.accountType = token.accountType as string
         session.user.hasPlayerProfile = token.hasPlayerProfile as boolean
         session.user.hasCoachProfile = token.hasCoachProfile as boolean
+        session.user.isProvider = token.isProvider as boolean
+        session.user.providerTypes = token.providerTypes as string[]
       }
       return session
     },

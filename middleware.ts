@@ -65,6 +65,24 @@ export default auth((req) => {
     }
   }
 
+  // Provider route protection (except /provider/apply which is open to all authenticated users)
+  const isProviderPage = pathname.startsWith('/provider') && !pathname.startsWith('/provider/apply')
+  const isProviderApi = pathname.startsWith('/api/provider') && !pathname.startsWith('/api/provider/apply') && !pathname.startsWith('/api/provider/status')
+
+  if ((isProviderPage || isProviderApi) && isLoggedIn) {
+    const isProvider = (req.auth as { user?: { isProvider?: boolean } })?.user?.isProvider
+
+    if (!isProvider) {
+      if (isProviderApi) {
+        return NextResponse.json(
+          { error: 'Forbidden: Provider access required' },
+          { status: 403 }
+        )
+      }
+      return NextResponse.redirect(new URL('/provider/apply', req.nextUrl))
+    }
+  }
+
   return NextResponse.next()
 })
 

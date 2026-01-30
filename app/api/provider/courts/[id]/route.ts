@@ -25,10 +25,48 @@ const updateCourtSchema = z.object({
   amenities: z.array(z.string()).optional(),
   isActive: z.boolean().optional(),
   operatingHours: z.any().optional(),
-  ownerId: z.string().nullable().optional(),
 })
 
-// PATCH - Update court (admin)
+// GET - Get a single court owned by current user
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth()
+    if (!session?.user) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+    if (!session.user.isProvider) {
+      return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
+    }
+
+    const { id } = await params
+
+    const court = await prisma.court.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: { bookings: true },
+        },
+      },
+    })
+
+    if (!court) {
+      return NextResponse.json({ error: 'Cancha no encontrada' }, { status: 404 })
+    }
+    if (court.ownerId !== session.user.id) {
+      return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
+    }
+
+    return NextResponse.json(court)
+  } catch (error) {
+    logger.error('Provider get court error:', error)
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
+  }
+}
+
+// PATCH - Update court (verify ownership)
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -38,7 +76,7 @@ export async function PATCH(
     if (!session?.user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
-    if (session.user.role !== 'ADMIN') {
+    if (!session.user.isProvider) {
       return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
     }
 
@@ -57,6 +95,9 @@ export async function PATCH(
     if (!existing) {
       return NextResponse.json({ error: 'Cancha no encontrada' }, { status: 404 })
     }
+    if (existing.ownerId !== session.user.id) {
+      return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
+    }
 
     const court = await prisma.court.update({
       where: { id },
@@ -65,12 +106,12 @@ export async function PATCH(
 
     return NextResponse.json(court)
   } catch (error) {
-    logger.error('Update court error:', error)
+    logger.error('Provider update court error:', error)
     return NextResponse.json({ error: 'Error al actualizar cancha' }, { status: 500 })
   }
 }
 
-// DELETE - Delete court (admin)
+// DELETE - Soft-delete court (set isActive=false, verify ownership)
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -80,7 +121,7 @@ export async function DELETE(
     if (!session?.user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
-    if (session.user.role !== 'ADMIN') {
+    if (!session.user.isProvider) {
       return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
     }
 
@@ -90,14 +131,18 @@ export async function DELETE(
     if (!existing) {
       return NextResponse.json({ error: 'Cancha no encontrada' }, { status: 404 })
     }
+    if (existing.ownerId !== session.user.id) {
+      return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
+    }
 
-    await prisma.court.delete({
+    await prisma.court.update({
       where: { id },
+      data: { isActive: false },
     })
 
-    return NextResponse.json({ message: 'Cancha eliminada correctamente' })
+    return NextResponse.json({ message: 'Cancha desactivada correctamente' })
   } catch (error) {
-    logger.error('Delete court error:', error)
-    return NextResponse.json({ error: 'Error al eliminar cancha' }, { status: 500 })
+    logger.error('Provider delete court error:', error)
+    return NextResponse.json({ error: 'Error al desactivar cancha' }, { status: 500 })
   }
 }

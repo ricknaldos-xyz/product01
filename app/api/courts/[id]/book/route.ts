@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
+import { createNotification } from '@/lib/notifications'
 import { z } from 'zod'
 
 const bookingSchema = z.object({
@@ -94,6 +95,18 @@ export async function POST(
         notes,
       },
     })
+
+    // Notify court owner about new booking request
+    if (court.ownerId) {
+      await createNotification({
+        userId: court.ownerId,
+        type: 'BOOKING_REQUESTED',
+        title: 'Nueva reserva de cancha',
+        body: `Reserva para ${court.name} el ${bookingDate.toLocaleDateString('es-PE')} de ${startTime} a ${endTime}`,
+        referenceId: booking.id,
+        referenceType: 'court_booking',
+      }).catch((err) => logger.error('Failed to create booking notification:', err))
+    }
 
     return NextResponse.json(booking, { status: 201 })
   } catch (error) {

@@ -27,14 +27,14 @@ const createCourtSchema = z.object({
   operatingHours: z.any().optional(),
 })
 
-// GET - List all courts (admin)
+// GET - List courts owned by current user
 export async function GET(request: NextRequest) {
   try {
     const session = await auth()
     if (!session?.user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
-    if (session.user.role !== 'ADMIN') {
+    if (!session.user.isProvider) {
       return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
     }
 
@@ -43,19 +43,21 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '20')))
     const skip = (page - 1) * limit
 
+    const where = { ownerId: session.user.id }
+
     const [courts, total] = await Promise.all([
       prisma.court.findMany({
+        where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
         include: {
-          owner: { select: { id: true, name: true, email: true } },
           _count: {
             select: { bookings: true },
           },
         },
       }),
-      prisma.court.count(),
+      prisma.court.count({ where }),
     ])
 
     return NextResponse.json({
@@ -68,19 +70,19 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    logger.error('Admin list courts error:', error)
+    logger.error('Provider list courts error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
 
-// POST - Create a court (admin)
+// POST - Create a new court owned by current user
 export async function POST(request: NextRequest) {
   try {
     const session = await auth()
     if (!session?.user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
-    if (session.user.role !== 'ADMIN') {
+    if (!session.user.isProvider) {
       return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
     }
 
@@ -95,12 +97,15 @@ export async function POST(request: NextRequest) {
     }
 
     const court = await prisma.court.create({
-      data: parsed.data,
+      data: {
+        ...parsed.data,
+        ownerId: session.user.id,
+      },
     })
 
     return NextResponse.json(court, { status: 201 })
   } catch (error) {
-    logger.error('Create court error:', error)
+    logger.error('Provider create court error:', error)
     return NextResponse.json({ error: 'Error al crear cancha' }, { status: 500 })
   }
 }

@@ -19,6 +19,9 @@ import {
   Shield,
   BarChart3,
   UserCheck,
+  Building2,
+  ClipboardList,
+  Inbox,
 } from 'lucide-react'
 
 export interface NavItem {
@@ -61,11 +64,20 @@ export const coachNavigation: NavItem[] = [
   { name: 'Mis Alumnos', href: '/coach/students', icon: Users, tourId: 'coach-students' },
 ]
 
+export const providerCourtNavigation: NavItem[] = [
+  { name: 'Mis Canchas', href: '/provider/courts', icon: MapPin, tourId: 'provider-courts' },
+]
+
+export const providerWorkshopNavigation: NavItem[] = [
+  { name: 'Mis Talleres', href: '/provider/workshops', icon: Wrench, tourId: 'provider-workshops' },
+]
+
 export const adminNavigation: NavItem[] = [
   { name: 'Admin Panel', href: '/admin', icon: Shield, tourId: 'admin' },
   { name: 'Usuarios', href: '/admin/users', icon: Users, tourId: 'admin-users' },
   { name: 'Analiticas', href: '/admin/analytics', icon: BarChart3, tourId: 'admin-analytics' },
   { name: 'Coaches', href: '/admin/coaches', icon: UserCheck, tourId: 'admin-coaches' },
+  { name: 'Proveedores', href: '/admin/providers', icon: Building2, tourId: 'admin-providers' },
   { name: 'Tienda', href: '/admin/tienda', icon: ShoppingBag, tourId: 'admin-shop' },
   { name: 'Encordado', href: '/admin/encordado', icon: Wrench, tourId: 'admin-stringing' },
   { name: 'Canchas', href: '/admin/courts', icon: MapPin, tourId: 'admin-courts' },
@@ -79,6 +91,8 @@ export interface NavSection {
 interface SessionUser {
   hasPlayerProfile?: boolean
   hasCoachProfile?: boolean
+  isProvider?: boolean
+  providerTypes?: string[]
   role?: string
 }
 
@@ -98,7 +112,21 @@ export function getNavigationSections(user: SessionUser | undefined, sportLabel:
 
   // Coach management
   if (user?.hasCoachProfile) {
-    sections.push({ items: coachNavigation, label: 'Gestion Coach' })
+    sections.push({ items: [...coachNavigation, { name: 'Solicitudes', href: '/coach/requests', icon: Inbox, tourId: 'coach-requests' }], label: 'Gestion Coach' })
+  }
+
+  // Provider management
+  if (user?.isProvider) {
+    const providerItems: NavItem[] = []
+    if (user.providerTypes?.includes('COURT')) {
+      providerItems.push(...providerCourtNavigation)
+    }
+    if (user.providerTypes?.includes('WORKSHOP')) {
+      providerItems.push(...providerWorkshopNavigation)
+    }
+    if (providerItems.length > 0) {
+      sections.push({ items: providerItems, label: 'Proveedor' })
+    }
   }
 
   // Admin

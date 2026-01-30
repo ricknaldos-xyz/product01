@@ -159,6 +159,23 @@ enum NotificationType {
   BADGE_EARNED
   COACH_INVITATION
   TIER_PROMOTION
+  // Provider lifecycle
+  PROVIDER_APPLICATION_SUBMITTED
+  PROVIDER_APPROVED
+  PROVIDER_REJECTED
+  // Booking lifecycle
+  BOOKING_REQUESTED
+  BOOKING_CONFIRMED
+  BOOKING_REJECTED
+  BOOKING_CANCELLED
+  // Stringing lifecycle
+  STRINGING_STATUS_UPDATE
+  STRINGING_COMPLETED
+  STRINGING_READY_FOR_PICKUP
+  // Coach request lifecycle
+  COACH_REQUEST_RECEIVED
+  COACH_REQUEST_ACCEPTED
+  COACH_REQUEST_DECLINED
 }
 
 enum FeedItemType {
@@ -199,6 +216,7 @@ enum CoachVerificationStatus {
 
 enum CoachStudentStatus {
   PENDING_INVITE
+  PENDING_REQUEST
   ACTIVE
   PAUSED
   ENDED
@@ -274,6 +292,44 @@ enum ChunkCategory {
 }
 
 // ============================================
+// PROVIDER MARKETPLACE
+// ============================================
+
+enum ProviderType {
+  COURT
+  WORKSHOP
+}
+
+enum ProviderStatus {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+model ProviderApplication {
+  id            String         @id @default(cuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          ProviderType
+  status        ProviderStatus @default(PENDING_APPROVAL)
+  businessName  String
+  businessPhone String
+  businessEmail String?
+  description   String?
+  documentUrls  String[]       @default([])
+  reviewedAt    DateTime?
+  reviewNotes   String?
+  reviewedBy    String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@unique([userId, type])
+  @@index([status, type])
+  @@map("provider_applications")
+}
+
+// ============================================
 // USER & AUTH
 // ============================================
 
@@ -330,6 +386,11 @@ model User {
   shopOrders      ShopOrder[]
   stringingOrders StringingOrder[]
   productReviews  ProductReview[]
+
+  // Provider
+  providerApplications ProviderApplication[]
+  ownedCourts          Court[]               @relation("OwnedCourts")
+  ownedWorkshops       Workshop[]            @relation("OwnedWorkshops")
 
   // Courts
   courtBookings CourtBooking[]
@@ -1569,11 +1630,16 @@ model Workshop {
 
   operatingHours Json? // { mon: "9:00-18:00", ... }
 
+  // Provider ownership
+  ownerId String?
+  owner   User?   @relation("OwnedWorkshops", fields: [ownerId], references: [id], onDelete: SetNull)
+
   stringingOrders StringingOrder[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([ownerId])
   @@map("workshops")
 }
 
@@ -1662,7 +1728,9 @@ enum CourtType {
 
 enum BookingStatus {
   PENDING
+  PENDING_PAYMENT
   CONFIRMED
+  REJECTED
   CANCELLED
 }
 
@@ -1687,12 +1755,18 @@ model Court {
   amenities      String[]
   isActive       Boolean      @default(true)
   operatingHours Json?
-  bookings       CourtBooking[]
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+
+  // Provider ownership
+  ownerId String?
+  owner   User?   @relation("OwnedCourts", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  bookings  CourtBooking[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@index([city, district, isActive])
   @@index([surface])
+  @@index([ownerId])
   @@map("courts")
 }
 
@@ -1707,7 +1781,18 @@ model CourtBooking {
   endTime   String
   status    BookingStatus @default(PENDING)
   notes     String?
-  createdAt DateTime      @default(now())
+
+  // Confirmation flow
+  confirmationNote String?
+  confirmedAt      DateTime?
+  rejectedAt       DateTime?
+
+  // Payment
+  totalCents    Int?
+  culqiChargeId String?
+  paidAt        DateTime?
+
+  createdAt DateTime @default(now())
 
   @@index([courtId, date])
   @@index([userId])

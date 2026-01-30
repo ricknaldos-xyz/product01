@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
+import { createNotification } from '@/lib/notifications'
 import { z } from 'zod'
 import { StringingOrderStatus } from '@prisma/client'
 import { STRINGING_ORDER_TRANSITIONS, isValidTransition } from '@/lib/order-transitions'
@@ -109,10 +110,42 @@ export async function PATCH(
       where: { id },
       data,
       include: {
-        user: { select: { name: true, email: true } },
+        user: { select: { id: true, name: true, email: true } },
         workshop: { select: { name: true } },
       },
     })
+
+    // Send notification to the user on status changes
+    if (parsed.data.status) {
+      const statusMessages: Record<string, string> = {
+        CONFIRMED: 'Tu pedido de encordado ha sido confirmado',
+        RECEIVED_AT_WORKSHOP: 'Tu raqueta fue recibida en el taller',
+        IN_PROGRESS: 'Tu raqueta esta siendo encordada',
+        STRINGING_COMPLETED: 'El encordado de tu raqueta ha sido completado',
+        READY_FOR_PICKUP: 'Tu raqueta esta lista para recoger',
+        OUT_FOR_DELIVERY: 'Tu raqueta esta en camino',
+        DELIVERED: 'Tu raqueta ha sido entregada',
+        STRINGING_CANCELLED: 'Tu pedido de encordado ha sido cancelado',
+      }
+
+      const notifType = parsed.data.status === 'STRINGING_COMPLETED'
+        ? 'STRINGING_COMPLETED' as const
+        : parsed.data.status === 'READY_FOR_PICKUP'
+          ? 'STRINGING_READY_FOR_PICKUP' as const
+          : 'STRINGING_STATUS_UPDATE' as const
+
+      const body = statusMessages[parsed.data.status]
+      if (body) {
+        await createNotification({
+          userId: order.user.id,
+          type: notifType,
+          title: 'Actualizacion de encordado',
+          body: `${body} (${order.orderNumber})`,
+          referenceId: order.id,
+          referenceType: 'stringing_order',
+        }).catch((err) => logger.error('Failed to create stringing notification:', err))
+      }
+    }
 
     return NextResponse.json(order)
   } catch (error) {

@@ -5,7 +5,7 @@ import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const updateStudentSchema = z.object({
-  status: z.enum(['PENDING_INVITE', 'ACTIVE', 'PAUSED', 'ENDED']).optional(),
+  status: z.enum(['PENDING_INVITE', 'PENDING_REQUEST', 'ACTIVE', 'PAUSED', 'ENDED']).optional(),
   canViewAnalyses: z.boolean().optional(),
   canAssignPlans: z.boolean().optional(),
 })
