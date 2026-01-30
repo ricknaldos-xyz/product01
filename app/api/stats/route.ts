@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 export async function GET() {
   try {
@@ -125,7 +126,7 @@ export async function GET() {
       progressData,
     })
   } catch (error) {
-    console.error('Stats error:', error)
+    logger.error('Stats error:', error)
     return NextResponse.json(
       { error: 'Error al obtener estadisticas' },
       { status: 500 }

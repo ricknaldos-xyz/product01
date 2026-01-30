@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { getCulqiClient } from '@/lib/culqi'
 
@@ -75,14 +76,14 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ success: true, orderId: order.id })
     } catch (chargeError) {
-      console.error('Culqi charge failed:', chargeError)
+      logger.error('Culqi charge failed:', chargeError)
       return NextResponse.json(
         { error: 'Error al procesar el pago. Intenta de nuevo.' },
         { status: 400 }
       )
     }
   } catch (error) {
-    console.error('Stringing checkout error:', error)
+    logger.error('Stringing checkout error:', error)
     return NextResponse.json(
       { error: 'Error al crear sesion de pago' },
       { status: 500 }

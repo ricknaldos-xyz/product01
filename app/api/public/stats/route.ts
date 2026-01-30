@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Public stats (no auth required)
 export async function GET() {
@@ -20,7 +21,7 @@ export async function GET() {
       coaches,
     })
   } catch (error) {
-    console.error('Public stats error:', error)
+    logger.error('Public stats error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

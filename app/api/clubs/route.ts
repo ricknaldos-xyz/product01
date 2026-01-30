@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const createClubSchema = z.object({
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(club, { status: 201 })
   } catch (error) {
-    console.error('Create club error:', error)
+    logger.error('Create club error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -96,7 +97,7 @@ export async function GET(request: NextRequest) {
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
-    console.error('List clubs error:', error)
+    logger.error('List clubs error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

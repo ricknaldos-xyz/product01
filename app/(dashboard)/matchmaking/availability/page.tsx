@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
+import { logger } from '@/lib/logger'
 import { GlassInput } from '@/components/ui/glass-input'
 import { Clock, Plus, Trash2, Loader2, Save } from 'lucide-react'
 import { toast } from 'sonner'
@@ -51,7 +52,7 @@ export default function AvailabilityPage() {
         setSlots(data)
       }
     } catch {
-      console.error('Failed to fetch availability')
+      logger.error('Failed to fetch availability')
     } finally {
       setLoading(false)
     }

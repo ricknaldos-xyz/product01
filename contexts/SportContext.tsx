@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import { useSession } from 'next-auth/react'
+import { logger } from '@/lib/logger'
 
 interface SportInfo {
   id: string
@@ -56,7 +57,7 @@ export function SportProvider({ children }: { children: ReactNode }) {
         const saved = data.find((s) => s.slug === savedSlug)
         setActiveSportState(saved ?? data[0] ?? null)
       } catch (error) {
-        console.error('[SportContext] Failed to fetch sports:', error)
+        logger.error('[SportContext] Failed to fetch sports:', error)
       } finally {
         if (!cancelled) setIsLoading(false)
       }

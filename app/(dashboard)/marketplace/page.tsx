@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { GlassCard } from '@/components/ui/glass-card'
+import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GraduationCap, Star, MapPin, Loader2, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -36,7 +37,7 @@ export default function MarketplacePage() {
           setCoaches(data.coaches)
         }
       } catch {
-        console.error('Failed to fetch coaches')
+        logger.error('Failed to fetch coaches')
       } finally {
         setLoading(false)
       }

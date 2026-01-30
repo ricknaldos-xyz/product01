@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const createAnalysisSchema = z.object({
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(analysis, { status: 201 })
   } catch (error) {
-    console.error('Create analysis error:', error)
+    logger.error('Create analysis error:', error)
     return NextResponse.json(
       { error: 'Error al crear analisis' },
       { status: 500 }
@@ -138,7 +139,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fetch analyses error:', error)
+    logger.error('Fetch analyses error:', error)
     return NextResponse.json(
       { error: 'Error al obtener analisis' },
       { status: 500 }

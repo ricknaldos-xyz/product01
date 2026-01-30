@@ -1,3 +1,5 @@
+import { logger } from '@/lib/logger'
+
 const EMBEDDING_MODEL = 'gemini-embedding-001'
 const OUTPUT_DIMENSIONS = 768  // Match pgvector column: vector(768)
 const BATCH_SIZE = 5  // Small batches to avoid rate limits
@@ -32,7 +34,7 @@ async function callEmbedApi(text: string, retryCount = 0): Promise<number[]> {
     // Retry on 429 (rate limit) with exponential backoff
     if (response.status === 429 && retryCount < MAX_RETRIES) {
       const backoffMs = Math.pow(2, retryCount + 1) * 5000 // 10s, 20s, 40s
-      console.warn(`Embedding rate limited (429), retrying in ${backoffMs / 1000}s (attempt ${retryCount + 1}/${MAX_RETRIES})`)
+      logger.warn(`Embedding rate limited (429), retrying in ${backoffMs / 1000}s (attempt ${retryCount + 1}/${MAX_RETRIES})`)
       await delay(backoffMs)
       return callEmbedApi(text, retryCount + 1)
     }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { generateBracket } from '@/lib/tournaments'
 
 // POST - Start tournament (generate bracket)
@@ -41,7 +42,7 @@ export async function POST(
 
     return NextResponse.json({ message: 'Torneo iniciado y bracket generado' })
   } catch (error) {
-    console.error('Start tournament error:', error)
+    logger.error('Start tournament error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Error interno del servidor' },
       { status: 500 }

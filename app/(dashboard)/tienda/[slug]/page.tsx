@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { logger } from '@/lib/logger'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
@@ -65,7 +66,7 @@ export default function ProductDetailPage() {
         router.push('/tienda')
       }
     } catch {
-      console.error('Failed to fetch product')
+      logger.error('Failed to fetch product')
     } finally {
       setLoading(false)
     }

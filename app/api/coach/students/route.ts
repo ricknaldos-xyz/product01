@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - List coach's students
 export async function GET() {
@@ -40,7 +41,7 @@ export async function GET() {
 
     return NextResponse.json(students)
   } catch (error) {
-    console.error('List students error:', error)
+    logger.error('List students error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

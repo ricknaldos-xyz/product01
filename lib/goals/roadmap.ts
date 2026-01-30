@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { getGeminiClient } from '@/lib/gemini/client'
 import { retrieveRelevantChunks } from '@/lib/rag/retriever'
 import { buildRagContext } from '@/lib/rag/context-builder'
@@ -211,13 +212,13 @@ export async function generateGoalRoadmap(
     }
 
     if (!validateRoadmap(roadmap)) {
-      console.warn('Gemini returned invalid roadmap structure, using default')
+      logger.warn('Gemini returned invalid roadmap structure, using default')
       return getDefaultRoadmap(goal)
     }
 
     return roadmap
   } catch (error) {
-    console.error('Failed to generate goal roadmap:', error)
+    logger.error('Failed to generate goal roadmap:', error)
     return getDefaultRoadmap(goal)
   }
 }

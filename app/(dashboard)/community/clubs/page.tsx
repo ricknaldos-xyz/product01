@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Users, Loader2, Globe, Lock } from 'lucide-react'
+import { logger } from '@/lib/logger'
 import Link from 'next/link'
 
 interface Club {
@@ -28,7 +29,7 @@ export default function ClubsPage() {
           setClubs(data.clubs ?? data)
         }
       } catch {
-        console.error('Failed to fetch clubs')
+        logger.error('Failed to fetch clubs')
       } finally {
         setLoading(false)
       }

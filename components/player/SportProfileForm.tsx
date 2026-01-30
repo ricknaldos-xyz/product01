@@ -5,6 +5,7 @@ import { GlassButton } from '@/components/ui/glass-button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Label } from '@/components/ui/label'
 import { Loader2 } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
 interface ConfigField {
   key: string
@@ -56,13 +57,13 @@ export function SportProfileForm({
 
       if (!res.ok) {
         const data = await res.json()
-        console.error('Error saving sport profile:', data.error)
+        logger.error('Error saving sport profile:', data.error)
         return
       }
 
       onSaved?.()
     } catch (error) {
-      console.error('Error saving sport profile:', error)
+      logger.error('Error saving sport profile:', error)
     } finally {
       setIsLoading(false)
     }

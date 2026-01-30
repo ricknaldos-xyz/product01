@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { getCulqiClient } from '@/lib/culqi'
 
 // DELETE - Cancel subscription
@@ -39,7 +40,7 @@ export async function DELETE() {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Cancel subscription error:', error)
+    logger.error('Cancel subscription error:', error)
     return NextResponse.json(
       { error: 'Error al cancelar suscripcion' },
       { status: 500 }
@@ -70,7 +71,7 @@ export async function GET() {
       periodEnd: user?.culqiCurrentPeriodEnd,
     })
   } catch (error) {
-    console.error('Get subscription info error:', error)
+    logger.error('Get subscription info error:', error)
     return NextResponse.json(
       { error: 'Error al obtener info' },
       { status: 500 }

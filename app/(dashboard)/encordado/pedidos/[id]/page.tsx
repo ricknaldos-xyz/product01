@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { GlassCard } from '@/components/ui/glass-card'
+import { logger } from '@/lib/logger'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import { StringingStatusTracker } from '@/components/stringing/StringingStatusTracker'
 import { formatPrice } from '@/lib/shop'
@@ -89,7 +90,7 @@ export default function PedidoDetailPage() {
           setOrder(data)
         }
       } catch {
-        console.error('Error fetching order detail')
+        logger.error('Error fetching order detail')
       } finally {
         setLoading(false)
       }

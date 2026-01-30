@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { StringingOrderStatus } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
@@ -54,7 +55,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error al listar ordenes de encordado:', error)
+    logger.error('Error al listar ordenes de encordado:', error)
     return NextResponse.json({ error: 'Error al listar ordenes de encordado' }, { status: 500 })
   }
 }

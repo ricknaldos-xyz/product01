@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Get tournament by ID (public, no auth)
 export async function GET(
@@ -43,7 +44,7 @@ export async function GET(
 
     return NextResponse.json(tournament)
   } catch (error) {
-    console.error('Get tournament error:', error)
+    logger.error('Get tournament error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

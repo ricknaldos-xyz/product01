@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { GlassCard } from '@/components/ui/glass-card'
+import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
 import AdminStringingTable from '@/components/admin/AdminStringingTable'
 import { Loader2, Wrench, CheckCircle, Clock, Search, Building2 } from 'lucide-react'
@@ -65,7 +66,7 @@ export default function AdminEncordadoPage() {
         })
       }
     } catch (error) {
-      console.error('Error al cargar ordenes:', error)
+      logger.error('Error al cargar ordenes:', error)
     } finally {
       setLoading(false)
     }

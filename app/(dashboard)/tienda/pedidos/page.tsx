@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { logger } from '@/lib/logger'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { OrderStatusBadge } from '@/components/shop/OrderStatusBadge'
@@ -45,7 +46,7 @@ export default function PedidosPage() {
         setOrders(data.orders)
       }
     } catch {
-      console.error('Failed to fetch orders')
+      logger.error('Failed to fetch orders')
     } finally {
       setLoading(false)
     }

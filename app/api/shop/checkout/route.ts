@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { checkoutLimiter } from '@/lib/rate-limit'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { getCulqiClient } from '@/lib/culqi'
 import { Prisma } from '@prisma/client'
@@ -206,7 +207,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ success: true, orderId: order.id })
     } catch (chargeError) {
-      console.error('Culqi charge failed:', chargeError)
+      logger.error('Culqi charge failed:', chargeError)
 
       // Revert stock and delete order
       for (const item of order.items) {
@@ -224,7 +225,7 @@ export async function POST(request: NextRequest) {
       )
     }
   } catch (error) {
-    console.error('Checkout error:', error)
+    logger.error('Checkout error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

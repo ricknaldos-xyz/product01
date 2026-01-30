@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const abandonSchema = z.object({
@@ -74,7 +75,7 @@ export async function GET(
 
     return NextResponse.json(goal)
   } catch (error) {
-    console.error('Get goal error:', error)
+    logger.error('Get goal error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -139,7 +140,7 @@ export async function PATCH(
 
     return NextResponse.json(updated)
   } catch (error) {
-    console.error('Abandon goal error:', error)
+    logger.error('Abandon goal error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

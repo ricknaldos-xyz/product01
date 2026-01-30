@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const updateWorkshopSchema = z.object({
@@ -52,7 +53,7 @@ export async function PATCH(
 
     return NextResponse.json(workshop)
   } catch (error) {
-    console.error('Error al actualizar taller:', error)
+    logger.error('Error al actualizar taller:', error)
     return NextResponse.json({ error: 'Error al actualizar taller' }, { status: 500 })
   }
 }
@@ -84,7 +85,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Taller desactivado correctamente' })
   } catch (error) {
-    console.error('Error al desactivar taller:', error)
+    logger.error('Error al desactivar taller:', error)
     return NextResponse.json({ error: 'Error al desactivar taller' }, { status: 500 })
   }
 }

@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import { getGeminiClient } from '@/lib/gemini/client'
 import { buildExerciseEnrichmentPrompt } from './prompts/exercise-enrichment'
@@ -26,7 +27,7 @@ export async function enrichExercisesWithStructuredContent(
   }
   const uniqueExercises = Array.from(uniqueMap.values())
 
-  console.log(`Enriching ${uniqueExercises.length} unique exercises (from ${exercises.length} total)`)
+  logger.info(`Enriching ${uniqueExercises.length} unique exercises (from ${exercises.length} total)`)
 
   const genAI = getGeminiClient()
   const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
@@ -92,7 +93,7 @@ export async function enrichExercisesWithStructuredContent(
         enrichmentMap.set(exercise.name, structured)
       }
     } catch (parseError) {
-      console.error('Failed to parse enrichment batch:', parseError)
+      logger.error('Failed to parse enrichment batch:', parseError)
     }
   }
 
@@ -109,6 +110,6 @@ export async function enrichExercisesWithStructuredContent(
 
   if (updates.length > 0) {
     await Promise.all(updates)
-    console.log(`Enriched ${updates.length} exercises with structured content`)
+    logger.info(`Enriched ${updates.length} exercises with structured content`)
   }
 }

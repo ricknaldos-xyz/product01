@@ -5,6 +5,7 @@ import { Flame, Snowflake, Trophy } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassBadge } from '@/components/ui/glass-badge'
+import { logger } from '@/lib/logger'
 
 interface UserStreak {
   id: string
@@ -44,7 +45,7 @@ export function StreakWidget({ compact = false }: StreakWidgetProps) {
           }
         }
       } catch (error) {
-        console.error('Failed to fetch streak:', error)
+        logger.error('Failed to fetch streak:', error)
       } finally {
         setLoading(false)
       }

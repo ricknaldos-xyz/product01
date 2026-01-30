@@ -7,6 +7,7 @@ import { GlassBadge } from '@/components/ui/glass-badge'
 import { StarRating } from './StarRating'
 import { Loader2, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { logger } from '@/lib/logger'
 
 interface Review {
   id: string
@@ -44,7 +45,7 @@ export function ProductReviews({ productSlug, productId }: ProductReviewsProps) 
         setReviews(data.reviews)
       }
     } catch {
-      console.error('Failed to fetch reviews')
+      logger.error('Failed to fetch reviews')
     } finally {
       setLoading(false)
     }

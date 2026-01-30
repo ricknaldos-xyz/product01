@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Club detail
 export async function GET(
@@ -39,7 +40,7 @@ export async function GET(
 
     return NextResponse.json(club)
   } catch (error) {
-    console.error('Get club error:', error)
+    logger.error('Get club error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 export async function GET(
   request: NextRequest,
@@ -40,7 +41,7 @@ export async function GET(
       techniques: sport.techniques,
     })
   } catch (error) {
-    console.error('Error fetching techniques:', error)
+    logger.error('Error fetching techniques:', error)
     return NextResponse.json(
       { error: 'Error al obtener tecnicas' },
       { status: 500 }

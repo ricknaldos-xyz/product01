@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { GlassCard } from '@/components/ui/glass-card'
+import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import {
@@ -69,7 +70,7 @@ export default function BookingsPage() {
         setPagination(data.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 })
       }
     } catch (error) {
-      console.error('Error fetching bookings:', error)
+      logger.error('Error fetching bookings:', error)
     } finally {
       setLoading(false)
     }

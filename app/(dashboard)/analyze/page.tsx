@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { GlassButton } from '@/components/ui/glass-button'
+import { logger } from '@/lib/logger'
 import { GlassCard } from '@/components/ui/glass-card'
 import { toast } from 'sonner'
 import {
@@ -239,7 +240,7 @@ export default function AnalyzePage() {
       if (!detRes.ok) {
         const errBody = await detRes.json().catch(() => null)
         const msg = errBody?.error || `Error ${detRes.status}`
-        console.error('detect-technique failed:', detRes.status, msg)
+        logger.error('detect-technique failed:', detRes.status, msg)
         throw new Error(msg)
       }
 

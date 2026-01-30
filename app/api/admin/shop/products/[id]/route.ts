@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { ProductCategory } from '@prisma/client'
 
@@ -60,7 +61,7 @@ export async function GET(
 
     return NextResponse.json(product)
   } catch (error) {
-    console.error('Error al obtener producto:', error)
+    logger.error('Error al obtener producto:', error)
     return NextResponse.json({ error: 'Error al obtener producto' }, { status: 500 })
   }
 }
@@ -101,7 +102,7 @@ export async function PATCH(
 
     return NextResponse.json(product)
   } catch (error) {
-    console.error('Error al actualizar producto:', error)
+    logger.error('Error al actualizar producto:', error)
     return NextResponse.json({ error: 'Error al actualizar producto' }, { status: 500 })
   }
 }
@@ -133,7 +134,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Producto desactivado correctamente' })
   } catch (error) {
-    console.error('Error al desactivar producto:', error)
+    logger.error('Error al desactivar producto:', error)
     return NextResponse.json({ error: 'Error al desactivar producto' }, { status: 500 })
   }
 }

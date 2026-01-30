@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 export async function GET() {
   try {
@@ -45,7 +46,7 @@ export async function GET() {
       },
     })
   } catch (error) {
-    console.error('Error al obtener inventario:', error)
+    logger.error('Error al obtener inventario:', error)
     return NextResponse.json({ error: 'Error al obtener inventario' }, { status: 500 })
   }
 }

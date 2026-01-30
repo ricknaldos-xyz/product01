@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Image from 'next/image'
+import { logger } from '@/lib/logger'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { TierBadge } from '@/components/player/TierBadge'
@@ -75,7 +76,7 @@ export default function StudentDetailPage() {
           setAnalyses(data)
         }
       } catch {
-        console.error('Failed to fetch student data')
+        logger.error('Failed to fetch student data')
       } finally {
         setLoading(false)
       }

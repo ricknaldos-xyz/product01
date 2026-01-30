@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { GlassButton } from '@/components/ui/glass-button'
+import { logger } from '@/lib/logger'
 import { ProductGrid } from '@/components/shop/ProductGrid'
 import { ProductFilters } from '@/components/shop/ProductFilters'
 import { SearchBar } from '@/components/shop/SearchBar'
@@ -56,7 +57,7 @@ export default function TiendaPage() {
         setTotalPages(data.totalPages)
       }
     } catch {
-      console.error('Failed to fetch products')
+      logger.error('Failed to fetch products')
     } finally {
       setLoading(false)
     }

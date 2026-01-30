@@ -5,6 +5,7 @@ import { BadgeCard } from './BadgeCard'
 import { BADGE_DEFINITIONS, BadgeDefinition } from '@/lib/badges'
 import { BadgeType } from '@prisma/client'
 import { Loader2 } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
 interface UserBadge {
   id: string
@@ -26,7 +27,7 @@ export function BadgesGrid() {
           setBadges(data)
         }
       } catch (error) {
-        console.error('Failed to fetch badges:', error)
+        logger.error('Failed to fetch badges:', error)
       } finally {
         setLoading(false)
       }

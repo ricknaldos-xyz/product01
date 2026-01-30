@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const addItemSchema = z.object({
@@ -136,7 +137,7 @@ export async function POST(request: NextRequest) {
       itemCount: activeItems.reduce((sum, item) => sum + item.quantity, 0),
     })
   } catch (error) {
-    console.error('Add to cart error:', error)
+    logger.error('Add to cart error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

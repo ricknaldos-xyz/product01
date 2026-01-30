@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Get pending peer reviews (auth required)
 export async function GET() {
@@ -53,7 +54,7 @@ export async function GET() {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Pending reviews error:', error)
+    logger.error('Pending reviews error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

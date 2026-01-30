@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const imageSchema = z.object({
@@ -49,7 +50,7 @@ export async function POST(
 
     return NextResponse.json({ images: updated.images })
   } catch (error) {
-    console.error('Error al agregar imagen:', error)
+    logger.error('Error al agregar imagen:', error)
     return NextResponse.json({ error: 'Error al agregar imagen' }, { status: 500 })
   }
 }
@@ -92,7 +93,7 @@ export async function DELETE(
 
     return NextResponse.json({ images: updated.images })
   } catch (error) {
-    console.error('Error al eliminar imagen:', error)
+    logger.error('Error al eliminar imagen:', error)
     return NextResponse.json({ error: 'Error al eliminar imagen' }, { status: 500 })
   }
 }

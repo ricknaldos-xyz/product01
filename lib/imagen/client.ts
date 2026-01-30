@@ -1,3 +1,5 @@
+import { logger } from '@/lib/logger'
+
 const IMAGEN_API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:predict'
 
@@ -43,9 +45,9 @@ export async function generateExerciseImage(
       const errorMsg = errorData?.error?.message || `HTTP ${response.status}`
       // Don't spam logs for billing-related errors
       if (response.status === 400 || response.status === 403) {
-        console.warn('Imagen API not available (billing required):', errorMsg)
+        logger.warn('Imagen API not available (billing required):', errorMsg)
       } else {
-        console.error('Imagen API error:', errorMsg)
+        logger.error('Imagen API error:', errorMsg)
       }
       return null
     }
@@ -53,7 +55,7 @@ export async function generateExerciseImage(
     const data = (await response.json()) as ImagenResponse
 
     if (data.error) {
-      console.error('Imagen error:', data.error.message)
+      logger.error('Imagen error:', data.error.message)
       return null
     }
 
@@ -63,7 +65,7 @@ export async function generateExerciseImage(
 
     return Buffer.from(data.predictions[0].bytesBase64Encoded, 'base64')
   } catch (error) {
-    console.error('Imagen generation failed:', error)
+    logger.error('Imagen generation failed:', error)
     return null
   }
 }

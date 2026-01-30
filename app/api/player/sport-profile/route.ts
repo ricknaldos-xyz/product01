@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const sportProfileSchema = z.object({
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(sportProfile)
   } catch (error) {
-    console.error('Sport profile error:', error)
+    logger.error('Sport profile error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
@@ -124,7 +125,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(sportProfile)
   } catch (error) {
-    console.error('Get sport profile error:', error)
+    logger.error('Get sport profile error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

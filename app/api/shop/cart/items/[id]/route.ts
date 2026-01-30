@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const updateSchema = z.object({
@@ -62,7 +63,7 @@ export async function PATCH(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Update cart item error:', error)
+    logger.error('Update cart item error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
@@ -103,7 +104,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Delete cart item error:', error)
+    logger.error('Delete cart item error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

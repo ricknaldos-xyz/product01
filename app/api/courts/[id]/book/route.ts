@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const bookingSchema = z.object({
@@ -96,7 +97,7 @@ export async function POST(
 
     return NextResponse.json(booking, { status: 201 })
   } catch (error) {
-    console.error('Create booking error:', error)
+    logger.error('Create booking error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

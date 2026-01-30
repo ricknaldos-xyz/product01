@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { CourtSurface, CourtType } from '@prisma/client'
 
 // GET - List courts (public)
@@ -67,7 +68,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('List courts error:', error)
+    logger.error('List courts error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

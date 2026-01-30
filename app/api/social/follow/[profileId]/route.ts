@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { isBlocked } from '@/lib/blocks'
 import { createNotification } from '@/lib/notifications'
 
@@ -72,14 +73,14 @@ export async function POST(
       body: 'Alguien empezo a seguir tu perfil',
       referenceId: myProfile.id,
       referenceType: 'profile',
-    }).catch(console.error)
+    }).catch((e) => logger.error('Failed to create new follower notification', e))
 
     return NextResponse.json({ followed: true }, { status: 201 })
   } catch (error) {
     if ((error as { code?: string }).code === 'P2002') {
       return NextResponse.json({ error: 'Ya sigues a este jugador' }, { status: 400 })
     }
-    console.error('Follow error:', error)
+    logger.error('Follow error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -135,7 +136,7 @@ export async function DELETE(
     if (error instanceof Error && error.message === 'NOT_FOLLOWING') {
       return NextResponse.json({ error: 'No sigues a este jugador' }, { status: 400 })
     }
-    console.error('Unfollow error:', error)
+    logger.error('Unfollow error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Get or create user cart
 export async function GET() {
@@ -55,7 +56,7 @@ export async function GET() {
       itemCount: activeItems.reduce((sum, item) => sum + item.quantity, 0),
     })
   } catch (error) {
-    console.error('Get cart error:', error)
+    logger.error('Get cart error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

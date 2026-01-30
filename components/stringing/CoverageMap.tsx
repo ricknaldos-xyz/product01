@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import { Loader2, MapPin } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
 interface CoverageData {
   districts: string[]
@@ -23,7 +24,7 @@ export function CoverageMap() {
           setCoverage(data)
         }
       } catch {
-        console.error('Error fetching coverage')
+        logger.error('Error fetching coverage')
       } finally {
         setLoading(false)
       }

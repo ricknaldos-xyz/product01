@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { logger } from '@/lib/logger'
 import Link from 'next/link'
 import { GlassCard } from '@/components/ui/glass-card'
 import { CheckoutForm } from '@/components/shop/CheckoutForm'
@@ -59,7 +60,7 @@ export default function CheckoutPage() {
         }
       }
     } catch {
-      console.error('Failed to fetch cart')
+      logger.error('Failed to fetch cart')
     } finally {
       setLoading(false)
     }

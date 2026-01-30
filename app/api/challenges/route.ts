@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { challengeLimiter } from '@/lib/rate-limit'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { Prisma } from '@prisma/client'
 import { isBlocked } from '@/lib/blocks'
 import { z } from 'zod'
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(challenge, { status: 201 })
   } catch (error) {
-    console.error('Create challenge error:', error)
+    logger.error('Create challenge error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -191,7 +192,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('List challenges error:', error)
+    logger.error('List challenges error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

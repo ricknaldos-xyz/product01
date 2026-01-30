@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { logger } from '@/lib/logger'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { OrderStatusBadge } from '@/components/shop/OrderStatusBadge'
@@ -51,7 +52,7 @@ export default function CheckoutSuccessPage() {
         setOrder(data.order)
       }
     } catch {
-      console.error('Failed to fetch order')
+      logger.error('Failed to fetch order')
     } finally {
       setLoading(false)
     }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const reviewSchema = z.object({
@@ -41,7 +42,7 @@ export async function GET(
 
     return NextResponse.json({ reviews })
   } catch (error) {
-    console.error('Get reviews error:', error)
+    logger.error('Get reviews error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
@@ -132,7 +133,7 @@ export async function POST(
 
     return NextResponse.json({ review }, { status: 201 })
   } catch (error) {
-    console.error('Create review error:', error)
+    logger.error('Create review error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { GlassCard } from '@/components/ui/glass-card'
+import { logger } from '@/lib/logger'
 
 interface ActivityDay {
   date: string
@@ -73,7 +74,7 @@ export function ActivityHeatmap() {
           setTotalDays(data.length)
         }
       } catch (error) {
-        console.error('Failed to fetch activity:', error)
+        logger.error('Failed to fetch activity:', error)
       } finally {
         setLoading(false)
       }

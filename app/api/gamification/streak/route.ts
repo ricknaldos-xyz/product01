@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 export async function GET() {
   try {
@@ -27,7 +28,7 @@ export async function GET() {
 
     return NextResponse.json(streak)
   } catch (error) {
-    console.error('Get streak error:', error)
+    logger.error('Get streak error:', error)
     return NextResponse.json(
       { error: 'Error al obtener racha' },
       { status: 500 }
@@ -124,7 +125,7 @@ export async function POST() {
 
     return NextResponse.json(streak)
   } catch (error) {
-    console.error('Update streak error:', error)
+    logger.error('Update streak error:', error)
     return NextResponse.json(
       { error: 'Error al actualizar racha' },
       { status: 500 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 
@@ -61,7 +62,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Change password error:', error)
+    logger.error('Change password error:', error)
     return NextResponse.json(
       { error: 'Error al cambiar contrasena' },
       { status: 500 }

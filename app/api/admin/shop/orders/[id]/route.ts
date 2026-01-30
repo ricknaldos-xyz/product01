@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { OrderStatus } from '@prisma/client'
 import { SHOP_ORDER_TRANSITIONS, isValidTransition } from '@/lib/order-transitions'
@@ -44,7 +45,7 @@ export async function GET(
 
     return NextResponse.json(order)
   } catch (error) {
-    console.error('Error al obtener pedido:', error)
+    logger.error('Error al obtener pedido:', error)
     return NextResponse.json({ error: 'Error al obtener pedido' }, { status: 500 })
   }
 }
@@ -114,7 +115,7 @@ export async function PATCH(
 
     return NextResponse.json(order)
   } catch (error) {
-    console.error('Error al actualizar pedido:', error)
+    logger.error('Error al actualizar pedido:', error)
     return NextResponse.json({ error: 'Error al actualizar pedido' }, { status: 500 })
   }
 }

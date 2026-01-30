@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { TierBadge } from '@/components/player/TierBadge'
+import { logger } from '@/lib/logger'
 import { Loader2, Trophy, Calendar } from 'lucide-react'
 import type { SkillTier } from '@prisma/client'
 
@@ -43,7 +44,7 @@ export default function MatchesPage() {
           setMatches(data)
         }
       } catch {
-        console.error('Failed to fetch matches')
+        logger.error('Failed to fetch matches')
       } finally {
         setLoading(false)
       }

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
+import { logger } from '@/lib/logger'
 import { formatPrice } from '@/lib/shop'
 import AdminOrderTable from '@/components/admin/AdminOrderTable'
 import AdminStockAlert from '@/components/admin/AdminStockAlert'
@@ -63,7 +64,7 @@ export default function AdminTiendaPage() {
         setLowStockProducts([...stockData.outOfStock, ...stockData.lowStock])
       }
     } catch (error) {
-      console.error('Error al cargar datos:', error)
+      logger.error('Error al cargar datos:', error)
     } finally {
       setLoading(false)
     }

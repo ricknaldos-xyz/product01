@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { generateToken } from '@/lib/tokens'
 import { sendEmailVerification } from '@/lib/email'
 
@@ -40,7 +41,7 @@ export async function POST() {
     try {
       await sendEmailVerification(user.email, user.name || 'Usuario', token)
     } catch (emailError) {
-      console.error('Failed to send verification email:', emailError)
+      logger.error('Failed to send verification email:', emailError)
       return NextResponse.json(
         { error: 'Error al enviar el email de verificacion' },
         { status: 500 }
@@ -51,7 +52,7 @@ export async function POST() {
       message: 'Email de verificacion enviado',
     })
   } catch (error) {
-    console.error('Send verification error:', error)
+    logger.error('Send verification error:', error)
     return NextResponse.json(
       { error: 'Error al procesar la solicitud' },
       { status: 500 }

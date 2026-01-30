@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const setupSchema = z.object({
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(profile, { status: 201 })
   } catch (error) {
-    console.error('Profile setup error:', error)
+    logger.error('Profile setup error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

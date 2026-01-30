@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { ProductCategory } from '@prisma/client'
 
@@ -92,7 +93,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error al listar productos:', error)
+    logger.error('Error al listar productos:', error)
     return NextResponse.json({ error: 'Error al listar productos' }, { status: 500 })
   }
 }
@@ -154,7 +155,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(product, { status: 201 })
   } catch (error) {
-    console.error('Error al crear producto:', error)
+    logger.error('Error al crear producto:', error)
     return NextResponse.json({ error: 'Error al crear producto' }, { status: 500 })
   }
 }

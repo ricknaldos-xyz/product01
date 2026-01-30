@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 const MAX_RETRIES = 3
 
@@ -77,7 +78,7 @@ export async function POST(
       analysis: updatedAnalysis,
     })
   } catch (error) {
-    console.error('Retry analysis error:', error)
+    logger.error('Retry analysis error:', error)
     return NextResponse.json(
       { error: 'Error al reintentar el analisis' },
       { status: 500 }

@@ -7,6 +7,7 @@ import { CartItemRow } from './CartItemRow'
 import { CartSummary } from './CartSummary'
 import { X, Loader2, ShoppingBag } from 'lucide-react'
 import { toast } from 'sonner'
+import { logger } from '@/lib/logger'
 
 interface CartItem {
   id: string
@@ -52,7 +53,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         setTotalCents(data.totalCents)
       }
     } catch {
-      console.error('Failed to fetch cart')
+      logger.error('Failed to fetch cart')
     } finally {
       setLoading(false)
     }

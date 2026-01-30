@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { logger } from '@/lib/logger'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
@@ -40,7 +41,7 @@ export default function AdminStockPage() {
         setData(await res.json())
       }
     } catch (error) {
-      console.error('Error al cargar inventario:', error)
+      logger.error('Error al cargar inventario:', error)
     } finally {
       setLoading(false)
     }

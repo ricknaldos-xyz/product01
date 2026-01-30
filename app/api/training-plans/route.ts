@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { generateTrainingPlan } from '@/lib/training/generator'
 import { linkTrainingPlanToGoal } from '@/lib/goals/progress'
 import { getUserSubscription, checkActivePlansLimit } from '@/lib/subscription'
@@ -48,13 +49,13 @@ export async function POST(request: NextRequest) {
     // Link to goal if provided (non-blocking)
     if (validated.data.goalId && plan?.id) {
       linkTrainingPlanToGoal(session.user.id, plan.id, validated.data.goalId).catch((error) => {
-        console.error('Failed to link training plan to goal:', error)
+        logger.error('Failed to link training plan to goal:', error)
       })
     }
 
     return NextResponse.json(plan, { status: 201 })
   } catch (error) {
-    console.error('Create training plan error:', error)
+    logger.error('Create training plan error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Error al crear plan' },
       { status: 500 }
@@ -88,7 +89,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(plans)
   } catch (error) {
-    console.error('Fetch training plans error:', error)
+    logger.error('Fetch training plans error:', error)
     return NextResponse.json(
       { error: 'Error al obtener planes' },
       { status: 500 }

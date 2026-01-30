@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import { searchExerciseVideo } from '@/lib/youtube/client'
 
@@ -22,7 +23,7 @@ export async function enrichExercisesWithVideos(
   }
   const uniqueExercises = Array.from(uniqueMap.values())
 
-  console.log(
+  logger.info(
     `Searching YouTube videos for ${uniqueExercises.length} unique exercises (from ${exercises.length} total)`
   )
 
@@ -35,7 +36,7 @@ export async function enrichExercisesWithVideos(
         videoMap.set(exercise.name, videoUrl)
       }
     } catch (error) {
-      console.warn(`YouTube search failed for "${exercise.name}":`, error)
+      logger.warn(`YouTube search failed for "${exercise.name}":`, error)
     }
 
     // Rate limiting
@@ -57,6 +58,6 @@ export async function enrichExercisesWithVideos(
 
   if (updates.length > 0) {
     await Promise.all(updates)
-    console.log(`Updated ${updates.length} exercises with YouTube videos`)
+    logger.info(`Updated ${updates.length} exercises with YouTube videos`)
   }
 }

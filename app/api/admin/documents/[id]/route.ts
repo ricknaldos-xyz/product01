@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // PATCH: Recover FAILED documents or trigger reprocessing
 export async function PATCH(
@@ -56,7 +57,7 @@ export async function PATCH(
       message: 'Documento ya esta procesado',
     })
   } catch (error) {
-    console.error('Document process/recover error:', error)
+    logger.error('Document process/recover error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Error al procesar documento' },
       { status: 500 }
@@ -94,7 +95,7 @@ export async function GET(
 
     return NextResponse.json(document)
   } catch (error) {
-    console.error('Document get error:', error)
+    logger.error('Document get error:', error)
     return NextResponse.json({ error: 'Error al obtener documento' }, { status: 500 })
   }
 }
@@ -129,7 +130,7 @@ export async function DELETE(
         const { del } = await import('@vercel/blob')
         await del(document.fileUrl)
       } catch (e) {
-        console.error('Failed to delete blob:', e)
+        logger.error('Failed to delete blob:', e)
       }
     }
 
@@ -140,7 +141,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Document delete error:', error)
+    logger.error('Document delete error:', error)
     return NextResponse.json({ error: 'Error al eliminar documento' }, { status: 500 })
   }
 }

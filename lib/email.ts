@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { Resend } from 'resend'
 
 let resend: Resend | null = null
@@ -33,13 +34,13 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
     })
 
     if (error) {
-      console.error('Email send error:', error)
+      logger.error('Email send error:', error)
       throw error
     }
 
     return data
   } catch (error) {
-    console.error('Failed to send email:', error)
+    logger.error('Failed to send email:', error)
     throw error
   }
 }

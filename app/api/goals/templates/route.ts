@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 const TEMPLATES = [
   { type: 'TECHNIQUE', label: 'Dominar el saque', techniqueSlug: 'saque', icon: 'zap' },
@@ -48,7 +49,7 @@ export async function GET() {
 
     return NextResponse.json(templates)
   } catch (error) {
-    console.error('Get goal templates error:', error)
+    logger.error('Get goal templates error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

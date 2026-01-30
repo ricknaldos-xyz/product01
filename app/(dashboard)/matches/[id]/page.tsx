@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { logger } from '@/lib/logger'
 import Image from 'next/image'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
@@ -71,7 +72,7 @@ export default function MatchDetailPage() {
         }
       }
     } catch {
-      console.error('Failed to fetch match')
+      logger.error('Failed to fetch match')
     } finally {
       setLoading(false)
     }

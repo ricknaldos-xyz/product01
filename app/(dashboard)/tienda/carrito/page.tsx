@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { GlassCard } from '@/components/ui/glass-card'
+import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
 import { CartItemRow } from '@/components/shop/CartItemRow'
 import { CartSummary } from '@/components/shop/CartSummary'
@@ -46,7 +47,7 @@ export default function CarritoPage() {
         setTotalCents(data.totalCents)
       }
     } catch {
-      console.error('Failed to fetch cart')
+      logger.error('Failed to fetch cart')
     } finally {
       setLoading(false)
     }

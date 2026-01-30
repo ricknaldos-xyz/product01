@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
 import { GlassCard } from '@/components/ui/glass-card'
+import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import AdminWorkshopForm from '@/components/admin/AdminWorkshopForm'
@@ -37,7 +38,7 @@ export default function AdminTalleresPage() {
         setWorkshops(await res.json())
       }
     } catch (error) {
-      console.error('Error al cargar talleres:', error)
+      logger.error('Error al cargar talleres:', error)
     } finally {
       setLoading(false)
     }

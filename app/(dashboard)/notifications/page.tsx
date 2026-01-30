@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
+import { logger } from '@/lib/logger'
 import { Bell, Loader2, Check } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -33,7 +34,7 @@ export default function NotificationsPage() {
         setUnreadCount(data.unreadCount)
       }
     } catch {
-      console.error('Failed to fetch notifications')
+      logger.error('Failed to fetch notifications')
     } finally {
       setLoading(false)
     }

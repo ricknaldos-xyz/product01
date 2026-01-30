@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Current user's ranking position for a sport
 export async function GET(request: NextRequest) {
@@ -101,7 +102,7 @@ export async function GET(request: NextRequest) {
       totalInTier,
     })
   } catch (error) {
-    console.error('Get my position error:', error)
+    logger.error('Get my position error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

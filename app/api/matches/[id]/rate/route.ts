@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const ratingSchema = z.object({
@@ -82,7 +83,7 @@ export async function POST(
 
     return NextResponse.json(rating, { status: 201 })
   } catch (error) {
-    console.error('Rate match error:', error)
+    logger.error('Rate match error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

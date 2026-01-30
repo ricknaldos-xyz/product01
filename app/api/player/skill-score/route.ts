@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { getTierLabel } from '@/lib/skill-score'
 
 // GET - Get current user's skill score breakdown
@@ -60,7 +61,7 @@ export async function GET() {
       })),
     })
   } catch (error) {
-    console.error('Get skill score error:', error)
+    logger.error('Get skill score error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

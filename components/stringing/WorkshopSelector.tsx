@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Loader2, MapPin, Phone } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
 interface Workshop {
   id: string
@@ -30,7 +31,7 @@ export function WorkshopSelector({ selectedId, onSelect }: WorkshopSelectorProps
           setWorkshops(data)
         }
       } catch {
-        console.error('Error fetching workshops')
+        logger.error('Error fetching workshops')
       } finally {
         setLoading(false)
       }

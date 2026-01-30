@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { CourtSurface, CourtType } from '@prisma/client'
 
@@ -63,7 +64,7 @@ export async function PATCH(
 
     return NextResponse.json(court)
   } catch (error) {
-    console.error('Update court error:', error)
+    logger.error('Update court error:', error)
     return NextResponse.json({ error: 'Error al actualizar cancha' }, { status: 500 })
   }
 }
@@ -95,7 +96,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Cancha eliminada correctamente' })
   } catch (error) {
-    console.error('Delete court error:', error)
+    logger.error('Delete court error:', error)
     return NextResponse.json({ error: 'Error al eliminar cancha' }, { status: 500 })
   }
 }

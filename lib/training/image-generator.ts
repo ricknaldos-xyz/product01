@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import { generateExerciseImage } from '@/lib/imagen/client'
 import { writeFile, mkdir } from 'fs/promises'
@@ -23,7 +24,7 @@ export async function generateExerciseImages(
   }
   const uniqueExercises = Array.from(uniqueMap.values())
 
-  console.log(
+  logger.info(
     `Generating images for ${uniqueExercises.length} unique exercises (from ${exercises.length} total)`
   )
 
@@ -43,10 +44,10 @@ export async function generateExerciseImages(
       const imageUrl = await storeImage(imageBuffer, exercise.id)
       if (imageUrl) {
         imageMap.set(exercise.name, imageUrl)
-        console.log(`Generated image for: ${exercise.name}`)
+        logger.debug(`Generated image for: ${exercise.name}`)
       }
     } catch (error) {
-      console.warn(`Image generation failed for "${exercise.name}":`, error)
+      logger.warn(`Image generation failed for "${exercise.name}":`, error)
     }
   }
 
@@ -63,7 +64,7 @@ export async function generateExerciseImages(
 
   if (updates.length > 0) {
     await Promise.all(updates)
-    console.log(`Updated ${updates.length} exercises with images`)
+    logger.info(`Updated ${updates.length} exercises with images`)
   }
 }
 
@@ -94,7 +95,7 @@ async function storeImage(
     await writeFile(filePath, buffer)
     return `/uploads/generated/${filename}`
   } catch (error) {
-    console.error('Failed to store image:', error)
+    logger.error('Failed to store image:', error)
     return null
   }
 }

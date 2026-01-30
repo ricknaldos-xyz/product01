@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import { Severity } from '@prisma/client'
 import { retrieveRelevantChunks } from '@/lib/rag/retriever'
@@ -196,7 +197,7 @@ export async function generateTrainingPlan({
       analysis.technique.name
     )
   } catch (error) {
-    console.warn('Exercise enrichment failed, falling back to basic instructions:', error)
+    logger.warn('Exercise enrichment failed, falling back to basic instructions:', error)
   }
 
   // Generate exercise images
@@ -210,7 +211,7 @@ export async function generateTrainingPlan({
       analysis.technique.sport.name
     )
   } catch (error) {
-    console.warn('Exercise image generation failed:', error)
+    logger.warn('Exercise image generation failed:', error)
   }
 
   // Enrich exercises with YouTube demonstration videos
@@ -224,7 +225,7 @@ export async function generateTrainingPlan({
       analysis.technique.sport.name
     )
   } catch (error) {
-    console.warn('Video enrichment failed:', error)
+    logger.warn('Video enrichment failed:', error)
   }
 
   // Create exercise-issue links
@@ -352,10 +353,10 @@ async function buildExercisePool(
       }
     }
 
-    console.log(`Gemini generated ${pool.length} exercises for ${issues.length} issues`)
+    logger.info(`Gemini generated ${pool.length} exercises for ${issues.length} issues`)
     return pool
   } catch (error) {
-    console.error('Gemini exercise generation failed, using fallback:', error)
+    logger.error('Gemini exercise generation failed, using fallback:', error)
     return buildFallbackPool(issues)
   }
 }

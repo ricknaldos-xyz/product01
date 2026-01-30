@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import { generateEmbedding } from './embeddings'
 import type { ChunkCategory } from '@prisma/client'
@@ -37,7 +38,7 @@ export async function retrieveRelevantChunks(
   try {
     queryEmbedding = await generateEmbedding(query)
   } catch (error) {
-    console.error('Failed to generate query embedding:', error)
+    logger.error('Failed to generate query embedding:', error)
     return []
   }
 
@@ -101,7 +102,7 @@ export async function retrieveRelevantChunks(
 
     return results
   } catch (error) {
-    console.error('RAG retrieval failed (pgvector may not be set up):', error)
+    logger.error('RAG retrieval failed (pgvector may not be set up):', error)
     return []
   }
 }

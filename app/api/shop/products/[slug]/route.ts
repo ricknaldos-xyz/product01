@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Public product detail by slug
 export async function GET(
@@ -44,7 +45,7 @@ export async function GET(
       averageRating: Math.round(averageRating * 10) / 10,
     })
   } catch (error) {
-    console.error('Get product detail error:', error)
+    logger.error('Get product detail error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

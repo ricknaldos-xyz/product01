@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import { SkillTier } from '@prisma/client'
 
@@ -235,7 +236,7 @@ export async function recalculateSkillScore(userId: string): Promise<void> {
     }
 
     if (previousTier !== skillTier && skillTier !== 'UNRANKED') {
-      console.log(
+      logger.info(
         `User ${userId} sport ${sportId} promoted from ${previousTier} to ${skillTier} (score: ${compositeScore?.toFixed(1)})`
       )
     }

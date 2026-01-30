@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import { parsePdf } from './pdf-parser'
 import { chunkPages } from './chunker'
@@ -57,7 +58,7 @@ export async function processDocument(documentId: string): Promise<void> {
       throw new Error('No text could be extracted from the PDF')
     }
 
-    console.log(`Document ${documentId}: ${parsed.totalPages} pages, ${chunks.length} chunks`)
+    logger.info(`Document ${documentId}: ${parsed.totalPages} pages, ${chunks.length} chunks`)
 
     // 5. Generate embeddings in batches
     const allEmbeddings: number[][] = []
@@ -65,7 +66,7 @@ export async function processDocument(documentId: string): Promise<void> {
       const batch = chunks.slice(i, i + EMBED_BATCH_SIZE)
       const embeddings = await generateEmbeddings(batch.map((c) => c.content))
       allEmbeddings.push(...embeddings)
-      console.log(`Embedded ${Math.min(i + EMBED_BATCH_SIZE, chunks.length)}/${chunks.length} chunks`)
+      logger.debug(`Embedded ${Math.min(i + EMBED_BATCH_SIZE, chunks.length)}/${chunks.length} chunks`)
     }
 
     // 6. Delete any existing chunks (in case of reprocessing)
@@ -113,9 +114,9 @@ export async function processDocument(documentId: string): Promise<void> {
       data: { status: 'COMPLETED' },
     })
 
-    console.log(`Document ${documentId} processed successfully: ${chunks.length} chunks stored`)
+    logger.info(`Document ${documentId} processed successfully: ${chunks.length} chunks stored`)
   } catch (error) {
-    console.error(`Document ${documentId} processing failed:`, error)
+    logger.error(`Document ${documentId} processing failed:`, error)
 
     const rawMessage = error instanceof Error ? error.message : 'Error desconocido'
     // Store a clean, user-friendly error message (max 300 chars)

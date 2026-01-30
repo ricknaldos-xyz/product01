@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
+import { logger } from '@/lib/logger'
 import { Trophy, Calendar, MapPin, Users, Loader2, Plus } from 'lucide-react'
 import Link from 'next/link'
 
@@ -54,7 +55,7 @@ export default function TournamentsPage() {
           setTournaments(data.tournaments)
         }
       } catch {
-        console.error('Failed to fetch tournaments')
+        logger.error('Failed to fetch tournaments')
       } finally {
         setLoading(false)
       }

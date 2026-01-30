@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import { GoalStatus, GoalType, Prisma, SkillTier } from '@prisma/client'
 
@@ -40,17 +41,17 @@ export async function updateGoalProgress(
   })
 
   if (!analysis) {
-    console.log(`[goals/progress] Analysis ${analysisId} not found, skipping goal update`)
+    logger.debug(`[goals/progress] Analysis ${analysisId} not found, skipping goal update`)
     return
   }
 
   if (analysis.userId !== userId) {
-    console.log(`[goals/progress] Analysis ${analysisId} does not belong to user ${userId}, skipping`)
+    logger.debug(`[goals/progress] Analysis ${analysisId} does not belong to user ${userId}, skipping`)
     return
   }
 
   if (analysis.overallScore === null || analysis.overallScore === undefined) {
-    console.log(`[goals/progress] Analysis ${analysisId} has no overallScore, skipping goal update`)
+    logger.debug(`[goals/progress] Analysis ${analysisId} has no overallScore, skipping goal update`)
     return
   }
 
@@ -73,13 +74,13 @@ export async function updateGoalProgress(
   })
 
   if (activeGoals.length === 0) {
-    console.log(
+    logger.debug(
       `[goals/progress] No active goals found for user ${userId} matching technique ${analysis.techniqueId}`
     )
     return
   }
 
-  console.log(
+  logger.info(
     `[goals/progress] Found ${activeGoals.length} active goal(s) for user ${userId} matching analysis ${analysisId}`
   )
 
@@ -130,7 +131,7 @@ export async function updateGoalProgress(
           case GoalType.SCORE_TARGET: {
             const targetScore = goal.targetScore
             if (targetScore === null || targetScore === undefined) {
-              console.log(
+              logger.debug(
                 `[goals/progress] Goal ${goal.id} is SCORE_TARGET but has no targetScore, skipping progress calc`
               )
               break
@@ -146,7 +147,7 @@ export async function updateGoalProgress(
 
           case GoalType.TIER_TARGET: {
             if (!goal.targetTier) {
-              console.log(
+              logger.debug(
                 `[goals/progress] Goal ${goal.id} is TIER_TARGET but has no targetTier, skipping progress calc`
               )
               break
@@ -212,15 +213,13 @@ export async function updateGoalProgress(
           },
         })
 
-        console.log(
+        logger.info(
           `[goals/progress] Updated goal ${goal.id}: score=${currentScore.toFixed(1)}, progress=${progressPercent.toFixed(1)}%, status=${status}`
         )
       })
     } catch (error) {
-      console.log(
-        `[goals/progress] Error updating goal ${goal.id} for analysis ${analysisId}:`,
-        error
-      )
+      logger.error(`Error updating goal ${goal.id} for analysis ${analysisId}`, error)
+      throw error
     }
   }
 }
@@ -241,14 +240,14 @@ export async function linkTrainingPlanToGoal(
   })
 
   if (!goal) {
-    console.log(
+    logger.debug(
       `[goals/progress] Goal ${goalId} not found for user ${userId}, skipping training plan link`
     )
     return
   }
 
   if (goal.status !== GoalStatus.ACTIVE) {
-    console.log(
+    logger.debug(
       `[goals/progress] Goal ${goalId} is not ACTIVE (status=${goal.status}), skipping training plan link`
     )
     return
@@ -289,7 +288,7 @@ export async function linkTrainingPlanToGoal(
       })
     }
 
-    console.log(
+    logger.info(
       `[goals/progress] Linked training plan ${trainingPlanId} to goal ${goalId}`
     )
   })

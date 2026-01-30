@@ -6,6 +6,7 @@ import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import { Upload, FileText, Trash2, Play, RefreshCw, Shield } from 'lucide-react'
 import { toast } from 'sonner'
+import { logger } from '@/lib/logger'
 
 interface DocumentItem {
   id: string
@@ -42,7 +43,7 @@ export default function AdminPage() {
         setDocuments(await res.json())
       }
     } catch (error) {
-      console.error('Failed to fetch documents:', error)
+      logger.error('Failed to fetch documents:', error)
     } finally {
       setLoading(false)
     }
@@ -81,7 +82,7 @@ export default function AdminPage() {
       setSportSlug('')
       await fetchDocuments()
     } catch (error) {
-      console.error('Upload failed:', error)
+      logger.error('Upload failed:', error)
       toast.error('Error al subir documento')
     } finally {
       setUploading(false)
@@ -109,7 +110,7 @@ export default function AdminPage() {
       }
       await fetchDocuments()
     } catch (error) {
-      console.error('Process failed:', error)
+      logger.error('Process failed:', error)
       toast.error('Error al procesar documento')
     } finally {
       setProcessingIds((prev) => {
@@ -133,7 +134,7 @@ export default function AdminPage() {
         toast.error('Error al eliminar documento')
       }
     } catch (error) {
-      console.error('Delete failed:', error)
+      logger.error('Delete failed:', error)
       toast.error('Error al eliminar documento')
     }
   }

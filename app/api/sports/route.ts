@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 export async function GET() {
   try {
@@ -17,7 +18,7 @@ export async function GET() {
 
     return NextResponse.json(sports)
   } catch (error) {
-    console.error('Error fetching sports:', error)
+    logger.error('Error fetching sports:', error)
     return NextResponse.json(
       { error: 'Error al obtener deportes' },
       { status: 500 }

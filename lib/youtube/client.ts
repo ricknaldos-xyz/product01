@@ -1,3 +1,5 @@
+import { logger } from '@/lib/logger'
+
 const YOUTUBE_SEARCH_URL = 'https://www.googleapis.com/youtube/v3/search'
 
 // Trusted tennis coaching channel names (matched case-insensitively against channelTitle)
@@ -72,9 +74,9 @@ export async function searchExerciseVideo(
       const data = (await response.json().catch(() => null)) as YouTubeSearchResponse | null
       const errorMsg = data?.error?.message || `HTTP ${response.status}`
       if (response.status === 403) {
-        console.warn('YouTube API not enabled or quota exceeded:', errorMsg)
+        logger.warn('YouTube API not enabled or quota exceeded:', errorMsg)
       } else {
-        console.error('YouTube API error:', errorMsg)
+        logger.error('YouTube API error:', errorMsg)
       }
       return null
     }
@@ -93,7 +95,7 @@ export async function searchExerciseVideo(
     const bestResult = trustedResult || data.items[0]
     return `https://www.youtube.com/embed/${bestResult.id.videoId}`
   } catch (error) {
-    console.error('YouTube search failed:', error)
+    logger.error('YouTube search failed:', error)
     return null
   }
 }

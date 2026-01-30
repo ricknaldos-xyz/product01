@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { GlassCard } from '@/components/ui/glass-card'
+import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import { Loader2, Check } from 'lucide-react'
@@ -39,7 +40,7 @@ export default function SportSelectionPage() {
           setSports(data)
         }
       } catch (error) {
-        console.error('Failed to fetch sports:', error)
+        logger.error('Failed to fetch sports:', error)
       } finally {
         setLoading(false)
       }
@@ -62,7 +63,7 @@ export default function SportSelectionPage() {
       router.push('/profile/player/edit')
       router.refresh()
     } catch (error) {
-      console.error('Failed to select sport:', error)
+      logger.error('Failed to select sport:', error)
     } finally {
       setSubmitting(false)
     }

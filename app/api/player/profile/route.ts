@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 // GET - Get current user's player profile
@@ -34,7 +35,7 @@ export async function GET() {
 
     return NextResponse.json(profile)
   } catch (error) {
-    console.error('Get player profile error:', error)
+    logger.error('Get player profile error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
@@ -85,7 +86,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json(profile)
   } catch (error) {
-    console.error('Update player profile error:', error)
+    logger.error('Update player profile error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

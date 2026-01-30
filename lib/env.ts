@@ -13,9 +13,9 @@ function requireEnv(name: string): string {
 export const env = {
   DATABASE_URL: requireEnv('DATABASE_URL'),
   AUTH_SECRET: requireEnv('AUTH_SECRET'),
-  CULQI_SECRET_KEY: process.env.CULQI_SECRET_KEY,
-  CULQI_WEBHOOK_SECRET: process.env.CULQI_WEBHOOK_SECRET,
-  NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'http://localhost:3000',
+  CULQI_SECRET_KEY: requireEnv('CULQI_SECRET_KEY'),
+  CULQI_WEBHOOK_SECRET: requireEnv('CULQI_WEBHOOK_SECRET'),
+  NEXTAUTH_URL: requireEnv('NEXTAUTH_URL'),
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   GOOGLE_AI_API_KEY: process.env.GOOGLE_AI_API_KEY,

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - List sports the current user is enrolled in
 export async function GET() {
@@ -29,7 +30,7 @@ export async function GET() {
 
     return NextResponse.json(sports)
   } catch (error) {
-    console.error('Fetch user sports error:', error)
+    logger.error('Fetch user sports error:', error)
     return NextResponse.json(
       { error: 'Error al obtener deportes' },
       { status: 500 }

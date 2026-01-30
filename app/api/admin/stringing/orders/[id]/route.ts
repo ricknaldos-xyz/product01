@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { StringingOrderStatus } from '@prisma/client'
 import { STRINGING_ORDER_TRANSITIONS, isValidTransition } from '@/lib/order-transitions'
@@ -39,7 +40,7 @@ export async function GET(
 
     return NextResponse.json(order)
   } catch (error) {
-    console.error('Error al obtener orden de encordado:', error)
+    logger.error('Error al obtener orden de encordado:', error)
     return NextResponse.json({ error: 'Error al obtener orden de encordado' }, { status: 500 })
   }
 }
@@ -115,7 +116,7 @@ export async function PATCH(
 
     return NextResponse.json(order)
   } catch (error) {
-    console.error('Error al actualizar orden de encordado:', error)
+    logger.error('Error al actualizar orden de encordado:', error)
     return NextResponse.json({ error: 'Error al actualizar orden de encordado' }, { status: 500 })
   }
 }

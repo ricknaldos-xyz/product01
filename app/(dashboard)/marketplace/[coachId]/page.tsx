@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Image from 'next/image'
+import { logger } from '@/lib/logger'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import {
@@ -72,7 +73,7 @@ export default function CoachProfilePage() {
           setNotFound(true)
         }
       } catch {
-        console.error('Failed to fetch coach')
+        logger.error('Failed to fetch coach')
       } finally {
         setLoading(false)
       }

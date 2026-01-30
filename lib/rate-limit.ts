@@ -1,7 +1,8 @@
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
+import { logger } from '@/lib/logger'
 
-// In-memory fallback for development without Redis
+// In-memory fallback for development only
 interface RateLimitEntry {
   count: number
   resetAt: number
@@ -51,6 +52,8 @@ function createUpstashLimiter(prefix: string, limit: number, windowSec: number) 
   }
 }
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 function rateLimit(options: {
   key: string
   limit: number
@@ -62,7 +65,13 @@ function rateLimit(options: {
     return createUpstashLimiter(options.key, options.limit, options.window)
   }
 
-  // Fallback to in-memory for local development
+  if (isProduction) {
+    logger.warn(
+      `Rate limiter "${options.key}" using in-memory fallback in production. ` +
+      'Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN for distributed rate limiting.'
+    )
+  }
+
   return createInMemoryLimiter(options.key, options.limit, options.window)
 }
 

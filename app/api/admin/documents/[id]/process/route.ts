@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
+import { logger } from '@/lib/logger'
 import { processDocument } from '@/lib/rag/processor'
 
 export const maxDuration = 300 // 5 minutes for large PDFs
@@ -25,7 +26,7 @@ export async function POST(
 
     return NextResponse.json({ success: true, message: 'Documento procesado correctamente' })
   } catch (error) {
-    console.error('Document processing error:', error)
+    logger.error('Document processing error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Error al procesar documento' },
       { status: 500 }

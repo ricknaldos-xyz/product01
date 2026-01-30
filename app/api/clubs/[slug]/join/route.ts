@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // POST - Join a club
 export async function POST(
@@ -50,7 +51,7 @@ export async function POST(
     if ((error as { code?: string }).code === 'P2002') {
       return NextResponse.json({ error: 'Ya eres miembro de este club' }, { status: 400 })
     }
-    console.error('Join club error:', error)
+    logger.error('Join club error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -101,7 +102,7 @@ export async function DELETE(
 
     return NextResponse.json({ joined: false })
   } catch (error) {
-    console.error('Leave club error:', error)
+    logger.error('Leave club error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

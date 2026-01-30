@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { verifyVideoMetadata, createVerification } from '@/lib/verification'
 
 // POST - Trigger verification for an analysis
@@ -44,7 +45,7 @@ export async function POST(
       status: result.verificationScore >= 60 ? 'VERIFIED' : 'PENDING_REVIEW',
     })
   } catch (error) {
-    console.error('Verify analysis error:', error)
+    logger.error('Verify analysis error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

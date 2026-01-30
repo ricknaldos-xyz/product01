@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Public coach profile
 export async function GET(
@@ -35,7 +36,7 @@ export async function GET(
 
     return NextResponse.json(coach)
   } catch (error) {
-    console.error('Get coach profile error:', error)
+    logger.error('Get coach profile error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

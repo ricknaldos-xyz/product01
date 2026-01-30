@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const reviewSchema = z.object({
@@ -59,7 +60,7 @@ export async function POST(
     if ((error as { code?: string }).code === 'P2002') {
       return NextResponse.json({ error: 'Ya dejaste una resena' }, { status: 400 })
     }
-    console.error('Review coach error:', error)
+    logger.error('Review coach error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

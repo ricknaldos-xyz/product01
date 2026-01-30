@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import type { GoogleGenerativeAI, GenerateContentResult, SafetySetting, Part } from '@google/generative-ai'
 
 // Models in order of preference (most powerful first)
@@ -21,7 +22,7 @@ export async function generateWithFallback(
 
   for (const modelName of MODELS_PRIORITY) {
     try {
-      console.log(`[gemini] Trying ${modelName}...`)
+      logger.debug(`[gemini] Trying ${modelName}...`)
       const model = genAI.getGenerativeModel({
         model: modelName,
         safetySettings,
@@ -29,11 +30,11 @@ export async function generateWithFallback(
       })
 
       const result = await model.generateContent(content)
-      console.log(`[gemini] Success with ${modelName}`)
+      logger.info(`[gemini] Success with ${modelName}`)
       return { result, modelUsed: modelName }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error)
-      console.log(`[gemini] ${modelName} failed: ${errorMsg.substring(0, 100)}`)
+      logger.warn(`[gemini] ${modelName} failed: ${errorMsg.substring(0, 100)}`)
       lastError = error as Error
 
       // If it's a 404 (model not found) or 503 (overloaded), try next model

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const createProgressSchema = z.object({
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(progressLog, { status: 201 })
   } catch (error) {
-    console.error('Create progress error:', error)
+    logger.error('Create progress error:', error)
     return NextResponse.json(
       { error: 'Error al guardar progreso' },
       { status: 500 }
@@ -147,7 +148,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(progressLogs)
   } catch (error) {
-    console.error('Fetch progress error:', error)
+    logger.error('Fetch progress error:', error)
     return NextResponse.json(
       { error: 'Error al obtener progreso' },
       { status: 500 }
@@ -190,7 +191,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Delete progress error:', error)
+    logger.error('Delete progress error:', error)
     return NextResponse.json(
       { error: 'Error al eliminar progreso' },
       { status: 500 }

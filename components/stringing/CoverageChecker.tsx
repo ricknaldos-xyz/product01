@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
 interface CoverageCheckerProps {
   district: string
@@ -21,7 +22,7 @@ export function CoverageChecker({ district, onDistrictChange }: CoverageCheckerP
           setDistricts(data.districts || [])
         }
       } catch {
-        console.error('Error fetching districts')
+        logger.error('Error fetching districts')
       } finally {
         setLoading(false)
       }

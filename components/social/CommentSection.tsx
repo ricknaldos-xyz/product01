@@ -9,6 +9,7 @@ import { Loader2, Send } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import type { SkillTier } from '@prisma/client'
+import { logger } from '@/lib/logger'
 
 interface CommentAuthor {
   userId: string
@@ -45,7 +46,7 @@ export function CommentSection({ targetId, targetType }: CommentSectionProps) {
           setComments(data.comments)
         }
       } catch {
-        console.error('Failed to fetch comments')
+        logger.error('Failed to fetch comments')
       } finally {
         setLoading(false)
       }

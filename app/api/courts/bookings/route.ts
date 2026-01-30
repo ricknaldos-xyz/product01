@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { BookingStatus } from '@prisma/client'
 
 // GET - List user's bookings
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('List bookings error:', error)
+    logger.error('List bookings error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -99,7 +100,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json(updated)
   } catch (error) {
-    console.error('Cancel booking error:', error)
+    logger.error('Cancel booking error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

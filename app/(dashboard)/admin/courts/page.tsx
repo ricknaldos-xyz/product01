@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
+import { logger } from '@/lib/logger'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import {
   Shield, Loader2, Plus, Trash2, ChevronDown, ChevronUp,
@@ -95,7 +96,7 @@ export default function AdminCourtsPage() {
         setCourts(data.courts || [])
       }
     } catch (error) {
-      console.error('Error fetching courts:', error)
+      logger.error('Error fetching courts:', error)
     } finally {
       setLoading(false)
     }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Image from 'next/image'
+import { logger } from '@/lib/logger'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { TierBadge } from '@/components/player/TierBadge'
@@ -57,7 +58,7 @@ export default function ClubDetailPage() {
           setIsMember(data.isMember ?? false)
         }
       } catch {
-        console.error('Failed to fetch club')
+        logger.error('Failed to fetch club')
       } finally {
         setLoading(false)
       }

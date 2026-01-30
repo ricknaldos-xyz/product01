@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { GlassCard } from '@/components/ui/glass-card'
+import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
 import AdminOrderTable from '@/components/admin/AdminOrderTable'
 import { ArrowLeft, ChevronLeft, ChevronRight, Search, Loader2 } from 'lucide-react'
@@ -43,7 +44,7 @@ export default function AdminPedidosPage() {
         setTotalPages(data.pagination?.totalPages || 1)
       }
     } catch (error) {
-      console.error('Error al cargar pedidos:', error)
+      logger.error('Error al cargar pedidos:', error)
     } finally {
       setLoading(false)
     }

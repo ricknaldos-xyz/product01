@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - List distinct countries with ranked players
 export async function GET(_request: NextRequest) {
@@ -26,7 +27,7 @@ export async function GET(_request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Get ranking countries error:', error)
+    logger.error('Get ranking countries error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

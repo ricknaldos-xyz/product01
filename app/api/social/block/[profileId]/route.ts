@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // POST - Block a profile
 export async function POST(
@@ -40,7 +41,7 @@ export async function POST(
     if ((error as { code?: string }).code === 'P2002') {
       return NextResponse.json({ error: 'Ya bloqueaste a este usuario' }, { status: 400 })
     }
-    console.error('Block error:', error)
+    logger.error('Block error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -76,7 +77,7 @@ export async function DELETE(
 
     return NextResponse.json({ blocked: false })
   } catch (error) {
-    console.error('Unblock error:', error)
+    logger.error('Unblock error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

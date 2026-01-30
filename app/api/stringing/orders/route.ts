@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { Prisma } from '@prisma/client'
 import { z } from 'zod'
 import {
@@ -99,7 +100,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('List stringing orders error:', error)
+    logger.error('List stringing orders error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -190,7 +191,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ id: order.id, orderNumber: order.orderNumber }, { status: 201 })
   } catch (error) {
-    console.error('Create stringing order error:', error)
+    logger.error('Create stringing order error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

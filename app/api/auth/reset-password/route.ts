@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { verifyToken } from '@/lib/tokens'
 
 export async function POST(request: NextRequest) {
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    console.error('Reset password error:', error)
+    logger.error('Reset password error:', error)
     return NextResponse.json(
       { error: 'Error al restablecer la contrasena' },
       { status: 500 }

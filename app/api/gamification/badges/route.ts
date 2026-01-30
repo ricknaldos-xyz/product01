@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { BadgeType } from '@prisma/client'
 import { BADGE_DEFINITIONS } from '@/lib/badges'
 
@@ -25,7 +26,7 @@ export async function GET() {
 
     return NextResponse.json(badgesWithDefinitions)
   } catch (error) {
-    console.error('Get badges error:', error)
+    logger.error('Get badges error:', error)
     return NextResponse.json(
       { error: 'Error al obtener badges' },
       { status: 500 }
@@ -149,7 +150,7 @@ export async function POST() {
       definitions: newBadges.map((type) => BADGE_DEFINITIONS[type]),
     })
   } catch (error) {
-    console.error('Check badges error:', error)
+    logger.error('Check badges error:', error)
     return NextResponse.json(
       { error: 'Error al verificar badges' },
       { status: 500 }

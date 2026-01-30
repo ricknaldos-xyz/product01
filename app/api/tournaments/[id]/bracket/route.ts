@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Get tournament bracket
 export async function GET(
@@ -58,7 +59,7 @@ export async function GET(
       participants: tournament.participants,
     })
   } catch (error) {
-    console.error('Get bracket error:', error)
+    logger.error('Get bracket error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

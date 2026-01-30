@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { getBlockedProfileIds } from '@/lib/blocks'
 import { boundingBox, haversineDistance } from '@/lib/geo'
 import { Prisma, SkillTier } from '@prisma/client'
@@ -125,7 +126,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(results)
   } catch (error) {
-    console.error('Matchmaking discover error:', error)
+    logger.error('Matchmaking discover error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

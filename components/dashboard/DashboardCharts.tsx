@@ -5,6 +5,7 @@ import { ScoreChart } from '@/components/charts/ScoreChart'
 import { ActivityChart } from '@/components/charts/ActivityChart'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Loader2 } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
 interface ChartData {
   scoreData: Array<{ technique: string; score: number; date: string }>
@@ -25,7 +26,7 @@ export function DashboardCharts() {
           setData(result)
         }
       } catch (error) {
-        console.error('Failed to fetch stats:', error)
+        logger.error('Failed to fetch stats:', error)
       } finally {
         setLoading(false)
       }

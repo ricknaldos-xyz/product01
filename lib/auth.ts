@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
@@ -35,7 +36,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const { success } = await authLimiter.check(email)
         if (!success) {
-          console.warn('Rate limited login attempt for:', email)
+          logger.warn('Rate limited login attempt for:', email)
           return null
         }
 

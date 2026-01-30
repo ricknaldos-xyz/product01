@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(document, { status: 201 })
   } catch (error) {
-    console.error('Document upload error:', error)
+    logger.error('Document upload error:', error)
     return NextResponse.json({ error: 'Error al subir documento' }, { status: 500 })
   }
 }
@@ -128,7 +129,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Document list error:', error)
+    logger.error('Document list error:', error)
     return NextResponse.json({ error: 'Error al listar documentos' }, { status: 500 })
   }
 }

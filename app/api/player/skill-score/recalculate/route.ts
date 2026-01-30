@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
+import { logger } from '@/lib/logger'
 import { recalculateSkillScore } from '@/lib/skill-score'
 
 // POST - Force recalculate skill score
@@ -14,7 +15,7 @@ export async function POST() {
 
     return NextResponse.json({ message: 'Score recalculado exitosamente' })
   } catch (error) {
-    console.error('Recalculate skill score error:', error)
+    logger.error('Recalculate skill score error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

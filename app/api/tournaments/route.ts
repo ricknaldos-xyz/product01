@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { tournamentLimiter } from '@/lib/rate-limit'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { Prisma, TournamentStatus } from '@prisma/client'
 import { z } from 'zod'
 
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(tournament, { status: 201 })
   } catch (error) {
-    console.error('Create tournament error:', error)
+    logger.error('Create tournament error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -117,7 +118,7 @@ export async function GET(request: NextRequest) {
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
-    console.error('List tournaments error:', error)
+    logger.error('List tournaments error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

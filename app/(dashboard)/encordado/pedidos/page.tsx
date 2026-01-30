@@ -6,6 +6,7 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { StringingOrderCard } from '@/components/stringing/StringingOrderCard'
 import { Loader2, Package } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
 interface StringingOrder {
   id: string
@@ -32,7 +33,7 @@ export default function PedidosEncordadoPage() {
           setOrders(data)
         }
       } catch {
-        console.error('Error fetching stringing orders')
+        logger.error('Error fetching stringing orders')
       } finally {
         setLoading(false)
       }

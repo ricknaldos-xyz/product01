@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { generateGoalRoadmap } from '@/lib/goals/roadmap'
 import { GoalType, GoalStatus, SkillTier } from '@prisma/client'
@@ -175,7 +176,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(goal, { status: 201 })
   } catch (error) {
-    console.error('Create goal error:', error)
+    logger.error('Create goal error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -236,7 +237,7 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil(total / limit),
     })
   } catch (error) {
-    console.error('List goals error:', error)
+    logger.error('List goals error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

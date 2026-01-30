@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const updateSettingsSchema = z.object({
@@ -53,7 +54,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json(user)
   } catch (error) {
-    console.error('Update settings error:', error)
+    logger.error('Update settings error:', error)
     return NextResponse.json(
       { error: 'Error al actualizar configuracion' },
       { status: 500 }
@@ -82,7 +83,7 @@ export async function GET() {
 
     return NextResponse.json(user)
   } catch (error) {
-    console.error('Get settings error:', error)
+    logger.error('Get settings error:', error)
     return NextResponse.json(
       { error: 'Error al obtener configuracion' },
       { status: 500 }

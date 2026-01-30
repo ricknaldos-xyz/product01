@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { calculateElo } from '@/lib/elo'
 import { z } from 'zod'
 
@@ -166,7 +167,7 @@ export async function PATCH(
     if (error instanceof Error && error.message === 'ALREADY_CONFIRMED') {
       return NextResponse.json({ error: 'Ya confirmaste este partido' }, { status: 400 })
     }
-    console.error('Confirm match error:', error)
+    logger.error('Confirm match error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Court detail (public)
 export async function GET(
@@ -30,7 +31,7 @@ export async function GET(
 
     return NextResponse.json(court)
   } catch (error) {
-    console.error('Get court error:', error)
+    logger.error('Get court error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

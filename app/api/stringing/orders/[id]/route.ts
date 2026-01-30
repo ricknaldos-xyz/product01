@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Get stringing order detail
 export async function GET(
@@ -32,7 +33,7 @@ export async function GET(
 
     return NextResponse.json(order)
   } catch (error) {
-    console.error('Get stringing order error:', error)
+    logger.error('Get stringing order error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

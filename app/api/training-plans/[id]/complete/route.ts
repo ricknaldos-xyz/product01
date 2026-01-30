@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 export async function POST(
   _request: NextRequest,
@@ -29,7 +30,7 @@ export async function POST(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Complete plan error:', error)
+    logger.error('Complete plan error:', error)
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })
   }
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { getCulqiClient, PLANS } from '@/lib/culqi'
 import { z } from 'zod'
 
@@ -68,10 +69,9 @@ export async function POST(request: NextRequest) {
         })
 
         customerId = customer.id
-      } catch (customerError: any) {
+      } catch (customerError: unknown) {
         // If customer already exists, try to find the existing one
-        const errorMessage =
-          customerError?.message || customerError?.merchant_message || ''
+        const errorMessage = customerError instanceof Error ? customerError.message : String(customerError)
         if (
           errorMessage.toLowerCase().includes('already') ||
           errorMessage.toLowerCase().includes('existe') ||
@@ -91,14 +91,14 @@ export async function POST(request: NextRequest) {
               )
             }
           } catch (findError) {
-            console.error('Error finding existing Culqi customer:', findError)
+            logger.error('Error finding existing Culqi customer:', findError)
             return NextResponse.json(
               { error: 'Error al buscar cliente existente' },
               { status: 500 }
             )
           }
         } else {
-          console.error('Error creating Culqi customer:', customerError)
+          logger.error('Error creating Culqi customer:', customerError)
           return NextResponse.json(
             { error: 'Error al crear cliente en Culqi' },
             { status: 500 }
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
       })
       cardId = card.id
     } catch (cardError) {
-      console.error('Error creating Culqi card:', cardError)
+      logger.error('Error creating Culqi card:', cardError)
       return NextResponse.json(
         { error: 'Error al registrar tarjeta' },
         { status: 500 }
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
       })
       subscriptionId = subscription.id
     } catch (subscriptionError) {
-      console.error('Error creating Culqi subscription:', subscriptionError)
+      logger.error('Error creating Culqi subscription:', subscriptionError)
       return NextResponse.json(
         { error: 'Error al crear suscripcion' },
         { status: 500 }
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Subscribe error:', error)
+    logger.error('Subscribe error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

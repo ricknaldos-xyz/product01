@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { GlassCard } from '@/components/ui/glass-card'
+import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
 import { TierBadge } from '@/components/player/TierBadge'
 import { GraduationCap, UserPlus, Loader2 } from 'lucide-react'
@@ -37,7 +38,7 @@ export default function CoachStudentsPage() {
           setStudents(data)
         }
       } catch {
-        console.error('Failed to fetch students')
+        logger.error('Failed to fetch students')
       } finally {
         setLoading(false)
       }

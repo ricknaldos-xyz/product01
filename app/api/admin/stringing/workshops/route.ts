@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const createWorkshopSchema = z.object({
@@ -34,7 +35,7 @@ export async function GET() {
 
     return NextResponse.json(workshops)
   } catch (error) {
-    console.error('Error al listar talleres:', error)
+    logger.error('Error al listar talleres:', error)
     return NextResponse.json({ error: 'Error al listar talleres' }, { status: 500 })
   }
 }
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(workshop, { status: 201 })
   } catch (error) {
-    console.error('Error al crear taller:', error)
+    logger.error('Error al crear taller:', error)
     return NextResponse.json({ error: 'Error al crear taller' }, { status: 500 })
   }
 }

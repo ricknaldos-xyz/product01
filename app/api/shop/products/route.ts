@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { ProductCategory } from '@prisma/client'
 
 // GET - Public product listing with filters
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil(total / limit),
     })
   } catch (error) {
-    console.error('Get products error:', error)
+    logger.error('Get products error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

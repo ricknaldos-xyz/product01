@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { generateToken } from '@/lib/tokens'
 import { sendPasswordResetEmail } from '@/lib/email'
 import { forgotPasswordLimiter } from '@/lib/rate-limit'
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
     try {
       await sendPasswordResetEmail(email, user.name || 'Usuario', token)
     } catch (emailError) {
-      console.error('Failed to send password reset email:', emailError)
+      logger.error('Failed to send password reset email:', emailError)
       // Don't expose email errors to prevent enumeration
     }
 
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
       message: 'Si el email existe, recibiras instrucciones para restablecer tu contrasena',
     })
   } catch (error) {
-    console.error('Forgot password error:', error)
+    logger.error('Forgot password error:', error)
     return NextResponse.json(
       { error: 'Error al procesar la solicitud' },
       { status: 500 }

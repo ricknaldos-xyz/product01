@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { AvailabilityDay } from '@prisma/client'
 
@@ -28,7 +29,7 @@ export async function GET() {
 
     return NextResponse.json(availability)
   } catch (error) {
-    console.error('Get availability error:', error)
+    logger.error('Get availability error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -92,7 +93,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(updated)
   } catch (error) {
-    console.error('Update availability error:', error)
+    logger.error('Update availability error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

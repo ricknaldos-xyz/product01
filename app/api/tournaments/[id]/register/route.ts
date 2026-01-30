@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { isPlayerTierAllowed } from '@/lib/tiers'
 
 // POST - Register for tournament
@@ -68,7 +69,7 @@ export async function POST(
     if ((error as { code?: string }).code === 'P2002') {
       return NextResponse.json({ error: 'Ya estas inscrito' }, { status: 400 })
     }
-    console.error('Tournament register error:', error)
+    logger.error('Tournament register error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { GlassCard } from '@/components/ui/glass-card'
+import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import { Loader2, Check, ArrowLeft } from 'lucide-react'
@@ -48,7 +49,7 @@ export default function AddSportPage() {
           setUserSportIds(new Set(userSports.map((s) => s.id)))
         }
       } catch (error) {
-        console.error('Failed to fetch sports:', error)
+        logger.error('Failed to fetch sports:', error)
       } finally {
         setLoading(false)
       }
@@ -72,7 +73,7 @@ export default function AddSportPage() {
       router.push('/profile')
       router.refresh()
     } catch (error) {
-      console.error('Failed to add sport:', error)
+      logger.error('Failed to add sport:', error)
     } finally {
       setSubmitting(false)
     }

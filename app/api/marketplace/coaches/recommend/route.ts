@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 // GET - Get 1-3 recommended coaches for the current user
 export async function GET() {
@@ -65,7 +66,7 @@ export async function GET() {
 
     return NextResponse.json({ coaches })
   } catch (error) {
-    console.error('Recommend coaches error:', error)
+    logger.error('Recommend coaches error:', error)
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { logger } from '@/lib/logger'
 import Image from 'next/image'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
@@ -77,7 +78,7 @@ export default function ChallengeDetailPage() {
         }
       }
     } catch {
-      console.error('Failed to fetch challenge')
+      logger.error('Failed to fetch challenge')
     } finally {
       setLoading(false)
     }

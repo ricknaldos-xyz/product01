@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { verifyToken } from '@/lib/tokens'
 
 export async function POST(request: NextRequest) {
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    console.error('Verify email error:', error)
+    logger.error('Verify email error:', error)
     return NextResponse.json(
       { error: 'Error al verificar el email' },
       { status: 500 }

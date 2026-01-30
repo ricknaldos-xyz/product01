@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
+import { logger } from '@/lib/logger'
 import { uploadLimiter } from '@/lib/rate-limit'
 import { writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
@@ -115,7 +116,7 @@ export async function POST(request: NextRequest) {
       type: isVideo ? 'VIDEO' : 'IMAGE',
     })
   } catch (error) {
-    console.error('Upload error:', error)
+    logger.error('Upload error:', error)
     return NextResponse.json(
       { error: 'Error al subir archivo' },
       { status: 500 }

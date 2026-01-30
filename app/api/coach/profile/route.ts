@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 // GET - Get current user's coach profile
@@ -38,7 +39,7 @@ export async function GET() {
 
     return NextResponse.json(profile)
   } catch (error) {
-    console.error('Get coach profile error:', error)
+    logger.error('Get coach profile error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -80,7 +81,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json(profile)
   } catch (error) {
-    console.error('Update coach profile error:', error)
+    logger.error('Update coach profile error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
@@ -121,7 +122,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(profile, { status: 201 })
   } catch (error) {
-    console.error('Create coach profile error:', error)
+    logger.error('Create coach profile error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

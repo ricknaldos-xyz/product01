@@ -8,6 +8,7 @@ import { BadgeCard } from '@/components/gamification/BadgeCard'
 import { BadgeDefinition } from '@/lib/badges'
 import { BadgeType } from '@prisma/client'
 import { Award, ChevronRight } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
 interface UserBadge {
   id: string
@@ -33,7 +34,7 @@ export function RecentBadgesCard() {
           setBadges(data.slice(0, 4)) // Only show recent 4
         }
       } catch (error) {
-        console.error('Failed to fetch badges:', error)
+        logger.error('Failed to fetch badges:', error)
       } finally {
         setLoading(false)
       }

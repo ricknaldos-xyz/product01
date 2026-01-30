@@ -6,6 +6,7 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import { Clock, Zap, Truck, MapPin, Shield, Loader2 } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
 interface CoverageData {
   districts: string[]
@@ -25,7 +26,7 @@ export default function EncordadoPage() {
           setCoverage(data)
         }
       } catch {
-        console.error('Error fetching coverage')
+        logger.error('Error fetching coverage')
       } finally {
         setLoadingCoverage(false)
       }
