@@ -36,7 +36,7 @@ export function MediaPreview({ items }: MediaPreviewProps) {
             >
               {item.type === 'VIDEO' ? (
                 <video
-                  src={item.url}
+                  src={item.url + '#t=0.5'}
                   preload="metadata"
                   playsInline
                   muted

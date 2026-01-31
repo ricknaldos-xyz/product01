@@ -7,6 +7,13 @@ import { GlassBadge } from '@/components/ui/glass-badge'
 import { getCategoryLabel, SEVERITY_CONFIG, type Severity } from '@/lib/analysis-constants'
 import { cn } from '@/lib/utils'
 
+const SEVERITY_BG: Record<string, string> = {
+  CRITICAL: 'bg-red-500/10',
+  HIGH: 'bg-orange-500/10',
+  MEDIUM: 'bg-yellow-500/10',
+  LOW: 'bg-blue-500/10',
+}
+
 interface Issue {
   id: string
   title: string
@@ -22,12 +29,39 @@ interface IssueAccordionProps {
 }
 
 export function IssueAccordion({ issues }: IssueAccordionProps) {
-  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+
+  const toggleExpand = (id: string) => {
+    setExpandedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const allExpanded = issues.length > 0 && issues.every(i => expandedIds.has(i.id))
+
+  const toggleAll = () => {
+    if (allExpanded) {
+      setExpandedIds(new Set())
+    } else {
+      setExpandedIds(new Set(issues.map(i => i.id)))
+    }
+  }
 
   return (
     <div className="space-y-3">
+      <div className="flex justify-end">
+        <button
+          onClick={toggleAll}
+          className="text-xs text-primary hover:underline"
+        >
+          {allExpanded ? 'Colapsar todos' : 'Expandir todos'}
+        </button>
+      </div>
       {issues.map((issue, index) => {
-        const isExpanded = expandedId === issue.id
+        const isExpanded = expandedIds.has(issue.id)
         const { label: categoryLabel, icon: categoryIcon } = getCategoryLabel(issue.category)
         const severity = SEVERITY_CONFIG[issue.severity as Severity]
 
@@ -35,13 +69,13 @@ export function IssueAccordion({ issues }: IssueAccordionProps) {
           <GlassCard key={issue.id} intensity="light" padding="none">
             {/* Header - always visible */}
             <button
-              onClick={() => setExpandedId(isExpanded ? null : issue.id)}
+              onClick={() => toggleExpand(issue.id)}
               className="w-full flex items-center gap-3 p-4 text-left hover:bg-glass-light/30 transition-colors rounded-xl"
             >
               {/* Number circle */}
               <div className={cn(
                 'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0',
-                severity ? `bg-${issue.severity === 'CRITICAL' ? 'red' : issue.severity === 'HIGH' ? 'orange' : issue.severity === 'MEDIUM' ? 'yellow' : 'blue'}-500/10` : 'glass-ultralight'
+                SEVERITY_BG[issue.severity] ?? 'glass-ultralight'
               )}>
                 <span className={severity?.color ?? 'text-muted-foreground'}>{index + 1}</span>
               </div>

@@ -5,8 +5,10 @@ import Link from 'next/link'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
-import { Video, ArrowRight, TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Video, ArrowRight, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, Loader2, AlertCircle, ArrowUpDown } from 'lucide-react'
 import { formatRelativeTime } from '@/lib/utils'
+import { getScoreBorderColor } from '@/lib/analysis-constants'
+import { ScoreRing } from '@/components/analysis/ScoreRing'
 
 interface AnalysisItem {
   id: string
@@ -33,17 +35,26 @@ const STATUS_FILTERS = [
   { value: 'FAILED', label: 'Error' },
 ]
 
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Recientes' },
+  { value: 'best', label: 'Mejor score' },
+  { value: 'worst', label: 'Peor score' },
+] as const
+
+type SortOption = typeof SORT_OPTIONS[number]['value']
+
 const ITEMS_PER_PAGE = 10
 
-function getScoreColor(score: number): string {
-  if (score >= 8) return 'text-green-500'
-  if (score >= 6) return 'text-yellow-500'
-  return 'text-red-500'
-}
+const QUICK_START_TECHNIQUES = [
+  { name: 'Saque', icon: '🎾' },
+  { name: 'Derecha', icon: '💪' },
+  { name: 'Reves', icon: '🔄' },
+]
 
 export function AnalysesList({ analyses }: AnalysesListProps) {
   const [sportFilter, setSportFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [sortBy, setSortBy] = useState<SortOption>('recent')
   const [page, setPage] = useState(1)
 
   // Extract unique sports
@@ -57,16 +68,42 @@ export function AnalysesList({ analyses }: AnalysesListProps) {
 
   // Filter
   const filtered = useMemo(() => {
-    return analyses.filter((a) => {
+    const result = analyses.filter((a) => {
       if (sportFilter && a.technique.sport.slug !== sportFilter) return false
       if (statusFilter && a.status !== statusFilter) return false
       return true
     })
-  }, [analyses, sportFilter, statusFilter])
+
+    // Sort
+    result.sort((a, b) => {
+      if (sortBy === 'best') {
+        return (b.overallScore ?? -1) - (a.overallScore ?? -1)
+      }
+      if (sortBy === 'worst') {
+        return (a.overallScore ?? 999) - (b.overallScore ?? 999)
+      }
+      // recent (default) — by createdAt desc
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    })
+
+    return result
+  }, [analyses, sportFilter, statusFilter, sortBy])
+
+  // Stats for completed analyses
+  const stats = useMemo(() => {
+    const completed = filtered.filter((a) => a.status === 'COMPLETED' && a.overallScore != null)
+    if (completed.length === 0) return null
+    const scores = completed.map((a) => a.overallScore!)
+    const avg = scores.reduce((sum, s) => sum + s, 0) / scores.length
+    const best = Math.max(...scores)
+    return { count: completed.length, avg, best }
+  }, [filtered])
 
   // Paginate
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE)
+  const start = (page - 1) * ITEMS_PER_PAGE + 1
+  const end = Math.min(page * ITEMS_PER_PAGE, filtered.length)
 
   // Reset page on filter change
   const handleSportFilter = (slug: string) => {
@@ -77,45 +114,79 @@ export function AnalysesList({ analyses }: AnalysesListProps) {
     setStatusFilter(status)
     setPage(1)
   }
+  const handleSort = (sort: SortOption) => {
+    setSortBy(sort)
+    setPage(1)
+  }
 
   return (
     <div className="space-y-4">
-      {/* Sport filter tabs */}
-      {sports.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          <GlassButton
-            variant={sportFilter === '' ? 'solid' : 'outline'}
-            size="sm"
-            onClick={() => handleSportFilter('')}
-          >
-            Todos
-          </GlassButton>
-          {sports.map((sport) => (
+      {/* Compact filter bar — single row */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 flex-wrap">
+        {/* Sport filters (only if multiple sports) */}
+        {sports.length > 1 && (
+          <>
             <GlassButton
-              key={sport.slug}
-              variant={sportFilter === sport.slug ? 'solid' : 'outline'}
+              variant={sportFilter === '' ? 'solid' : 'outline'}
               size="sm"
-              onClick={() => handleSportFilter(sport.slug)}
+              onClick={() => handleSportFilter('')}
+              className="h-7 px-3 text-xs rounded-full"
             >
-              {sport.slug === 'tennis' ? '🎾' : '🏅'} {sport.name}
+              Todos
             </GlassButton>
-          ))}
-        </div>
-      )}
+            {sports.map((sport) => (
+              <GlassButton
+                key={sport.slug}
+                variant={sportFilter === sport.slug ? 'solid' : 'outline'}
+                size="sm"
+                onClick={() => handleSportFilter(sport.slug)}
+                className="h-7 px-3 text-xs rounded-full"
+              >
+                {sport.slug === 'tennis' ? '🎾' : '🏅'} {sport.name}
+              </GlassButton>
+            ))}
+            <div className="w-px h-5 bg-border mx-1 flex-shrink-0" />
+          </>
+        )}
 
-      {/* Status filter */}
-      <div className="flex gap-2 overflow-x-auto pb-1">
+        {/* Status filters */}
         {STATUS_FILTERS.map((filter) => (
           <GlassButton
             key={filter.value}
             variant={statusFilter === filter.value ? 'solid' : 'ghost'}
             size="sm"
             onClick={() => handleStatusFilter(filter.value)}
+            className="h-7 px-3 text-xs rounded-full"
           >
             {filter.label}
           </GlassButton>
         ))}
+
+        {/* Sort dropdown */}
+        <div className="ml-auto flex-shrink-0">
+          <div className="flex items-center gap-1">
+            <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
+            {SORT_OPTIONS.map((opt) => (
+              <GlassButton
+                key={opt.value}
+                variant={sortBy === opt.value ? 'solid' : 'ghost'}
+                size="sm"
+                onClick={() => handleSort(opt.value)}
+                className="h-7 px-3 text-xs rounded-full"
+              >
+                {opt.label}
+              </GlassButton>
+            ))}
+          </div>
+        </div>
       </div>
+
+      {/* Stats summary */}
+      {stats && (
+        <div className="text-sm text-muted-foreground">
+          {stats.count} analisis completados &bull; Promedio: {stats.avg.toFixed(1)}/10 &bull; Mejor: {stats.best.toFixed(1)}/10
+        </div>
+      )}
 
       {/* Analysis cards */}
       {paginated.length > 0 ? (
@@ -125,28 +196,54 @@ export function AnalysesList({ analyses }: AnalysesListProps) {
               ? analysis.overallScore - analysis.previousAnalysis.overallScore
               : null
 
+            const hasScore = analysis.overallScore != null
+            const borderColor = hasScore ? getScoreBorderColor(analysis.overallScore!) : 'border-l-muted-foreground/30'
+
             return (
               <GlassCard
                 key={analysis.id}
                 intensity="light"
                 padding="lg"
                 hover="lift"
-                className="flex items-center gap-4 cursor-pointer"
+                className={`flex items-center gap-4 cursor-pointer border-l-4 ${borderColor}`}
                 asChild
               >
                 <Link href={`/analyses/${analysis.id}`}>
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 glass-primary border-glass rounded-xl flex items-center justify-center text-2xl sm:text-3xl flex-shrink-0">
-                    {analysis.technique.sport.slug === 'tennis' ? '🎾' : '🏅'}
+                  {/* Left: Mini ScoreRing or status icon */}
+                  <div className="flex-shrink-0 flex flex-col items-center gap-1">
+                    {hasScore ? (
+                      <ScoreRing score={analysis.overallScore!} size="sm" />
+                    ) : (
+                      <div className="w-[60px] h-[60px] glass-primary border-glass rounded-xl flex items-center justify-center">
+                        {analysis.status === 'PROCESSING' ? (
+                          <Loader2 className="h-6 w-6 text-yellow-500 animate-spin" />
+                        ) : analysis.status === 'FAILED' ? (
+                          <AlertCircle className="h-6 w-6 text-red-500" />
+                        ) : (
+                          <Video className="h-6 w-6 text-muted-foreground" />
+                        )}
+                      </div>
+                    )}
+                    {/* Delta indicator next to mini ring */}
+                    {scoreDelta !== null && scoreDelta !== 0 && (
+                      <div className={`flex items-center gap-0.5 text-xs font-medium ${scoreDelta > 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                        {scoreDelta > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                        {scoreDelta > 0 ? '+' : ''}{scoreDelta.toFixed(1)}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-sm sm:text-base truncate">{analysis.technique.name}</h3>
-                      {analysis.variant && (
-                        <span className="text-sm text-muted-foreground hidden sm:inline">
-                          - {analysis.variant.name}
-                        </span>
-                      )}
+                      <h3 className="font-semibold text-sm sm:text-base truncate">
+                        {analysis.technique.name}
+                        {analysis.variant && (
+                          <span className="text-muted-foreground font-normal"> - {analysis.variant.name}</span>
+                        )}
+                      </h3>
+                      <span className="text-xs text-muted-foreground flex-shrink-0">
+                        {formatRelativeTime(new Date(analysis.createdAt))}
+                      </span>
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {analysis.technique.sport.name}
@@ -177,31 +274,10 @@ export function AnalysesList({ analyses }: AnalysesListProps) {
                           {analysis._count.issues} problema{analysis._count.issues > 1 ? 's' : ''}
                         </span>
                       )}
-                      <span className="text-muted-foreground text-xs">
-                        {formatRelativeTime(new Date(analysis.createdAt))}
-                      </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    {analysis.overallScore != null && (
-                      <div className="text-center">
-                        <div className="glass-primary border-glass rounded-xl px-3 py-2">
-                          <div className={`text-xl sm:text-2xl font-bold ${getScoreColor(analysis.overallScore)}`}>
-                            {analysis.overallScore.toFixed(1)}
-                          </div>
-                          <div className="text-xs text-muted-foreground">/10</div>
-                        </div>
-                        {scoreDelta !== null && scoreDelta !== 0 && (
-                          <div className={`flex items-center justify-center gap-0.5 mt-1 text-xs font-medium ${scoreDelta > 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                            {scoreDelta > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                            {scoreDelta > 0 ? '+' : ''}{scoreDelta.toFixed(1)}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    <ArrowRight className="h-5 w-5 text-muted-foreground hidden sm:block" />
-                  </div>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground hidden sm:block flex-shrink-0" />
                 </Link>
               </GlassCard>
             )
@@ -221,9 +297,31 @@ export function AnalysesList({ analyses }: AnalysesListProps) {
               : 'Sube tu primer video para que nuestra IA analice tu tecnica y te de recomendaciones personalizadas'}
           </p>
           {!sportFilter && !statusFilter && (
-            <GlassButton variant="solid" size="lg" asChild>
-              <Link href="/analyze">Crear primer analisis</Link>
-            </GlassButton>
+            <>
+              <GlassButton variant="solid" size="lg" asChild>
+                <Link href="/analyze">Crear primer analisis</Link>
+              </GlassButton>
+              <div className="mt-8">
+                <p className="text-sm text-muted-foreground mb-4">Empieza analizando una de estas tecnicas:</p>
+                <div className="flex justify-center gap-3">
+                  {QUICK_START_TECHNIQUES.map((t) => (
+                    <GlassCard
+                      key={t.name}
+                      intensity="light"
+                      padding="md"
+                      hover="lift"
+                      className="cursor-pointer text-center"
+                      asChild
+                    >
+                      <Link href="/analyze">
+                        <div className="text-2xl mb-1">{t.icon}</div>
+                        <div className="text-sm font-medium">{t.name}</div>
+                      </Link>
+                    </GlassCard>
+                  ))}
+                </div>
+              </div>
+            </>
           )}
         </GlassCard>
       )}
@@ -240,7 +338,7 @@ export function AnalysesList({ analyses }: AnalysesListProps) {
             <ChevronLeft className="h-4 w-4" />
           </GlassButton>
           <span className="text-sm text-muted-foreground">
-            Pagina {page} de {totalPages}
+            Mostrando {start}-{end} de {filtered.length} analisis
           </span>
           <GlassButton
             variant="outline"

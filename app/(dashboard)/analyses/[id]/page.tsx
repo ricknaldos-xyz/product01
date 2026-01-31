@@ -43,6 +43,7 @@ import { CategoryBreakdown } from '@/components/analysis/CategoryBreakdown'
 import { IssueAccordion } from '@/components/analysis/IssueAccordion'
 import { ShareButton } from '@/components/analysis/ShareButton'
 import { MediaPreview } from '@/components/analysis/MediaPreview'
+import { ProcessingPoller } from '@/components/analysis/ProcessingPoller'
 
 async function getAnalysis(id: string, userId: string) {
   return prisma.analysis.findFirst({
@@ -97,18 +98,21 @@ export default async function AnalysisDetailPage({
         </div>
         <div className="flex items-center gap-2">
           <ShareButton techniqueName={analysis.technique.name} score={analysis.overallScore} />
-          {analysis.overallScore && <ScoreRing score={analysis.overallScore} />}
+          {analysis.overallScore && <ScoreRing score={analysis.overallScore} size="sm" />}
         </div>
       </div>
 
       {/* Status Banner */}
       {analysis.status === 'PROCESSING' && (
-        <GlassCard intensity="light" padding="md" className="bg-warning/5 border-warning/20 flex items-center gap-3">
-          <div className="w-5 h-5 border-2 border-warning border-t-transparent rounded-full animate-spin" />
-          <p className="text-warning">
-            Tu analisis esta siendo procesado. Esto puede tomar unos segundos.
-          </p>
-        </GlassCard>
+        <>
+          <ProcessingPoller analysisId={analysis.id} />
+          <GlassCard intensity="light" padding="md" className="bg-warning/5 border-warning/20 flex items-center gap-3">
+            <div className="w-5 h-5 border-2 border-warning border-t-transparent rounded-full animate-spin" />
+            <p className="text-warning">
+              Tu analisis esta siendo procesado. Esto puede tomar unos segundos.
+            </p>
+          </GlassCard>
+        </>
       )}
 
       {analysis.status === 'FAILED' && (
@@ -223,7 +227,7 @@ export default async function AnalysisDetailPage({
                   Genera tu Plan de Entrenamiento
                 </h3>
                 <p className="text-muted-foreground mb-4 max-w-md mx-auto">
-                  Basado en los problemas detectados, podemos crear un plan
+                  Basado en los {analysis.issues.length} problemas detectados, podemos crear un plan
                   personalizado de ejercicios para mejorar tu tecnica
                 </p>
                 <GlassButton variant="solid" asChild>

@@ -44,6 +44,13 @@ export function getScoreRingColor(score: number): string {
   return '#ef4444' // red-500
 }
 
+export function getScoreBorderColor(score: number): string {
+  if (score >= 8) return 'border-l-emerald-500'
+  if (score >= 6) return 'border-l-yellow-500'
+  if (score >= 4) return 'border-l-orange-500'
+  return 'border-l-red-500'
+}
+
 export function getScoreLabel(score: number): string {
   if (score >= 9) return 'Excelente'
   if (score >= 8) return 'Muy bueno'

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 
@@ -23,6 +23,20 @@ export function MediaLightbox({ items, currentIndex, onClose, onNavigate }: Medi
   const item = items[currentIndex]
   const hasPrev = currentIndex > 0
   const hasNext = currentIndex < items.length - 1
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.touches[0].clientX)
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart === null) return
+    const diff = touchStart - e.changedTouches[0].clientX
+    const threshold = 50
+    if (diff > threshold && hasNext) onNavigate(currentIndex + 1)
+    if (diff < -threshold && hasPrev) onNavigate(currentIndex - 1)
+    setTouchStart(null)
+  }
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') onClose()
@@ -70,12 +84,17 @@ export function MediaLightbox({ items, currentIndex, onClose, onNavigate }: Medi
       )}
 
       {/* Media content */}
-      <div className="relative max-w-4xl max-h-[85vh] w-full mx-4">
+      <div
+        className="relative max-w-4xl max-h-[85vh] w-full mx-4"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {item.type === 'VIDEO' ? (
           <video
             src={item.url}
             controls
             autoPlay
+            muted
             playsInline
             className="w-full max-h-[85vh] rounded-xl bg-black"
           />

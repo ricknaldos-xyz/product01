@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { GlassButton } from '@/components/ui/glass-button'
 import { logger } from '@/lib/logger'
@@ -14,6 +14,7 @@ import {
   X,
   Check,
   Sparkles,
+  Trophy,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSport } from '@/contexts/SportContext'
@@ -94,6 +95,11 @@ export default function AnalyzePage() {
   const [uploadedMediaItems, setUploadedMediaItems] = useState<
     Array<{ url: string; type: string; filename: string; size: number }>
   >([])
+  const [isDragging, setIsDragging] = useState(false)
+  const [processingElapsed, setProcessingElapsed] = useState(0)
+  const processingTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const [initialStepApplied, setInitialStepApplied] = useState(false)
+  const [currentUploadingFile, setCurrentUploadingFile] = useState<string>('')
 
   // Fetch sports on mount and pre-select active sport
   useEffect(() => {
@@ -114,6 +120,14 @@ export default function AnalyzePage() {
         setLoadingSports(false)
       })
   }, [activeSport])
+
+  // Skip sport step when pre-selected from context
+  useEffect(() => {
+    if (!initialStepApplied && selectedSport && activeSport && step === 'sport' && !loadingSports) {
+      setStep('technique')
+      setInitialStepApplied(true)
+    }
+  }, [selectedSport, activeSport, step, loadingSports, initialStepApplied])
 
   // Fetch techniques when sport is selected
   useEffect(() => {
@@ -147,8 +161,33 @@ export default function AnalyzePage() {
     }
   }, [selectedTechnique, selectedSport])
 
+  // Processing timer
+  useEffect(() => {
+    if (processing) {
+      setProcessingElapsed(0)
+      processingTimerRef.current = setInterval(() => {
+        setProcessingElapsed((prev) => prev + 1)
+      }, 1000)
+    } else {
+      if (processingTimerRef.current) {
+        clearInterval(processingTimerRef.current)
+        processingTimerRef.current = null
+      }
+      setProcessingElapsed(0)
+    }
+    return () => {
+      if (processingTimerRef.current) {
+        clearInterval(processingTimerRef.current)
+      }
+    }
+  }, [processing])
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || [])
+    addFiles(selectedFiles)
+  }
+
+  const addFiles = (selectedFiles: File[]) => {
     const validFiles = selectedFiles.filter((file) => {
       const isVideo = file.type.startsWith('video/')
       const isImage = file.type.startsWith('image/')
@@ -172,6 +211,26 @@ export default function AnalyzePage() {
     setFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    const droppedFiles = Array.from(e.dataTransfer.files)
+    addFiles(droppedFiles)
+  }
+
   async function uploadFiles(): Promise<
     Array<{ url: string; type: string; filename: string; size: number }>
   > {
@@ -184,7 +243,8 @@ export default function AnalyzePage() {
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
-      setUploadProgress(files.length > 1 ? `Subiendo ${i + 1} de ${files.length}...` : 'Subiendo...')
+      setCurrentUploadingFile(file.name)
+      setUploadProgress(files.length > 1 ? `Subiendo ${i + 1} de ${files.length} — ${file.name}` : 'Subiendo...')
 
       const isVideo = file.type.startsWith('video/')
 
@@ -215,6 +275,7 @@ export default function AnalyzePage() {
     }
 
     setUploadProgress('')
+    setCurrentUploadingFile('')
     return mediaItems
   }
 
@@ -436,7 +497,7 @@ export default function AnalyzePage() {
         break
       case 'upload':
         if (autoDetectMode) {
-          setStep('sport')
+          setStep('technique')
         } else if (variants.length > 0) {
           setStep('variant')
         } else {
@@ -446,6 +507,13 @@ export default function AnalyzePage() {
       case 'detection-confirm':
         setStep('upload')
         break
+    }
+  }
+
+  const navigateToStep = (targetStepId: string) => {
+    const targetIndex = steps.findIndex((s) => s.id === targetStepId)
+    if (targetIndex < currentStepIndex) {
+      setStep(targetStepId as Step)
     }
   }
 
@@ -499,7 +567,9 @@ export default function AnalyzePage() {
             })}
           </div>
           <p className="text-sm text-muted-foreground text-center mt-6">
-            Esto puede tomar unos segundos...
+            {processingElapsed >= 30
+              ? 'Tomando mas tiempo de lo esperado, por favor espera...'
+              : 'Esto puede tomar unos segundos...'}
           </p>
         </GlassCard>
       </div>
@@ -533,20 +603,28 @@ export default function AnalyzePage() {
                 i < steps.length - 1 && 'flex-1'
               )}
             >
-              <div
-                className={cn(
-                  'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-[var(--duration-normal)]',
-                  i <= currentStepIndex
-                    ? 'bg-primary text-primary-foreground shadow-glass-glow'
-                    : 'glass-ultralight border-glass text-muted-foreground'
-                )}
-              >
-                {i < currentStepIndex ? (
+              {i < currentStepIndex ? (
+                <button
+                  onClick={() => navigateToStep(s.id)}
+                  className={cn(
+                    'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-[var(--duration-normal)] cursor-pointer',
+                    'bg-primary text-primary-foreground shadow-glass-glow hover:opacity-80'
+                  )}
+                >
                   <Check className="h-4 w-4" />
-                ) : (
-                  i + 1
-                )}
-              </div>
+                </button>
+              ) : (
+                <div
+                  className={cn(
+                    'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-[var(--duration-normal)]',
+                    i <= currentStepIndex
+                      ? 'bg-primary text-primary-foreground shadow-glass-glow'
+                      : 'glass-ultralight border-glass text-muted-foreground'
+                  )}
+                >
+                  {i + 1}
+                </div>
+              )}
               {i < steps.length - 1 && (
                 <div
                   className={cn(
@@ -558,7 +636,7 @@ export default function AnalyzePage() {
             </div>
           ))}
         </div>
-        <div className="hidden sm:flex justify-between text-sm">
+        <div className="flex justify-between text-sm">
           {steps.map((s) => (
             <span
               key={s.id}
@@ -599,35 +677,12 @@ export default function AnalyzePage() {
                         : 'glass-ultralight border-glass hover:glass-light'
                     )}
                   >
-                    <div className="text-3xl mb-2">
-                      {sport.slug === 'tennis' ? '🎾' : '🏅'}
+                    <div className="w-10 h-10 rounded-lg glass-light border-glass flex items-center justify-center mb-2">
+                      <Trophy className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <h3 className="font-medium">{sport.name}</h3>
                   </button>
                 ))}
-              </div>
-            )}
-
-            {/* Auto-detect toggle */}
-            {selectedSport && (
-              <div className="mt-6 pt-6 border-t border-glass">
-                <button
-                  onClick={() => setAutoDetectMode(!autoDetectMode)}
-                  className={cn(
-                    'w-full p-4 rounded-xl text-left transition-all duration-[var(--duration-normal)] flex items-center gap-3',
-                    autoDetectMode
-                      ? 'glass-primary border-glass shadow-glass-glow'
-                      : 'glass-ultralight border-glass hover:glass-light'
-                  )}
-                >
-                  <Sparkles className={cn('h-5 w-5', autoDetectMode ? 'text-primary' : 'text-muted-foreground')} />
-                  <div>
-                    <h3 className="font-medium">Auto-detectar tecnica</h3>
-                    <p className="text-sm text-muted-foreground">
-                      La IA identifica automaticamente la tecnica desde tu video
-                    </p>
-                  </div>
-                </button>
               </div>
             )}
           </div>
@@ -646,10 +701,39 @@ export default function AnalyzePage() {
               </div>
             ) : (
               <div className="grid gap-3">
+                {/* Auto-detect option as first card */}
+                <button
+                  onClick={() => {
+                    setAutoDetectMode(true)
+                    setSelectedTechnique(null)
+                    setStep('upload')
+                  }}
+                  className={cn(
+                    'p-4 rounded-xl text-left transition-all duration-[var(--duration-normal)]',
+                    'glass-ultralight border-glass hover:glass-light',
+                    'relative overflow-hidden'
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg glass-primary border-glass flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Detectar automaticamente</h3>
+                      <p className="text-sm text-muted-foreground">
+                        La IA identifica la tecnica desde tu video
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
                 {techniques.map((technique) => (
                   <button
                     key={technique.id}
-                    onClick={() => setSelectedTechnique(technique)}
+                    onClick={() => {
+                      setAutoDetectMode(false)
+                      setSelectedTechnique(technique)
+                    }}
                     className={cn(
                       'p-4 rounded-xl text-left transition-all duration-[var(--duration-normal)]',
                       selectedTechnique?.id === technique.id
@@ -746,7 +830,17 @@ export default function AnalyzePage() {
             <VideoRequirements />
             <VideoGuidelines />
 
-            <div className="border-2 border-dashed border-glass rounded-xl p-4 sm:p-8 text-center hover:border-primary/50 hover:glass-ultralight transition-all duration-[var(--duration-normal)] mt-4">
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={cn(
+                'border-2 border-dashed rounded-xl p-4 sm:p-8 text-center transition-all duration-[var(--duration-normal)] mt-4',
+                isDragging
+                  ? 'border-primary bg-primary/5 scale-[1.02]'
+                  : 'border-glass hover:border-primary/50 hover:glass-ultralight'
+              )}
+            >
               <input
                 type="file"
                 id="file-upload"
@@ -763,7 +857,7 @@ export default function AnalyzePage() {
                   Arrastra archivos o haz clic para seleccionar
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Videos (max 100MB) o imagenes (max 10MB)
+                  Videos (max 100MB) o imagenes (max 10MB) — Hasta 5 archivos
                 </p>
               </label>
             </div>
@@ -773,13 +867,16 @@ export default function AnalyzePage() {
                 {files.map((file, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-3 glass-ultralight border-glass rounded-xl"
+                    className={cn(
+                      'flex items-center justify-between p-3 glass-ultralight border-glass rounded-xl',
+                      uploading && currentUploadingFile === file.name && 'ring-1 ring-primary/50'
+                    )}
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-black">
                         {file.type.startsWith('video/') ? (
                           <video
-                            src={URL.createObjectURL(file)}
+                            src={URL.createObjectURL(file) + '#t=0.5'}
                             className="w-full h-full object-cover"
                             preload="metadata"
                             muted
@@ -799,12 +896,16 @@ export default function AnalyzePage() {
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {(file.size / 1024 / 1024).toFixed(2)} MB
+                          {uploading && currentUploadingFile === file.name && (
+                            <span className="ml-2 text-primary">Subiendo...</span>
+                          )}
                         </p>
                       </div>
                     </div>
                     <button
                       onClick={() => removeFile(index)}
                       className="p-1.5 hover:glass-light rounded-lg transition-colors"
+                      disabled={uploading}
                     >
                       <X className="h-4 w-4" />
                     </button>
