@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { SkillTier } from '@prisma/client'
 
 const DEFAULT_WEIGHT = 0.6
-const MIN_TECHNIQUES_FOR_RANKING = 3
+export const MIN_TECHNIQUES_FOR_RANKING = 5
 const MAX_RECENT_ANALYSES = 3
 
 // Category thresholds (0-100 scale) — Peruvian tennis categories
@@ -127,7 +127,7 @@ export function getTechniqueTierColor(tier: TechniqueTier): string {
  * 1. For each technique analyzed, get the best score from the last 3 analyses
  * 2. Read technique weights from DB (Technique.weight)
  * 3. Compute weighted average across techniques
- * 4. Require at least 3 different techniques for a ranked score
+ * 4. Require at least 5 different techniques for a ranked score
  * 5. Update SportProfile and PlayerProfile
  */
 export async function recalculateSkillScore(userId: string): Promise<void> {

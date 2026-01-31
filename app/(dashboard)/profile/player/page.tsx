@@ -14,6 +14,7 @@ import { TierBadge } from '@/components/player/TierBadge'
 import { TechniqueRadarChart } from '@/components/player/TechniqueRadarChart'
 import { Pencil, MapPin, Calendar, Hand, Trophy, Target } from 'lucide-react'
 import Link from 'next/link'
+import { ProfileRankingGuide } from '@/components/player/ProfileRankingGuide'
 
 export default async function PlayerProfilePage() {
   const session = await auth()
@@ -55,7 +56,7 @@ export default async function PlayerProfilePage() {
         {/* Skill Score Card */}
         <GlassCard intensity="light" padding="lg" className="md:col-span-1">
           <h3 className="text-sm font-medium text-muted-foreground mb-4 text-center">Skill Score</h3>
-          <SkillScoreDisplay score={profile.compositeScore} tier={profile.skillTier} />
+          <SkillScoreDisplay score={profile.compositeScore} tier={profile.skillTier} techniquesAnalyzed={profile.totalTechniques} />
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div className="glass-ultralight rounded-xl p-3 text-center">
               <p className="text-lg font-bold">{profile.totalAnalyses}</p>
@@ -156,6 +157,17 @@ export default async function PlayerProfilePage() {
           </div>
         </GlassCard>
       </div>
+
+      {/* Ranking Guide for unranked users */}
+      {profile.skillTier === 'UNRANKED' && (
+        <ProfileRankingGuide
+          techniqueScores={profile.techniqueScores.map(ts => ({
+            technique: { name: ts.technique.name, slug: ts.technique.slug },
+            bestScore: ts.bestScore ?? 0,
+          }))}
+          skillTier={profile.skillTier}
+        />
+      )}
 
       {/* Technique Radar Chart */}
       <GlassCard intensity="light" padding="lg">

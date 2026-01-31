@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
           countryRank: true,
           matchesPlayed: true,
           matchesWon: true,
+          totalTechniques: true,
           profile: {
             select: {
               userId: true,

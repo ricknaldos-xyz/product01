@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
         skillTier: true,
         globalRank: true,
         countryRank: true,
+        totalTechniques: true,
       },
     })
 
@@ -74,6 +75,7 @@ export async function GET(request: NextRequest) {
       },
       select: {
         bestScore: true,
+        lastAnalyzedAt: true,
         technique: {
           select: {
             name: true,
@@ -144,6 +146,7 @@ export async function GET(request: NextRequest) {
       techniqueBreakdown: techniqueScores.map((ts) => ({
         technique: { name: ts.technique.name, slug: ts.technique.slug },
         bestScore: ts.bestScore,
+        lastAnalyzedAt: ts.lastAnalyzedAt?.toISOString() ?? null,
       })),
     })
   } catch (error) {

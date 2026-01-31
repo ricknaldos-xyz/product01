@@ -90,6 +90,7 @@ export default function AnalyzePage() {
   const [autoDetectMode, setAutoDetectMode] = useState(false)
   const [detectionResult, setDetectionResult] = useState<DetectionResponse | null>(null)
   const [uploadProgress, setUploadProgress] = useState('')
+  const [processingStage, setProcessingStage] = useState(0)
   const [uploadedMediaItems, setUploadedMediaItems] = useState<
     Array<{ url: string; type: string; filename: string; size: number }>
   >([])
@@ -276,6 +277,7 @@ export default function AnalyzePage() {
 
   async function handleDetectionConfirm(techniqueId: string, variantId: string | null) {
     setProcessing(true)
+    setProcessingStage(1)
     setStep('processing')
 
     try {
@@ -304,6 +306,7 @@ export default function AnalyzePage() {
         throw new Error('Error al procesar analisis')
       }
 
+      setProcessingStage(2)
       toast.success('Analisis completado!')
       router.push(`/analyses/${analysis.id}`)
     } catch (error) {
@@ -342,6 +345,7 @@ export default function AnalyzePage() {
 
       setUploading(false)
       setProcessing(true)
+      setProcessingStage(1)
       setStep('processing')
 
       // Start AI processing
@@ -353,6 +357,7 @@ export default function AnalyzePage() {
         throw new Error('Error al procesar analisis')
       }
 
+      setProcessingStage(2)
       toast.success('Analisis completado!')
       router.push(`/analyses/${analysis.id}`)
     } catch (error) {
@@ -445,13 +450,56 @@ export default function AnalyzePage() {
   }
 
   if (processing) {
+    const stages = [
+      { icon: Upload, label: 'Subiendo video', activeLabel: 'Subiendo video...' },
+      { icon: Sparkles, label: 'Analizando tecnica', activeLabel: 'Analizando tecnica...' },
+      { icon: Check, label: 'Generando resultados', activeLabel: 'Generando resultados...' },
+    ]
+
     return (
-      <div className="max-w-2xl mx-auto py-12 text-center">
-        <GlassCard intensity="medium" padding="xl" className="space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
-          <h2 className="text-xl font-semibold">Analizando tu tecnica...</h2>
-          <p className="text-muted-foreground">
-            Nuestra IA esta revisando tu video. Esto puede tomar unos segundos.
+      <div className="max-w-2xl mx-auto py-12">
+        <GlassCard intensity="medium" padding="xl">
+          <div className="space-y-6">
+            {stages.map((stage, i) => {
+              const isCompleted = i < processingStage
+              const isActive = i === processingStage
+              const isPending = i > processingStage
+
+              return (
+                <div key={i} className="flex items-center gap-4">
+                  <div className={cn(
+                    'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-500',
+                    isCompleted ? 'bg-green-500 text-white' :
+                    isActive ? 'bg-primary text-primary-foreground shadow-glass-glow' :
+                    'glass-ultralight border-glass text-muted-foreground'
+                  )}>
+                    {isCompleted ? (
+                      <Check className="h-5 w-5" />
+                    ) : isActive ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <stage.icon className="h-5 w-5" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className={cn(
+                      'font-medium transition-colors',
+                      isCompleted ? 'text-green-600' :
+                      isActive ? 'text-foreground' :
+                      'text-muted-foreground'
+                    )}>
+                      {isActive ? stage.activeLabel : stage.label}
+                    </p>
+                  </div>
+                  {isCompleted && (
+                    <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          <p className="text-sm text-muted-foreground text-center mt-6">
+            Esto puede tomar unos segundos...
           </p>
         </GlassCard>
       </div>
@@ -728,8 +776,22 @@ export default function AnalyzePage() {
                     className="flex items-center justify-between p-3 glass-ultralight border-glass rounded-xl"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 glass-primary border-glass rounded-lg flex items-center justify-center">
-                        {file.type.startsWith('video/') ? '🎬' : '📷'}
+                      <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-black">
+                        {file.type.startsWith('video/') ? (
+                          <video
+                            src={URL.createObjectURL(file)}
+                            className="w-full h-full object-cover"
+                            preload="metadata"
+                            muted
+                          />
+                        ) : (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={URL.createObjectURL(file)}
+                            className="w-full h-full object-cover"
+                            alt=""
+                          />
+                        )}
                       </div>
                       <div>
                         <p className="text-sm font-medium truncate max-w-[200px]">

@@ -8,6 +8,7 @@ import {
   Radar,
   ResponsiveContainer,
 } from 'recharts'
+import { MIN_TECHNIQUES_FOR_RANKING } from '@/lib/skill-score'
 
 interface TechniqueData {
   technique: { name: string; slug: string }
@@ -20,11 +21,11 @@ interface TechniqueRadarChartProps {
 }
 
 export function TechniqueRadarChart({ data, className }: TechniqueRadarChartProps) {
-  if (data.length < 3) {
+  if (data.length < MIN_TECHNIQUES_FOR_RANKING) {
     return (
       <div className={className}>
         <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
-          Necesitas al menos 3 tecnicas analizadas para ver el radar
+          {`Necesitas al menos ${MIN_TECHNIQUES_FOR_RANKING} tecnicas analizadas para ver el radar`}
         </div>
       </div>
     )

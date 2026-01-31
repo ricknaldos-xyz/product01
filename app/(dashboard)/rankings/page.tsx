@@ -6,6 +6,7 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { TierBadge } from '@/components/player/TierBadge'
 import { RankingHero } from '@/components/rankings/RankingHero'
+import { ImprovementPath } from '@/components/rankings/ImprovementPath'
 import { TopPodium } from '@/components/rankings/TopPodium'
 import { CategoryExplainer } from '@/components/rankings/CategoryExplainer'
 import { RankingTable, type RankingEntry } from '@/components/rankings/RankingTable'
@@ -126,6 +127,13 @@ export default function RankingsPage() {
       {/* Hero: self-contained, fetches own data */}
       <RankingHero />
 
+      {/* Improvement path for ranked users */}
+      <ImprovementPath />
+
+      {myPosition?.skillTier === 'UNRANKED' && (
+        <CategoryExplainer currentTier={myPosition?.skillTier} />
+      )}
+
       {/* Top 3 Podium (only when showing "Todos" unfiltered on page 1) */}
       {!isFiltered && page === 1 && !loading && !error && (
         <TopPodium players={podiumPlayers} />
@@ -217,7 +225,9 @@ export default function RankingsPage() {
       )}
 
       {/* Category explainer */}
-      <CategoryExplainer currentTier={myPosition?.skillTier} />
+      {myPosition?.skillTier !== 'UNRANKED' && (
+        <CategoryExplainer currentTier={myPosition?.skillTier} />
+      )}
     </div>
   )
 }

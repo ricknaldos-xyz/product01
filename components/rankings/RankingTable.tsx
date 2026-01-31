@@ -136,7 +136,9 @@ export function RankingTable({ rankings, loading, currentUserId }: RankingTableP
             </div>
 
             {/* Tier */}
-            <TierBadge tier={player.skillTier} size="sm" />
+            <div className="flex items-center gap-1">
+              <TierBadge tier={player.skillTier} size="sm" />
+            </div>
 
             {/* Score */}
             <span className="font-bold tabular-nums text-sm text-right">

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { TierBadge } from '@/components/player/TierBadge'
+import { RankingJourney } from '@/components/rankings/RankingJourney'
 import { Share2, Loader2, TrendingUp, TrendingDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { useSport } from '@/contexts/SportContext'
@@ -25,7 +26,7 @@ interface MyPositionData {
   totalInCountry: number
   totalInTier: number
   previousRank?: number | null
-  techniqueBreakdown?: { technique: { name: string; slug: string }; bestScore: number }[]
+  techniqueBreakdown?: { technique: { name: string; slug: string }; bestScore: number; lastAnalyzedAt?: string | null }[]
 }
 
 export function RankingHero() {
@@ -67,16 +68,11 @@ export function RankingHero() {
 
   if (isUnranked) {
     return (
-      <GlassCard intensity="primary" padding="lg">
-        <div className="text-center space-y-3 py-2">
-          <p className="text-muted-foreground">
-            Analiza 3+ tecnicas para obtener tu categoria
-          </p>
-          <Link href="/analyze">
-            <GlassButton variant="solid">Analizar video</GlassButton>
-          </Link>
-        </div>
-      </GlassCard>
+      <RankingJourney
+        techniqueBreakdown={data.techniqueBreakdown ?? []}
+        skillTier={data.skillTier}
+        variant="full"
+      />
     )
   }
 

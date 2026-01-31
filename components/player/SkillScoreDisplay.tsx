@@ -2,22 +2,26 @@
 
 import { cn } from '@/lib/utils'
 import { TierBadge } from './TierBadge'
+import { MIN_TECHNIQUES_FOR_RANKING } from '@/lib/skill-score'
 import type { SkillTier } from '@prisma/client'
 
 interface SkillScoreDisplayProps {
   score: number | null
   tier: SkillTier
   className?: string
+  techniquesAnalyzed?: number
 }
 
-export function SkillScoreDisplay({ score, tier, className }: SkillScoreDisplayProps) {
+export function SkillScoreDisplay({ score, tier, className, techniquesAnalyzed }: SkillScoreDisplayProps) {
   if (score === null || tier === 'UNRANKED') {
     return (
       <div className={cn('text-center', className)}>
         <div className="text-4xl font-bold text-muted-foreground">--</div>
         <TierBadge tier="UNRANKED" size="sm" className="mt-2" />
         <p className="text-xs text-muted-foreground mt-1">
-          Analiza 3+ tecnicas para obtener tu score
+          {techniquesAnalyzed && techniquesAnalyzed > 0
+            ? `${techniquesAnalyzed}/${MIN_TECHNIQUES_FOR_RANKING} tecnicas analizadas`
+            : `Analiza ${MIN_TECHNIQUES_FOR_RANKING}+ tecnicas para obtener tu score`}
         </p>
       </div>
     )

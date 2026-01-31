@@ -72,7 +72,7 @@ export function CategoryExplainer({ currentTier }: CategoryExplainerProps) {
         </div>
         <p className="text-xs text-muted-foreground leading-relaxed">
           Tu categoria se calcula automaticamente a partir del analisis de video de tus tecnicas.
-          Analiza al menos 3 tecnicas diferentes para obtener tu categoria.
+          Analiza al menos 5 tecnicas diferentes para obtener tu categoria.
         </p>
       </div>
     </GlassCard>

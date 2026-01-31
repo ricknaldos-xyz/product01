@@ -8,11 +8,9 @@ export const metadata: Metadata = {
 }
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { Video, ArrowRight } from 'lucide-react'
+import { Video } from 'lucide-react'
 import { GlassButton } from '@/components/ui/glass-button'
-import { GlassCard } from '@/components/ui/glass-card'
-import { GlassBadge } from '@/components/ui/glass-badge'
-import { formatRelativeTime } from '@/lib/utils'
+import { AnalysesList } from '@/components/analysis/AnalysesList'
 
 async function getAnalyses(userId: string) {
   return prisma.analysis.findMany({
@@ -23,6 +21,9 @@ async function getAnalyses(userId: string) {
         include: { sport: true },
       },
       variant: true,
+      previousAnalysis: {
+        select: { overallScore: true },
+      },
       _count: {
         select: { issues: true },
       },
@@ -35,6 +36,21 @@ export default async function AnalysesPage() {
   if (!session?.user) redirect('/login')
 
   const analyses = await getAnalyses(session.user.id)
+
+  // Serialize dates for client component
+  const serialized = analyses.map((a) => ({
+    id: a.id,
+    status: a.status,
+    overallScore: a.overallScore,
+    createdAt: a.createdAt.toISOString(),
+    technique: {
+      name: a.technique.name,
+      sport: { slug: a.technique.sport.slug, name: a.technique.sport.name },
+    },
+    variant: a.variant ? { name: a.variant.name } : null,
+    previousAnalysis: a.previousAnalysis ? { overallScore: a.previousAnalysis.overallScore } : null,
+    _count: a._count,
+  }))
 
   return (
     <div className="space-y-6">
@@ -53,97 +69,7 @@ export default async function AnalysesPage() {
         </GlassButton>
       </div>
 
-      {analyses.length > 0 ? (
-        <div className="grid gap-4">
-          {analyses.map((analysis) => (
-            <GlassCard
-              key={analysis.id}
-              intensity="light"
-              padding="lg"
-              hover="lift"
-              className="flex items-center gap-4 cursor-pointer"
-              asChild
-            >
-              <Link href={`/analyses/${analysis.id}`}>
-                <div className="w-16 h-16 glass-primary border-glass rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
-                  {analysis.technique.sport.slug === 'tennis' ? '🎾' : '🏅'}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold">{analysis.technique.name}</h3>
-                    {analysis.variant && (
-                      <span className="text-sm text-muted-foreground">
-                        - {analysis.variant.name}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {analysis.technique.sport.name}
-                  </p>
-                  <div className="flex items-center gap-3 mt-2 text-sm">
-                    <GlassBadge
-                      variant={
-                        analysis.status === 'COMPLETED'
-                          ? 'success'
-                          : analysis.status === 'PROCESSING'
-                          ? 'warning'
-                          : analysis.status === 'FAILED'
-                          ? 'destructive'
-                          : 'default'
-                      }
-                    >
-                      {analysis.status === 'COMPLETED'
-                        ? 'Completado'
-                        : analysis.status === 'PROCESSING'
-                        ? 'Procesando'
-                        : analysis.status === 'FAILED'
-                        ? 'Error'
-                        : 'Pendiente'}
-                    </GlassBadge>
-                    {analysis._count.issues > 0 && (
-                      <span className="text-muted-foreground">
-                        {analysis._count.issues} problema
-                        {analysis._count.issues > 1 ? 's' : ''} detectado
-                        {analysis._count.issues > 1 ? 's' : ''}
-                      </span>
-                    )}
-                    <span className="text-muted-foreground">
-                      {formatRelativeTime(analysis.createdAt)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4 flex-shrink-0">
-                  {analysis.overallScore && (
-                    <div className="text-center glass-primary border-glass rounded-xl px-3 py-2">
-                      <div className="text-2xl font-bold text-primary">
-                        {analysis.overallScore.toFixed(1)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">/10</div>
-                    </div>
-                  )}
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                </div>
-              </Link>
-            </GlassCard>
-          ))}
-        </div>
-      ) : (
-        <GlassCard intensity="light" padding="xl" className="text-center">
-          <div className="glass-ultralight border-glass rounded-2xl p-4 w-fit mx-auto mb-4">
-            <Video className="h-12 w-12 text-muted-foreground" />
-          </div>
-          <h3 className="text-lg font-medium mb-2">No tienes analisis aun</h3>
-          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            Sube tu primer video para que nuestra IA analice tu tecnica y te de
-            recomendaciones personalizadas
-          </p>
-          <GlassButton variant="solid" size="lg" asChild>
-            <Link href="/analyze">Crear primer analisis</Link>
-          </GlassButton>
-        </GlassCard>
-      )}
+      <AnalysesList analyses={serialized} />
     </div>
   )
 }

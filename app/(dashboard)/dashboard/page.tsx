@@ -20,6 +20,7 @@ import { StreakWidget } from '@/components/gamification/StreakWidget'
 import { GoalWidget } from '@/components/goals/GoalWidget'
 import { RecentBadgesCard } from '@/components/dashboard/RecentBadgesCard'
 import { ActivityHeatmap } from '@/components/gamification/ActivityHeatmap'
+import { DashboardRankingCard } from '@/components/dashboard/DashboardRankingCard'
 
 async function getStats(userId: string) {
   const [analysesCount, plansCount, completedPlans, recentAnalyses, user, userSportsCount] =
@@ -76,6 +77,9 @@ export default async function DashboardPage() {
         trainingPlanCount={stats.plansCount}
         hasSport={stats.userSportsCount > 0}
       />
+
+      {/* Ranking Progress / Position */}
+      <DashboardRankingCard />
 
       {/* Streak Widget */}
       <StreakWidget />
