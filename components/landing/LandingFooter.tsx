@@ -37,7 +37,7 @@ export function LandingFooter() {
               <span className="text-lg font-bold">SportTek</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              La plataforma integral para tu desarrollo en tenis, padel y pickleball. Analisis IA, rankings, torneos, coaches y comunidad.
+              La plataforma integral para tu desarrollo en tenis y padel. Analisis IA, rankings, torneos, coaches y comunidad.
             </p>
           </div>
 

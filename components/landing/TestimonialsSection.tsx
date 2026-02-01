@@ -34,7 +34,7 @@ const testimonials = [
   },
   {
     name: 'Maria L.',
-    role: 'Jugadora de pickleball',
+    role: 'Jugadora de padel',
     location: 'Surco, Peru',
     content:
       'Empece sin saber mi nivel real. Despues de 5 analisis tengo claro mis fortalezas y debilidades. El plan de entrenamiento me da ejercicios nuevos cada semana.',

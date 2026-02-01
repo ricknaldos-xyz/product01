@@ -31,7 +31,7 @@ export function CTASection() {
             </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
               Analisis IA, rankings, torneos, coaches, canchas y comunidad.
-              Todo lo que necesitas para tenis, padel y pickleball en una sola plataforma.
+              Todo lo que necesitas para tenis y padel en una sola plataforma.
             </p>
 
             {/* Value reminder */}

@@ -21,7 +21,7 @@ const providerTypes = [
     badge: 'Canchas',
     title: 'Registra tus canchas deportivas',
     description:
-      'Publica tus canchas de tenis, padel o pickleball en la plataforma. Los jugadores las encuentran por ubicacion, superficie y disponibilidad.',
+      'Publica tus canchas de tenis o padel en la plataforma. Los jugadores las encuentran por ubicacion, superficie y disponibilidad.',
     features: [
       { icon: CalendarCheck, text: 'Gestion de disponibilidad y horarios' },
       { icon: CreditCard, text: 'Reservas con pago integrado' },

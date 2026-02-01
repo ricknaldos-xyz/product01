@@ -2,9 +2,13 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const includeAll = searchParams.get('all') === 'true'
+
     const sports = await prisma.sport.findMany({
+      where: includeAll ? {} : { isActive: true },
       orderBy: { order: 'asc' },
       select: {
         id: true,

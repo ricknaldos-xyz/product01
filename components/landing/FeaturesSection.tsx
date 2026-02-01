@@ -106,7 +106,7 @@ const pillars = [
         icon: MapPin,
         title: 'Reserva de canchas',
         description:
-          'Canchas de tenis, padel y pickleball con disponibilidad en tiempo real y pago integrado.',
+          'Canchas de tenis y padel con disponibilidad en tiempo real y pago integrado.',
       },
       {
         icon: ShoppingBag,

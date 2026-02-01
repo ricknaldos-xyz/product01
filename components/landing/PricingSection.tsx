@@ -35,7 +35,7 @@ const plans = [
     features: [
       'Analisis ilimitados de video',
       'Planes de entrenamiento ilimitados',
-      'Tenis, Padel y Pickleball',
+      'Tenis y Padel',
       'Rankings multi-categoria completos',
       'Historial de progreso y estadisticas',
       'Matchmaking y desafios',

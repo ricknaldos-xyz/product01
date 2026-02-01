@@ -16,6 +16,7 @@ interface Sport {
   name: string
   icon: string | null
   description: string | null
+  isActive: boolean
 }
 
 const SPORT_EMOJI: Record<string, string> = {
@@ -37,7 +38,7 @@ export default function AddSportPage() {
     async function fetchData() {
       try {
         const [sportsRes, userSportsRes] = await Promise.all([
-          fetch('/api/sports'),
+          fetch('/api/sports?all=true'),
           fetch('/api/player/sports'),
         ])
 
@@ -57,7 +58,8 @@ export default function AddSportPage() {
     fetchData()
   }, [])
 
-  const availableSports = allSports.filter((s) => !userSportIds.has(s.id))
+  const availableSports = allSports.filter((s) => s.isActive && !userSportIds.has(s.id))
+  const comingSoonSports = allSports.filter((s) => !s.isActive)
 
   async function handleAdd() {
     if (!selectedId) return
@@ -98,7 +100,7 @@ export default function AddSportPage() {
         <h1 className="text-2xl font-bold">Agregar deporte</h1>
       </div>
 
-      {availableSports.length === 0 ? (
+      {availableSports.length === 0 && comingSoonSports.length === 0 ? (
         <GlassCard intensity="light" padding="xl" className="text-center">
           <p className="text-muted-foreground">Ya tienes todos los deportes disponibles.</p>
         </GlassCard>
@@ -138,23 +140,49 @@ export default function AddSportPage() {
                 </GlassCard>
               )
             })}
+
+            {/* Coming soon sports */}
+            {comingSoonSports.map((sport) => {
+              const emoji = SPORT_EMOJI[sport.slug] ?? '🏅'
+              return (
+                <GlassCard
+                  key={sport.id}
+                  intensity="ultralight"
+                  padding="lg"
+                  className="opacity-60 cursor-default border-2 border-transparent"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-3xl">{emoji}</span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-lg">{sport.name}</h3>
+                        <GlassBadge variant="default" size="sm">Proximamente</GlassBadge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">Disponible pronto</p>
+                    </div>
+                  </div>
+                </GlassCard>
+              )
+            })}
           </div>
 
-          <GlassButton
-            variant="solid"
-            className="w-full"
-            disabled={!selectedId || submitting}
-            onClick={handleAdd}
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Agregando...
-              </>
-            ) : (
-              'Agregar deporte'
-            )}
-          </GlassButton>
+          {availableSports.length > 0 && (
+            <GlassButton
+              variant="solid"
+              className="w-full"
+              disabled={!selectedId || submitting}
+              onClick={handleAdd}
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Agregando...
+                </>
+              ) : (
+                'Agregar deporte'
+              )}
+            </GlassButton>
+          )}
         </>
       )}
     </div>

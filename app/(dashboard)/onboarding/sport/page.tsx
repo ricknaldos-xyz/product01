@@ -15,6 +15,7 @@ interface Sport {
   name: string
   icon: string | null
   description: string | null
+  isActive: boolean
 }
 
 const SPORT_EMOJI: Record<string, string> = {
@@ -34,7 +35,7 @@ export default function SportSelectionPage() {
   useEffect(() => {
     async function fetchSports() {
       try {
-        const res = await fetch('/api/sports')
+        const res = await fetch('/api/sports?all=true')
         if (res.ok) {
           const data = await res.json()
           setSports(data)
@@ -87,7 +88,7 @@ export default function SportSelectionPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {sports.map((sport, index) => {
+        {sports.filter((s) => s.isActive).map((sport, index) => {
           const emoji = SPORT_EMOJI[sport.slug] ?? '🏅'
           const isSelected = selectedId === sport.id
           const isFree = index === 0
@@ -125,6 +126,30 @@ export default function SportSelectionPage() {
                     <Check className="h-4 w-4 text-primary-foreground" />
                   </div>
                 )}
+              </div>
+            </GlassCard>
+          )
+        })}
+
+        {/* Coming soon sports */}
+        {sports.filter((s) => !s.isActive).map((sport) => {
+          const emoji = SPORT_EMOJI[sport.slug] ?? '🏅'
+          return (
+            <GlassCard
+              key={sport.id}
+              intensity="ultralight"
+              padding="lg"
+              className="opacity-60 cursor-default border-2 border-transparent"
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-3xl">{emoji}</span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-lg">{sport.name}</h3>
+                    <GlassBadge variant="default" size="sm">Proximamente</GlassBadge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">Disponible pronto</p>
+                </div>
               </div>
             </GlassCard>
           )

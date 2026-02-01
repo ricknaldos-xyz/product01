@@ -11,7 +11,7 @@ const steps = [
     title: 'Registrate y sube tu primer video',
     description:
       'Elige tu deporte, graba tu tecnica con el movil y sube el video. Solo necesitas 10-30 segundos de grabacion.',
-    detail: 'Tenis, padel o pickleball',
+    detail: 'Tenis o padel',
   },
   {
     number: 2,

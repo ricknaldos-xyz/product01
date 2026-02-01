@@ -37,7 +37,7 @@ export function HeroSection() {
 
           {/* Subheadline */}
           <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-            Analisis IA de tu tecnica, rankings en vivo, torneos, coaches certificados, matchmaking, tienda y todo lo que necesitas para tenis, padel y pickleball.
+            Analisis IA de tu tecnica, rankings en vivo, torneos, coaches certificados, matchmaking, tienda y todo lo que necesitas para tenis y padel.
           </p>
 
           {/* Value props */}

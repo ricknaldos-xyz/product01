@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import { LandingHeader } from '@/components/landing/LandingHeader'
 
 export const metadata: Metadata = {
-  title: 'SportTek - Tu carrera deportiva en una sola plataforma | Tenis, Padel, Pickleball',
-  description: 'Plataforma integral para tenis, padel y pickleball: analisis de video con IA, rankings nacionales, torneos, coaches certificados, matchmaking, reserva de canchas, tienda y comunidad.',
+  title: 'SportTek - Tu carrera deportiva en una sola plataforma | Tenis y Padel',
+  description: 'Plataforma integral para tenis y padel: analisis de video con IA, rankings nacionales, torneos, coaches certificados, matchmaking, reserva de canchas, tienda y comunidad.',
   openGraph: {
     title: 'SportTek - Tu carrera deportiva en una sola plataforma',
-    description: 'Analisis IA, rankings, torneos, coaches, matchmaking, canchas y comunidad para tenis, padel y pickleball.',
+    description: 'Analisis IA, rankings, torneos, coaches, matchmaking, canchas y comunidad para tenis y padel.',
     type: 'website',
     locale: 'es_PE',
     siteName: 'SportTek',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'SportTek - Tu carrera deportiva en una sola plataforma',
-    description: 'Analisis IA, rankings, torneos, coaches y comunidad para tenis, padel y pickleball.',
+    description: 'Analisis IA, rankings, torneos, coaches y comunidad para tenis y padel.',
   },
 }
 import { HeroSection } from '@/components/landing/HeroSection'

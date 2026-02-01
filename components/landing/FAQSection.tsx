@@ -9,7 +9,7 @@ const faqs = [
   {
     question: 'Que es SportTek exactamente?',
     answer:
-      'SportTek es una plataforma integral para deportistas de tenis, padel y pickleball. Combina analisis de video con IA, planes de entrenamiento personalizados, rankings nacionales, torneos, matchmaking, coach marketplace, reserva de canchas, tienda deportiva y servicio de encordado. Todo en un solo lugar.',
+      'SportTek es una plataforma integral para deportistas de tenis y padel. Combina analisis de video con IA, planes de entrenamiento personalizados, rankings nacionales, torneos, matchmaking, coach marketplace, reserva de canchas, tienda deportiva y servicio de encordado. Todo en un solo lugar.',
   },
   {
     question: 'Como funciona el analisis con IA?',
@@ -19,7 +19,7 @@ const faqs = [
   {
     question: 'Que deportes estan disponibles?',
     answer:
-      'Actualmente soportamos Tenis (saque, derecha, reves, volea), Padel (bandeja, vibora, smash) y Pickleball. Cada deporte tiene su propio perfil de jugador, ranking y tecnicas especificas. El plan gratuito incluye un deporte; Pro y Elite incluyen todos.',
+      'Actualmente soportamos Tenis (saque, derecha, reves, volea) y Padel (bandeja, vibora, smash). Pickleball estara disponible proximamente. Cada deporte tiene su propio perfil de jugador, ranking y tecnicas especificas. El plan gratuito incluye un deporte; Pro y Elite incluyen todos.',
   },
   {
     question: 'Como funcionan los rankings y tiers?',
