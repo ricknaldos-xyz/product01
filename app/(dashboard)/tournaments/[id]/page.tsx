@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
+import { GlassBadge } from '@/components/ui/glass-badge'
 import { TierBadge } from '@/components/player/TierBadge'
 import { BracketView } from '@/components/tournaments/BracketView'
 import { ParticipantList } from '@/components/tournaments/ParticipantList'
@@ -76,11 +77,11 @@ const statusLabels: Record<string, string> = {
   CANCELLED: 'Cancelado',
 }
 
-const statusColors: Record<string, string> = {
-  REGISTRATION: 'text-green-600 bg-green-100',
-  IN_PROGRESS: 'text-blue-600 bg-blue-100',
-  COMPLETED: 'text-slate-500 bg-slate-100',
-  CANCELLED: 'text-red-500 bg-red-100',
+const statusVariant: Record<string, 'warning' | 'success' | 'destructive' | 'primary' | 'default'> = {
+  REGISTRATION: 'success',
+  IN_PROGRESS: 'primary',
+  COMPLETED: 'default',
+  CANCELLED: 'destructive',
 }
 
 export default function TournamentDetailPage() {
@@ -215,11 +216,9 @@ export default function TournamentDetailPage() {
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold">{tournament.name}</h1>
-                <span
-                  className={`text-xs px-2.5 py-1 rounded-full font-medium ${statusColors[tournament.status]}`}
-                >
+                <GlassBadge variant={statusVariant[tournament.status] || 'default'} size="sm">
                   {statusLabels[tournament.status]}
-                </span>
+                </GlassBadge>
               </div>
               {tournament.description && (
                 <p className="text-muted-foreground mt-2">{tournament.description}</p>

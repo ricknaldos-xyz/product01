@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
+import { GlassInput, GlassTextarea, GlassToggle } from '@/components/ui/glass-input'
 import { Settings, Loader2, Save, Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { logger } from '@/lib/logger'
@@ -147,25 +148,23 @@ export default function CoachSettingsPage() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Titular</label>
-            <input
+            <GlassInput
               type="text"
               maxLength={100}
               value={form.headline}
               onChange={(e) => setForm((prev) => ({ ...prev, headline: e.target.value }))}
               placeholder="Ej: Entrenador profesional de tenis"
-              className="w-full rounded-xl border border-glass bg-background/50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
             />
             <p className="text-xs text-muted-foreground mt-1">{form.headline.length}/100</p>
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Bio</label>
-            <textarea
+            <GlassTextarea
               maxLength={1000}
               rows={4}
               value={form.bio}
               onChange={(e) => setForm((prev) => ({ ...prev, bio: e.target.value }))}
               placeholder="Describe tu experiencia y enfoque como entrenador..."
-              className="w-full rounded-xl border border-glass bg-background/50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
             />
             <p className="text-xs text-muted-foreground mt-1">{form.bio.length}/1000</p>
           </div>
@@ -178,7 +177,7 @@ export default function CoachSettingsPage() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Anos de experiencia</label>
-            <input
+            <GlassInput
               type="number"
               min={0}
               value={form.yearsExperience}
@@ -188,7 +187,7 @@ export default function CoachSettingsPage() {
                   yearsExperience: parseInt(e.target.value) || 0,
                 }))
               }
-              className="w-full max-w-[200px] rounded-xl border border-glass bg-background/50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="max-w-[200px]"
             />
           </div>
 
@@ -206,6 +205,7 @@ export default function CoachSettingsPage() {
                     type="button"
                     onClick={() => removeCertification(i)}
                     className="hover:text-destructive transition-colors"
+                    aria-label="Eliminar certificacion"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -213,7 +213,7 @@ export default function CoachSettingsPage() {
               ))}
             </div>
             <div className="flex gap-2">
-              <input
+              <GlassInput
                 type="text"
                 value={newCertification}
                 onChange={(e) => setNewCertification(e.target.value)}
@@ -224,7 +224,7 @@ export default function CoachSettingsPage() {
                   }
                 }}
                 placeholder="Agregar certificacion..."
-                className="flex-1 rounded-xl border border-glass bg-background/50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="flex-1"
               />
               <GlassButton type="button" variant="outline" size="sm" onClick={addCertification}>
                 <Plus className="h-4 w-4 mr-1" />
@@ -247,6 +247,7 @@ export default function CoachSettingsPage() {
                     type="button"
                     onClick={() => removeSpecialty(i)}
                     className="hover:text-destructive transition-colors"
+                    aria-label="Eliminar especialidad"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -254,7 +255,7 @@ export default function CoachSettingsPage() {
               ))}
             </div>
             <div className="flex gap-2">
-              <input
+              <GlassInput
                 type="text"
                 value={newSpecialty}
                 onChange={(e) => setNewSpecialty(e.target.value)}
@@ -265,7 +266,7 @@ export default function CoachSettingsPage() {
                   }
                 }}
                 placeholder="Agregar especialidad..."
-                className="flex-1 rounded-xl border border-glass bg-background/50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="flex-1"
               />
               <GlassButton type="button" variant="outline" size="sm" onClick={addSpecialty}>
                 <Plus className="h-4 w-4 mr-1" />
@@ -282,22 +283,20 @@ export default function CoachSettingsPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label className="block text-sm font-medium mb-1">Pais</label>
-            <input
+            <GlassInput
               type="text"
               value={form.country}
               onChange={(e) => setForm((prev) => ({ ...prev, country: e.target.value }))}
               placeholder="Ej: Peru"
-              className="w-full rounded-xl border border-glass bg-background/50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
             />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Ciudad</label>
-            <input
+            <GlassInput
               type="text"
               value={form.city}
               onChange={(e) => setForm((prev) => ({ ...prev, city: e.target.value }))}
               placeholder="Ej: Lima"
-              className="w-full rounded-xl border border-glass bg-background/50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
             />
           </div>
           <div>
@@ -306,7 +305,7 @@ export default function CoachSettingsPage() {
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                 S/
               </span>
-              <input
+              <GlassInput
                 type="number"
                 min={0}
                 step="0.01"
@@ -317,7 +316,7 @@ export default function CoachSettingsPage() {
                     hourlyRate: parseFloat(e.target.value) || 0,
                   }))
                 }
-                className="w-full rounded-xl border border-glass bg-background/50 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="pl-10"
               />
             </div>
           </div>
@@ -334,19 +333,11 @@ export default function CoachSettingsPage() {
               Los jugadores podran encontrarte en el marketplace
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setForm((prev) => ({ ...prev, isAvailable: !prev.isAvailable }))}
-            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
-              form.isAvailable ? 'bg-primary' : 'bg-muted'
-            }`}
-          >
-            <span
-              className={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
-                form.isAvailable ? 'translate-x-6' : 'translate-x-1'
-              }`}
-            />
-          </button>
+          <GlassToggle
+            checked={form.isAvailable}
+            onCheckedChange={(v) => setForm(prev => ({...prev, isAvailable: v}))}
+            aria-label="Disponible para nuevos alumnos"
+          />
         </div>
       </GlassCard>
 

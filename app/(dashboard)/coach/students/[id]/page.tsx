@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { logger } from '@/lib/logger'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
+import { GlassBadge } from '@/components/ui/glass-badge'
 import { TierBadge } from '@/components/player/TierBadge'
 import {
   GraduationCap,
@@ -217,19 +218,20 @@ export default function StudentDetailPage() {
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-xl font-semibold">{name}</h2>
               <TierBadge tier={student.student.skillTier} size="sm" />
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${
+              <GlassBadge
+                variant={
                   student.status === 'ACTIVE'
-                    ? 'text-green-600 bg-green-100'
-                    : student.status === 'PENDING_INVITE'
-                    ? 'text-yellow-600 bg-yellow-100'
+                    ? 'success'
+                    : student.status === 'PENDING_INVITE' || student.status === 'PENDING_REQUEST'
+                    ? 'warning'
                     : student.status === 'PAUSED'
-                    ? 'text-orange-600 bg-orange-100'
-                    : 'text-muted-foreground bg-muted/50'
-                }`}
+                    ? 'warning'
+                    : 'default'
+                }
+                size="sm"
               >
                 {statusLabels[student.status]}
-              </span>
+              </GlassBadge>
             </div>
             <div className="flex gap-4 mt-1 text-sm text-muted-foreground">
               <span>Score: {student.student.compositeScore?.toFixed(1) || '--'}</span>
@@ -395,7 +397,7 @@ export default function StudentDetailPage() {
           <GlassCard intensity="medium" padding="lg" className="w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Asignar plan de entrenamiento</h2>
-              <button onClick={() => setShowAssignModal(false)} className="text-muted-foreground hover:text-foreground">
+              <button onClick={() => setShowAssignModal(false)} className="text-muted-foreground hover:text-foreground" aria-label="Cerrar modal">
                 <X className="h-5 w-5" />
               </button>
             </div>

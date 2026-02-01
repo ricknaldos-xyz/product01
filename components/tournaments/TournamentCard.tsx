@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { GlassCard } from '@/components/ui/glass-card'
+import { GlassBadge } from '@/components/ui/glass-badge'
 import { Calendar, MapPin, Users } from 'lucide-react'
 
 interface TournamentCardProps {
@@ -27,11 +28,11 @@ const statusLabels: Record<string, string> = {
   CANCELLED: 'Cancelado',
 }
 
-const statusColors: Record<string, string> = {
-  REGISTRATION: 'text-green-600 bg-green-100',
-  IN_PROGRESS: 'text-blue-600 bg-blue-100',
-  COMPLETED: 'text-slate-500 bg-slate-100',
-  CANCELLED: 'text-red-500 bg-red-100',
+const statusVariant: Record<string, 'warning' | 'success' | 'destructive' | 'primary' | 'default'> = {
+  REGISTRATION: 'success',
+  IN_PROGRESS: 'primary',
+  COMPLETED: 'default',
+  CANCELLED: 'destructive',
 }
 
 export function TournamentCard({ tournament }: TournamentCardProps) {
@@ -42,11 +43,9 @@ export function TournamentCard({ tournament }: TournamentCardProps) {
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-lg">{tournament.name}</h3>
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[tournament.status]}`}
-              >
+              <GlassBadge variant={statusVariant[tournament.status] || 'default'} size="sm">
                 {statusLabels[tournament.status]}
-              </span>
+              </GlassBadge>
             </div>
           </div>
 

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
+import { GlassInput, GlassTextarea } from '@/components/ui/glass-input'
 import { logger } from '@/lib/logger'
 import {
   Building2, Loader2, CheckCircle, Clock, XCircle,
@@ -200,14 +201,13 @@ export default function ProviderApplyPage() {
               <label htmlFor="businessName" className="text-sm font-medium">
                 Nombre del negocio *
               </label>
-              <input
+              <GlassInput
                 id="businessName"
                 type="text"
                 value={businessName}
                 onChange={(e) => setBusinessName(e.target.value)}
                 placeholder="Ej: Club Deportivo Los Olivos"
                 required
-                className="w-full rounded-xl border border-glass bg-glass-light px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
 
@@ -216,14 +216,15 @@ export default function ProviderApplyPage() {
               <label htmlFor="businessPhone" className="text-sm font-medium">
                 Telefono de contacto *
               </label>
-              <input
+              <GlassInput
                 id="businessPhone"
                 type="tel"
                 value={businessPhone}
                 onChange={(e) => setBusinessPhone(e.target.value)}
                 placeholder="Ej: 999 123 456"
                 required
-                className="w-full rounded-xl border border-glass bg-glass-light px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/50"
+                pattern="[0-9 +()-]{7,15}"
+                title="Numero de telefono valido"
               />
             </div>
 
@@ -232,13 +233,12 @@ export default function ProviderApplyPage() {
               <label htmlFor="businessEmail" className="text-sm font-medium">
                 Email del negocio (opcional)
               </label>
-              <input
+              <GlassInput
                 id="businessEmail"
                 type="email"
                 value={businessEmail}
                 onChange={(e) => setBusinessEmail(e.target.value)}
                 placeholder="contacto@minegocio.com"
-                className="w-full rounded-xl border border-glass bg-glass-light px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
 
@@ -247,13 +247,12 @@ export default function ProviderApplyPage() {
               <label htmlFor="description" className="text-sm font-medium">
                 Descripcion (opcional)
               </label>
-              <textarea
+              <GlassTextarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe tu negocio, servicios que ofreces, ubicacion, etc."
                 rows={4}
-                className="w-full rounded-xl border border-glass bg-glass-light px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/50 resize-none"
               />
             </div>
 

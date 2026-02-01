@@ -235,6 +235,11 @@ export default function AdminAnalyticsPage() {
                         style={{
                           width: `${percentage}%`,
                         }}
+                        role="progressbar"
+                        aria-valuenow={parseFloat(percentage)}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label={`${label}: ${percentage}%`}
                       />
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">

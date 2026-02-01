@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger'
 import Image from 'next/image'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
+import { GlassBadge } from '@/components/ui/glass-badge'
 import { TierBadge } from '@/components/player/TierBadge'
 import { Flag, Clock, MapPin, MessageSquare, Check, X, Loader2, ArrowLeft, Swords } from 'lucide-react'
 import { toast } from 'sonner'
@@ -47,13 +48,13 @@ const statusLabel: Record<string, string> = {
   EXPIRED: 'Expirado',
 }
 
-const statusColor: Record<string, string> = {
-  PENDING: 'text-yellow-600 bg-yellow-100',
-  ACCEPTED: 'text-green-600 bg-green-100',
-  DECLINED: 'text-red-600 bg-red-100',
-  CANCELLED: 'text-slate-500 bg-slate-100',
-  COMPLETED: 'text-blue-600 bg-blue-100',
-  EXPIRED: 'text-slate-400 bg-slate-100',
+const statusVariant: Record<string, 'warning' | 'success' | 'destructive' | 'primary' | 'default'> = {
+  PENDING: 'warning',
+  ACCEPTED: 'success',
+  DECLINED: 'destructive',
+  CANCELLED: 'destructive',
+  COMPLETED: 'primary',
+  EXPIRED: 'default',
 }
 
 export default function ChallengeDetailPage() {
@@ -179,9 +180,9 @@ export default function ChallengeDetailPage() {
           {renderPlayerCard(challenge.challenger, 'Retador')}
           <div className="flex flex-col items-center">
             <Swords className="h-8 w-8 text-muted-foreground" />
-            <span className={`text-xs px-3 py-1 rounded-full font-medium mt-2 ${statusColor[challenge.status]}`}>
+            <GlassBadge variant={statusVariant[challenge.status] || 'default'} size="sm" className="mt-2">
               {statusLabel[challenge.status]}
-            </span>
+            </GlassBadge>
           </div>
           {renderPlayerCard(challenge.challenged, 'Retado')}
         </div>

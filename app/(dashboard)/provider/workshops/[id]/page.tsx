@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
+import { GlassInput, GlassToggle } from '@/components/ui/glass-input'
 import { ArrowLeft, Loader2, Save, ClipboardList } from 'lucide-react'
 
 interface Workshop {
@@ -157,7 +158,7 @@ export default function ProviderWorkshopDetailPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <GlassButton variant="ghost" size="sm" onClick={() => router.push('/provider/workshops')}>
+          <GlassButton variant="ghost" size="sm" onClick={() => router.push('/provider/workshops')} aria-label="Volver a talleres">
             <ArrowLeft className="h-4 w-4" />
           </GlassButton>
           <div>
@@ -187,75 +188,67 @@ export default function ProviderWorkshopDetailPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">Nombre del taller *</label>
-              <input
+              <GlassInput
                 type="text"
                 name="name"
                 value={form.name}
                 onChange={handleChange}
                 required
-                className="glass-input w-full"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-1">Direccion *</label>
-              <input
+              <GlassInput
                 type="text"
                 name="address"
                 value={form.address}
                 onChange={handleChange}
                 required
-                className="glass-input w-full"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Distrito *</label>
-                <input
+                <GlassInput
                   type="text"
                   name="district"
                   value={form.district}
                   onChange={handleChange}
                   required
-                  className="glass-input w-full"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Ciudad</label>
-                <input
+                <GlassInput
                   type="text"
                   name="city"
                   value={form.city}
                   onChange={handleChange}
-                  className="glass-input w-full"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-1">Telefono</label>
-              <input
+              <GlassInput
                 type="text"
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
-                className="glass-input w-full"
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                name="isActive"
+            <div className="flex items-center gap-3">
+              <GlassToggle
                 checked={form.isActive}
-                onChange={handleChange}
-                id="isActive"
-                className="rounded"
+                onCheckedChange={(v) => setForm({ ...form, isActive: v })}
+                aria-label="Taller activo"
               />
-              <label htmlFor="isActive" className="text-sm font-medium">
+              <span className="text-sm font-medium">
                 Taller activo
-              </label>
+              </span>
             </div>
 
             {/* Operating hours */}
@@ -265,11 +258,11 @@ export default function ProviderWorkshopDetailPage() {
                 {DAYS.map((day) => (
                   <div key={day.key} className="flex items-center gap-3">
                     <span className="text-sm w-24">{day.label}</span>
-                    <input
+                    <GlassInput
                       type="text"
                       value={hours[day.key]}
                       onChange={(e) => handleHourChange(day.key, e.target.value)}
-                      className="glass-input flex-1"
+                      className="flex-1"
                       placeholder="Ej: 09:00-18:00 (vacio = cerrado)"
                     />
                   </div>

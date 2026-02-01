@@ -10,7 +10,7 @@ import { ImprovementPath } from '@/components/rankings/ImprovementPath'
 import { TopPodium } from '@/components/rankings/TopPodium'
 import { CategoryExplainer } from '@/components/rankings/CategoryExplainer'
 import { RankingTable, type RankingEntry } from '@/components/rankings/RankingTable'
-import { Trophy, Medal, ChevronLeft, ChevronRight, Loader2, AlertTriangle, Search } from 'lucide-react'
+import { Trophy, Medal, ChevronLeft, ChevronRight, Loader2, AlertTriangle, Search, X } from 'lucide-react'
 import { useSport } from '@/contexts/SportContext'
 import { useSession } from 'next-auth/react'
 import type { SkillTier } from '@prisma/client'
@@ -175,12 +175,36 @@ export default function RankingsPage() {
           placeholder="Buscar jugador..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-glass-light border border-glass text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+          aria-label="Buscar jugador"
+          className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-glass-light border border-glass text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => setSearchQuery('')}
+            aria-label="Limpiar busqueda"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
+      {/* Empty search results */}
+      {!error && !loading && rankings.length === 0 && debouncedSearch && (
+        <GlassCard intensity="light" padding="xl">
+          <div className="text-center space-y-3">
+            <Search className="h-12 w-12 text-muted-foreground mx-auto" />
+            <h3 className="text-lg font-semibold">No se encontraron jugadores para &apos;{searchQuery}&apos;</h3>
+            <GlassButton variant="ghost" size="sm" onClick={() => setSearchQuery('')}>
+              Limpiar busqueda
+            </GlassButton>
+          </div>
+        </GlassCard>
+      )}
+
       {/* Rankings Table */}
-      {!error && (
+      {!error && (rankings.length > 0 || !debouncedSearch) && (
         <RankingTable
           rankings={listPlayers.map(p => ({
             rank: p.rank,
@@ -207,6 +231,7 @@ export default function RankingsPage() {
             size="sm"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
+            aria-label="Pagina anterior"
           >
             <ChevronLeft className="h-4 w-4" />
           </GlassButton>
@@ -218,6 +243,7 @@ export default function RankingsPage() {
             size="sm"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
+            aria-label="Pagina siguiente"
           >
             <ChevronRight className="h-4 w-4" />
           </GlassButton>

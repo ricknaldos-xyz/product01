@@ -63,6 +63,7 @@ export default function AdminCoachesPage() {
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState<VerificationStatus | 'ALL'>('ALL')
   const [actionId, setActionId] = useState<string | null>(null)
+  const [confirmRejectId, setConfirmRejectId] = useState<string | null>(null)
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 })
 
   const fetchCoaches = useCallback(async (filter: VerificationStatus | 'ALL', page = 1) => {
@@ -278,34 +279,68 @@ export default function AdminCoachesPage() {
 
                   {/* Action buttons */}
                   {isPending && (
-                    <div className="flex items-center gap-3 pt-2 border-t border-glass">
-                      <GlassButton
-                        variant="solid"
-                        size="sm"
-                        disabled={isActioning}
-                        onClick={() => handleVerification(coach.id, 'VERIFIED')}
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                      >
-                        {isActioning ? (
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        ) : (
-                          <CheckCircle className="h-4 w-4 mr-2" />
-                        )}
-                        Aprobar
-                      </GlassButton>
-                      <GlassButton
-                        variant="destructive"
-                        size="sm"
-                        disabled={isActioning}
-                        onClick={() => handleVerification(coach.id, 'REJECTED')}
-                      >
-                        {isActioning ? (
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        ) : (
-                          <XCircle className="h-4 w-4 mr-2" />
-                        )}
-                        Rechazar
-                      </GlassButton>
+                    <div className="space-y-3 pt-2 border-t border-glass">
+                      {confirmRejectId === coach.id && (
+                        <div className="rounded-lg bg-destructive/10 p-3 space-y-2">
+                          <p className="text-sm font-medium text-destructive">
+                            Estas seguro de rechazar a este coach?
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <GlassButton
+                              variant="destructive"
+                              size="sm"
+                              disabled={isActioning}
+                              onClick={() => {
+                                handleVerification(coach.id, 'REJECTED')
+                                setConfirmRejectId(null)
+                              }}
+                            >
+                              {isActioning ? (
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              ) : null}
+                              Confirmar rechazo
+                            </GlassButton>
+                            <GlassButton
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setConfirmRejectId(null)}
+                            >
+                              Cancelar
+                            </GlassButton>
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-3">
+                        <GlassButton
+                          variant="solid"
+                          size="sm"
+                          disabled={isActioning}
+                          onClick={() => handleVerification(coach.id, 'VERIFIED')}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          aria-label="Aprobar coach"
+                        >
+                          {isActioning ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                          )}
+                          Aprobar
+                        </GlassButton>
+                        <GlassButton
+                          variant="destructive"
+                          size="sm"
+                          disabled={isActioning}
+                          onClick={() => setConfirmRejectId(coach.id)}
+                          aria-label="Rechazar coach"
+                        >
+                          {isActioning ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <XCircle className="h-4 w-4 mr-2" />
+                          )}
+                          Rechazar
+                        </GlassButton>
+                      </div>
                     </div>
                   )}
                 </div>

@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { GlassCard } from '@/components/ui/glass-card'
+import { GlassBadge } from '@/components/ui/glass-badge'
 import { TierBadge } from '@/components/player/TierBadge'
 import { FileText } from 'lucide-react'
 import Link from 'next/link'
@@ -24,11 +25,12 @@ interface StudentCardProps {
 export function StudentCard({ student }: StudentCardProps) {
   const name = student.displayName || student.userName || 'Alumno'
 
-  const statusConfig: Record<string, { label: string; className: string }> = {
-    PENDING_INVITE: { label: 'Pendiente', className: 'text-yellow-600 bg-yellow-100' },
-    ACTIVE: { label: 'Activo', className: 'text-green-600 bg-green-100' },
-    PAUSED: { label: 'Pausado', className: 'text-orange-600 bg-orange-100' },
-    ENDED: { label: 'Finalizado', className: 'text-muted-foreground bg-muted/50' },
+  const statusConfig: Record<string, { label: string; variant: 'warning' | 'success' | 'destructive' | 'primary' | 'default' }> = {
+    PENDING_INVITE: { label: 'Pendiente', variant: 'warning' },
+    PENDING_REQUEST: { label: 'Pendiente', variant: 'warning' },
+    ACTIVE: { label: 'Activo', variant: 'success' },
+    PAUSED: { label: 'Pausado', variant: 'warning' },
+    ENDED: { label: 'Finalizado', variant: 'default' },
   }
 
   const statusInfo = statusConfig[student.status] || statusConfig.ENDED
@@ -55,11 +57,9 @@ export function StudentCard({ student }: StudentCardProps) {
             <div className="flex items-center gap-2">
               <p className="font-semibold truncate">{name}</p>
               <TierBadge tier={student.skillTier} size="sm" />
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${statusInfo.className}`}
-              >
+              <GlassBadge variant={statusInfo.variant} size="sm">
                 {statusInfo.label}
-              </span>
+              </GlassBadge>
             </div>
             <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
               <span>Score: {student.compositeScore?.toFixed(1) || '--'}</span>

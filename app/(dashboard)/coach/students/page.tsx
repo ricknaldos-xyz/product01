@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import { GlassCard } from '@/components/ui/glass-card'
+import { GlassBadge } from '@/components/ui/glass-badge'
 import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
 import { TierBadge } from '@/components/player/TierBadge'
@@ -173,11 +174,9 @@ export default function CoachStudentsPage() {
                       <div className="flex items-center gap-2">
                         <p className="font-semibold truncate">{name}</p>
                         <TierBadge tier={s.student.skillTier} size="sm" />
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${
-                          s.status === 'ACTIVE' ? 'text-green-600 bg-green-100' : 'text-yellow-600 bg-yellow-100'
-                        }`}>
+                        <GlassBadge variant={s.status === 'ACTIVE' ? 'success' : s.status === 'PAUSED' ? 'warning' : s.status === 'ENDED' ? 'default' : 'warning'} size="sm">
                           {statusLabels[s.status]}
-                        </span>
+                        </GlassBadge>
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         {s.student.totalAnalyses} analisis | {s.student.totalTechniques} tecnicas | Score: {s.student.compositeScore?.toFixed(1) || '--'}

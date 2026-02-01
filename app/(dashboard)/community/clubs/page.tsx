@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
+import { GlassBadge } from '@/components/ui/glass-badge'
 import { Users, Loader2, Globe, Lock } from 'lucide-react'
 import { logger } from '@/lib/logger'
 import Link from 'next/link'
@@ -65,15 +66,15 @@ export default function ClubsPage() {
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold truncate">{club.name}</h2>
                     {club.isPublic ? (
-                      <span className="inline-flex items-center gap-1 text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+                      <GlassBadge variant="success" size="sm" className="inline-flex items-center gap-1">
                         <Globe className="h-3 w-3" />
                         Publico
-                      </span>
+                      </GlassBadge>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-xs text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
+                      <GlassBadge variant="warning" size="sm" className="inline-flex items-center gap-1">
                         <Lock className="h-3 w-3" />
                         Privado
-                      </span>
+                      </GlassBadge>
                     )}
                   </div>
 

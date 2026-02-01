@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { TierBadge } from '@/components/player/TierBadge'
 import { logger } from '@/lib/logger'
-import { Loader2, Trophy, Calendar } from 'lucide-react'
+import { Loader2, Trophy, Calendar, TrendingUp, TrendingDown } from 'lucide-react'
 import type { SkillTier } from '@prisma/client'
 
 interface MatchPlayer {
@@ -91,9 +91,13 @@ export default function MatchesPage() {
                       <p className="font-semibold truncate">{p1Name}</p>
                     </div>
                     {match.player1EloChange !== null && (
-                      <p className={`text-xs font-medium mt-0.5 ${
-                        match.player1EloChange > 0 ? 'text-green-600' : 'text-red-500'
-                      }`}>
+                      <p
+                        className={`text-xs font-medium mt-0.5 inline-flex items-center gap-0.5 ${
+                          match.player1EloChange > 0 ? 'text-green-600' : 'text-red-500'
+                        }`}
+                        aria-label={match.player1EloChange > 0 ? `Ganaste ${match.player1EloChange} puntos ELO` : `Perdiste ${Math.abs(match.player1EloChange)} puntos ELO`}
+                      >
+                        {match.player1EloChange > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                         {match.player1EloChange > 0 ? '+' : ''}{match.player1EloChange} ELO
                       </p>
                     )}
@@ -119,9 +123,13 @@ export default function MatchesPage() {
                       <TierBadge tier={match.player2.skillTier} size="sm" />
                     </div>
                     {match.player2EloChange !== null && (
-                      <p className={`text-xs font-medium mt-0.5 ${
-                        match.player2EloChange > 0 ? 'text-green-600' : 'text-red-500'
-                      }`}>
+                      <p
+                        className={`text-xs font-medium mt-0.5 inline-flex items-center gap-0.5 ${
+                          match.player2EloChange > 0 ? 'text-green-600' : 'text-red-500'
+                        }`}
+                        aria-label={match.player2EloChange > 0 ? `Ganaste ${match.player2EloChange} puntos ELO` : `Perdiste ${Math.abs(match.player2EloChange)} puntos ELO`}
+                      >
+                        {match.player2EloChange > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                         {match.player2EloChange > 0 ? '+' : ''}{match.player2EloChange} ELO
                       </p>
                     )}

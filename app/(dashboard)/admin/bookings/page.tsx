@@ -6,7 +6,7 @@ import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import { toast } from 'sonner'
 import { logger } from '@/lib/logger'
-import { CalendarDays, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { CalendarDays, Loader2, ChevronLeft, ChevronRight, X } from 'lucide-react'
 
 interface Booking {
   id: string
@@ -71,6 +71,8 @@ export default function AdminBookingsPage() {
   const [courtFilter, setCourtFilter] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
+
+  const hasActiveFilters = courtFilter !== '' || dateFrom !== '' || dateTo !== ''
 
   const fetchCourts = useCallback(async () => {
     try {
@@ -140,6 +142,13 @@ export default function AdminBookingsPage() {
     setPage(1)
   }
 
+  const clearFilters = () => {
+    setCourtFilter('')
+    setDateFrom('')
+    setDateTo('')
+    setPage(1)
+  }
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
@@ -178,6 +187,7 @@ export default function AdminBookingsPage() {
               value={courtFilter}
               onChange={(e) => handleCourtChange(e.target.value)}
               className="glass-input w-full"
+              aria-label="Filtrar por cancha"
             >
               <option value="">Todas las canchas</option>
               {courts.map((court) => (
@@ -196,6 +206,7 @@ export default function AdminBookingsPage() {
               value={dateFrom}
               onChange={(e) => handleDateFromChange(e.target.value)}
               className="glass-input w-full"
+              aria-label="Filtrar desde fecha"
             />
           </div>
           <div className="space-y-1.5">
@@ -207,9 +218,18 @@ export default function AdminBookingsPage() {
               value={dateTo}
               onChange={(e) => handleDateToChange(e.target.value)}
               className="glass-input w-full"
+              aria-label="Filtrar hasta fecha"
             />
           </div>
         </div>
+        {hasActiveFilters && (
+          <div className="mt-3">
+            <GlassButton variant="ghost" size="sm" onClick={clearFilters}>
+              <X className="h-4 w-4 mr-1" />
+              Limpiar filtros
+            </GlassButton>
+          </div>
+        )}
       </GlassCard>
 
       {/* Content */}
@@ -236,22 +256,22 @@ export default function AdminBookingsPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-glass">
-                      <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      <th scope="col" className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Fecha
                       </th>
-                      <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      <th scope="col" className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Hora
                       </th>
-                      <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      <th scope="col" className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Cancha
                       </th>
-                      <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      <th scope="col" className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Usuario
                       </th>
-                      <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      <th scope="col" className="text-right px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Monto
                       </th>
-                      <th className="text-center px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      <th scope="col" className="text-center px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Estado
                       </th>
                     </tr>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
+import { GlassBadge } from '@/components/ui/glass-badge'
 import { logger } from '@/lib/logger'
 import { Trophy, Calendar, MapPin, Users, Loader2, Plus } from 'lucide-react'
 import Link from 'next/link'
@@ -30,11 +31,11 @@ const statusLabels: Record<string, string> = {
   CANCELLED: 'Cancelado',
 }
 
-const statusColors: Record<string, string> = {
-  REGISTRATION: 'text-green-600 bg-green-100',
-  IN_PROGRESS: 'text-blue-600 bg-blue-100',
-  COMPLETED: 'text-slate-500 bg-slate-100',
-  CANCELLED: 'text-red-500 bg-red-100',
+const statusVariant: Record<string, 'warning' | 'success' | 'destructive' | 'primary' | 'default'> = {
+  REGISTRATION: 'success',
+  IN_PROGRESS: 'primary',
+  COMPLETED: 'default',
+  CANCELLED: 'destructive',
 }
 
 export default function TournamentsPage() {
@@ -118,9 +119,9 @@ export default function TournamentsPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="font-bold text-lg">{t.name}</h3>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[t.status]}`}>
+                      <GlassBadge variant={statusVariant[t.status] || 'default'} size="sm">
                         {statusLabels[t.status]}
-                      </span>
+                      </GlassBadge>
                     </div>
                     {t.description && (
                       <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{t.description}</p>

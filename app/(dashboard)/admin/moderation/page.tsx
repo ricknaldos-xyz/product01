@@ -75,6 +75,7 @@ export default function AdminModerationPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<TabValue>('pending')
   const [actionId, setActionId] = useState<string | null>(null)
+  const [confirmAction, setConfirmAction] = useState<{ reportId: string; action: string } | null>(null)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [total, setTotal] = useState(0)
@@ -245,59 +246,95 @@ export default function AdminModerationPage() {
 
                   {/* Action buttons for pending reports */}
                   {isPending && (
-                    <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-glass">
-                      <GlassButton
-                        variant="ghost"
-                        size="sm"
-                        disabled={isActioning}
-                        onClick={() => handleAction(report.id, 'warn')}
-                      >
-                        {isActioning ? (
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        ) : (
-                          <AlertTriangle className="h-4 w-4 mr-2" />
-                        )}
-                        Advertir
-                      </GlassButton>
-                      <GlassButton
-                        variant="ghost"
-                        size="sm"
-                        disabled={isActioning}
-                        onClick={() => handleAction(report.id, 'hide_content')}
-                      >
-                        {isActioning ? (
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        ) : (
-                          <EyeOff className="h-4 w-4 mr-2" />
-                        )}
-                        Ocultar Contenido
-                      </GlassButton>
-                      <GlassButton
-                        variant="destructive"
-                        size="sm"
-                        disabled={isActioning}
-                        onClick={() => handleAction(report.id, 'ban_user')}
-                      >
-                        {isActioning ? (
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        ) : (
-                          <Ban className="h-4 w-4 mr-2" />
-                        )}
-                        Banear Usuario
-                      </GlassButton>
-                      <GlassButton
-                        variant="ghost"
-                        size="sm"
-                        disabled={isActioning}
-                        onClick={() => handleAction(report.id, 'dismiss')}
-                      >
-                        {isActioning ? (
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        ) : (
-                          <XCircle className="h-4 w-4 mr-2" />
-                        )}
-                        Descartar
-                      </GlassButton>
+                    <div className="space-y-3 pt-2 border-t border-glass">
+                      {confirmAction?.reportId === report.id && confirmAction.action === 'ban_user' ? (
+                        <div className="rounded-lg bg-destructive/10 p-3 space-y-2">
+                          <p className="text-sm font-medium text-destructive">
+                            Estas seguro de banear a este usuario? Esta accion no se puede deshacer.
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <GlassButton
+                              variant="destructive"
+                              size="sm"
+                              disabled={isActioning}
+                              onClick={() => {
+                                handleAction(report.id, 'ban_user')
+                                setConfirmAction(null)
+                              }}
+                            >
+                              {isActioning ? (
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              ) : null}
+                              Confirmar
+                            </GlassButton>
+                            <GlassButton
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setConfirmAction(null)}
+                            >
+                              Cancelar
+                            </GlassButton>
+                          </div>
+                        </div>
+                      ) : null}
+                      <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
+                        <GlassButton
+                          variant="ghost"
+                          size="sm"
+                          disabled={isActioning}
+                          onClick={() => handleAction(report.id, 'warn')}
+                          aria-label="Advertir"
+                        >
+                          {isActioning ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <AlertTriangle className="h-4 w-4 mr-2" />
+                          )}
+                          Advertir
+                        </GlassButton>
+                        <GlassButton
+                          variant="ghost"
+                          size="sm"
+                          disabled={isActioning}
+                          onClick={() => handleAction(report.id, 'hide_content')}
+                          aria-label="Ocultar contenido"
+                        >
+                          {isActioning ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <EyeOff className="h-4 w-4 mr-2" />
+                          )}
+                          Ocultar Contenido
+                        </GlassButton>
+                        <GlassButton
+                          variant="destructive"
+                          size="sm"
+                          disabled={isActioning}
+                          onClick={() => setConfirmAction({ reportId: report.id, action: 'ban_user' })}
+                          aria-label="Banear usuario"
+                        >
+                          {isActioning ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <Ban className="h-4 w-4 mr-2" />
+                          )}
+                          Banear Usuario
+                        </GlassButton>
+                        <GlassButton
+                          variant="ghost"
+                          size="sm"
+                          disabled={isActioning}
+                          onClick={() => handleAction(report.id, 'dismiss')}
+                          aria-label="Desestimar"
+                        >
+                          {isActioning ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <XCircle className="h-4 w-4 mr-2" />
+                          )}
+                          Descartar
+                        </GlassButton>
+                      </div>
                     </div>
                   )}
                 </div>

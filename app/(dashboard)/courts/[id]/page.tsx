@@ -77,22 +77,25 @@ export default function CourtDetailPage() {
     : []
 
   useEffect(() => {
+    const controller = new AbortController()
     async function fetchCourt() {
       try {
-        const res = await fetch(`/api/courts/${courtId}`)
+        const res = await fetch(`/api/courts/${courtId}`, { signal: controller.signal })
         if (res.ok) {
           const data = await res.json()
           setCourt(data)
         } else {
           toast.error('No se pudo cargar la cancha')
         }
-      } catch {
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return
         toast.error('Error de conexion')
       } finally {
         setLoading(false)
       }
     }
     fetchCourt()
+    return () => controller.abort()
   }, [courtId])
 
   useEffect(() => {
@@ -323,7 +326,8 @@ export default function CourtDetailPage() {
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
                 required
-                className="glass-input w-full"
+                className="glass-input w-full min-h-[44px]"
+                aria-label="Hora de inicio"
               >
                 <option value="">Seleccionar</option>
                 {startTimeOptions.map((t) => (
@@ -340,7 +344,8 @@ export default function CourtDetailPage() {
                 onChange={(e) => setEndTime(e.target.value)}
                 required
                 disabled={!startTime}
-                className="glass-input w-full"
+                className="glass-input w-full min-h-[44px]"
+                aria-label="Hora de fin"
               >
                 <option value="">Seleccionar</option>
                 {endTimeOptions.map((t) => (

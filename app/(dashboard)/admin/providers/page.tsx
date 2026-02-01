@@ -65,6 +65,7 @@ export default function AdminProvidersPage() {
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState<ProviderStatus | 'ALL'>('ALL')
   const [actionId, setActionId] = useState<string | null>(null)
+  const [confirmRejectId, setConfirmRejectId] = useState<string | null>(null)
   const [reviewNotesMap, setReviewNotesMap] = useState<Record<string, string>>({})
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 })
 
@@ -283,6 +284,38 @@ export default function AdminProvidersPage() {
                         />
                       </div>
 
+                      {/* Reject confirmation */}
+                      {confirmRejectId === app.id && (
+                        <div className="rounded-lg bg-destructive/10 p-3 space-y-2">
+                          <p className="text-sm font-medium text-destructive">
+                            Estas seguro de rechazar esta solicitud?
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <GlassButton
+                              variant="destructive"
+                              size="sm"
+                              disabled={isActioning}
+                              onClick={() => {
+                                handleReview(app.id, 'REJECTED')
+                                setConfirmRejectId(null)
+                              }}
+                            >
+                              {isActioning ? (
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              ) : null}
+                              Confirmar rechazo
+                            </GlassButton>
+                            <GlassButton
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setConfirmRejectId(null)}
+                            >
+                              Cancelar
+                            </GlassButton>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Buttons */}
                       <div className="flex items-center gap-3">
                         <GlassButton
@@ -291,6 +324,7 @@ export default function AdminProvidersPage() {
                           disabled={isActioning}
                           onClick={() => handleReview(app.id, 'APPROVED')}
                           className="bg-green-600 hover:bg-green-700 text-white"
+                          aria-label="Aprobar solicitud"
                         >
                           {isActioning ? (
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -303,7 +337,8 @@ export default function AdminProvidersPage() {
                           variant="destructive"
                           size="sm"
                           disabled={isActioning}
-                          onClick={() => handleReview(app.id, 'REJECTED')}
+                          onClick={() => setConfirmRejectId(app.id)}
+                          aria-label="Rechazar solicitud"
                         >
                           {isActioning ? (
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { GlassCard } from '@/components/ui/glass-card'
+import { GlassBadge } from '@/components/ui/glass-badge'
 import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GraduationCap, Users, Star, UserPlus, Loader2, ArrowRight } from 'lucide-react'
@@ -199,14 +200,15 @@ export default function CoachDashboardPage() {
                           Score: {s.student.compositeScore?.toFixed(1) || '--'}
                         </p>
                       </div>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${
+                      <GlassBadge
+                        variant={
                           s.status === 'ACTIVE'
-                            ? 'text-green-600 bg-green-100'
-                            : s.status === 'PENDING_INVITE'
-                            ? 'text-yellow-600 bg-yellow-100'
-                            : 'text-muted-foreground bg-muted/50'
-                        }`}
+                            ? 'success'
+                            : s.status === 'PENDING_INVITE' || s.status === 'PENDING_REQUEST' || s.status === 'PAUSED'
+                            ? 'warning'
+                            : 'default'
+                        }
+                        size="sm"
                       >
                         {s.status === 'ACTIVE'
                           ? 'Activo'
@@ -215,7 +217,7 @@ export default function CoachDashboardPage() {
                           : s.status === 'PAUSED'
                           ? 'Pausado'
                           : 'Finalizado'}
-                      </span>
+                      </GlassBadge>
                     </div>
                   </Link>
                 </GlassCard>

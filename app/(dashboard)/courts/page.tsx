@@ -7,7 +7,8 @@ import { logger } from '@/lib/logger'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
-import { MapPin, Loader2, Phone, ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { MapPin, Phone, ChevronLeft, ChevronRight, Search, AlertTriangle, X } from 'lucide-react'
+import { toast } from 'sonner'
 
 const DISTRICTS = [
   'Miraflores', 'San Isidro', 'San Borja', 'Surco', 'La Molina',
@@ -58,13 +59,17 @@ export default function CourtsPage() {
   const [courts, setCourts] = useState<Court[]>([])
   const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 10, total: 0, totalPages: 0 })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [district, setDistrict] = useState('')
   const [surface, setSurface] = useState('')
   const [courtType, setCourtType] = useState('')
   const [page, setPage] = useState(1)
 
+  const hasActiveFilters = district !== '' || surface !== '' || courtType !== ''
+
   const fetchCourts = useCallback(async () => {
     setLoading(true)
+    setError(false)
     try {
       const params = new URLSearchParams()
       params.set('city', 'Lima')
@@ -80,8 +85,10 @@ export default function CourtsPage() {
         setCourts(data.courts || [])
         setPagination(data.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 })
       }
-    } catch (error) {
-      logger.error('Error fetching courts:', error)
+    } catch (err) {
+      logger.error('Error fetching courts:', err)
+      setError(true)
+      toast.error('Error al cargar canchas')
     } finally {
       setLoading(false)
     }
@@ -94,6 +101,12 @@ export default function CourtsPage() {
   useEffect(() => {
     setPage(1)
   }, [district, surface, courtType])
+
+  const clearFilters = () => {
+    setDistrict('')
+    setSurface('')
+    setCourtType('')
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -115,6 +128,7 @@ export default function CourtsPage() {
             value={district}
             onChange={(e) => setDistrict(e.target.value)}
             className="glass-input flex-1"
+            aria-label="Filtrar por distrito"
           >
             <option value="">Todos los distritos</option>
             {DISTRICTS.map((d) => (
@@ -125,6 +139,7 @@ export default function CourtsPage() {
             value={surface}
             onChange={(e) => setSurface(e.target.value)}
             className="glass-input flex-1"
+            aria-label="Filtrar por superficie"
           >
             <option value="">Toda superficie</option>
             {Object.entries(SURFACE_LABELS).map(([key, label]) => (
@@ -135,6 +150,7 @@ export default function CourtsPage() {
             value={courtType}
             onChange={(e) => setCourtType(e.target.value)}
             className="glass-input flex-1"
+            aria-label="Filtrar por tipo"
           >
             <option value="">Todo tipo</option>
             {Object.entries(COURT_TYPE_LABELS).map(([key, label]) => (
@@ -142,12 +158,48 @@ export default function CourtsPage() {
             ))}
           </select>
         </div>
+        {hasActiveFilters && (
+          <div className="mt-3">
+            <GlassButton variant="ghost" size="sm" onClick={clearFilters}>
+              <X className="h-4 w-4 mr-1" />
+              Limpiar filtros
+            </GlassButton>
+          </div>
+        )}
       </GlassCard>
 
-      {/* Courts Grid */}
-      {loading ? (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      {/* Error State */}
+      {error && !loading ? (
+        <GlassCard intensity="light" padding="xl">
+          <div className="text-center space-y-3">
+            <AlertTriangle className="h-12 w-12 text-destructive mx-auto" />
+            <h3 className="text-lg font-semibold">Error al cargar las canchas</h3>
+            <p className="text-muted-foreground text-sm">
+              No se pudo obtener la informacion. Intenta de nuevo.
+            </p>
+            <GlassButton variant="solid" size="sm" onClick={() => fetchCourts()}>
+              Intentar de nuevo
+            </GlassButton>
+          </div>
+        </GlassCard>
+      ) : loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2, 3].map((i) => (
+            <GlassCard key={i} intensity="light" padding="none">
+              <div className="animate-pulse">
+                <div className="h-48 rounded-xl bg-muted/30" />
+                <div className="p-4 space-y-3">
+                  <div className="h-5 w-2/3 rounded bg-muted/30" />
+                  <div className="h-4 w-1/2 rounded bg-muted/30" />
+                  <div className="flex gap-2">
+                    <div className="h-6 w-16 rounded-full bg-muted/30" />
+                    <div className="h-6 w-16 rounded-full bg-muted/30" />
+                  </div>
+                  <div className="h-6 w-24 rounded bg-muted/30" />
+                </div>
+              </div>
+            </GlassCard>
+          ))}
         </div>
       ) : courts.length === 0 ? (
         <GlassCard intensity="light" padding="xl">

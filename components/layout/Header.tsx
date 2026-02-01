@@ -46,7 +46,7 @@ export function Header({ onMenuClick }: HeaderProps) {
         {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <GlassButton variant="ghost" className="flex items-center gap-2">
+            <GlassButton variant="ghost" className="flex items-center gap-2" aria-label="Menu de usuario">
               <div className="w-8 h-8 rounded-full glass-primary border-glass flex items-center justify-center">
                 <User className="h-4 w-4 text-primary" />
               </div>

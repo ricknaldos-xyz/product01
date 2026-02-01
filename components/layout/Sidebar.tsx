@@ -30,6 +30,7 @@ function NavSection({ items, label }: { items: NavItem[]; label?: string }) {
             key={item.name}
             href={item.href}
             data-tour={item.tourId}
+            aria-current={isActive ? 'page' : undefined}
             className={cn(
               'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-[var(--duration-normal)]',
               isActive
@@ -71,7 +72,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-2 space-y-4 overflow-y-auto">
+      <nav role="navigation" aria-label="Navegacion principal" className="flex-1 px-3 py-2 space-y-4 overflow-y-auto">
         {sections.map((section, idx) => (
           <React.Fragment key={idx}>
             {idx > 0 && <hr className="border-glass mx-2" />}

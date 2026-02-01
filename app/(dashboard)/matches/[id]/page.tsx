@@ -10,7 +10,7 @@ import { GlassButton } from '@/components/ui/glass-button'
 import { TierBadge } from '@/components/player/TierBadge'
 import { ScoreInput } from '@/components/matches/ScoreInput'
 import { RatingForm } from '@/components/matches/RatingForm'
-import { Trophy, Calendar, MapPin, Loader2, ArrowLeft, CheckCircle2, Clock } from 'lucide-react'
+import { Trophy, Calendar, MapPin, Loader2, ArrowLeft, CheckCircle2, Clock, TrendingUp, TrendingDown } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import type { SkillTier } from '@prisma/client'
@@ -188,9 +188,13 @@ export default function MatchDetailPage() {
           <p className="font-semibold">{name}</p>
           <TierBadge tier={player.skillTier} size="sm" />
           {eloChange !== null && (
-            <p className={`text-sm font-medium mt-1 ${
-              eloChange > 0 ? 'text-green-600' : 'text-red-500'
-            }`}>
+            <p
+              className={`text-sm font-medium mt-1 inline-flex items-center gap-0.5 ${
+                eloChange > 0 ? 'text-green-600' : 'text-red-500'
+              }`}
+              aria-label={eloChange > 0 ? `Ganaste ${eloChange} puntos ELO` : `Perdiste ${Math.abs(eloChange)} puntos ELO`}
+            >
+              {eloChange > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               {eloChange > 0 ? '+' : ''}{eloChange} ELO
             </p>
           )}
@@ -213,7 +217,7 @@ export default function MatchDetailPage() {
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
         <Link href="/matches">
-          <GlassButton variant="ghost" size="sm">
+          <GlassButton variant="ghost" size="sm" aria-label="Volver a partidos">
             <ArrowLeft className="h-4 w-4" />
           </GlassButton>
         </Link>
@@ -277,7 +281,9 @@ export default function MatchDetailPage() {
 
             <div>
               <label className="block text-sm font-medium mb-1.5">Marcador</label>
-              <ScoreInput value={sets} onChange={setSets} />
+              <div role="group" aria-label="Marcador por sets">
+                <ScoreInput value={sets} onChange={setSets} />
+              </div>
             </div>
 
             <GlassButton
@@ -309,7 +315,8 @@ export default function MatchDetailPage() {
       {/* Status messages */}
       {(isPlayer1 || isPlayer2) && currentPlayerConfirmed && !bothConfirmed && (
         <GlassCard intensity="light" padding="md">
-          <p className="text-sm text-center text-yellow-600">
+          <p className="text-sm text-center text-yellow-600 inline-flex items-center gap-1.5 w-full justify-center">
+            <Clock className="h-4 w-4 flex-shrink-0" />
             Has confirmado tu resultado. Esperando confirmacion de {opponentName}.
           </p>
         </GlassCard>
@@ -317,7 +324,8 @@ export default function MatchDetailPage() {
 
       {(isPlayer1 || isPlayer2) && bothConfirmed && currentPlayerRated && (
         <GlassCard intensity="light" padding="md">
-          <p className="text-sm text-center text-green-600">
+          <p className="text-sm text-center text-green-600 inline-flex items-center gap-1.5 w-full justify-center">
+            <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
             Partido completado y calificado. Gracias por participar.
           </p>
         </GlassCard>

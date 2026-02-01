@@ -51,6 +51,7 @@ export default function MatchmakingPage() {
       setPlayers(data)
     } catch {
       setError(true)
+      toast.error('Error al cargar jugadores')
     } finally {
       setLoading(false)
     }
@@ -85,7 +86,7 @@ export default function MatchmakingPage() {
           <Swords className="h-7 w-7 text-primary" />
           <h1 className="text-2xl font-bold">Encontrar Rivales</h1>
         </div>
-        <GlassButton variant="outline" size="sm" onClick={requestLocation}>
+        <GlassButton variant="outline" size="sm" onClick={requestLocation} aria-label={latitude ? 'GPS activo' : 'Activar GPS'}>
           <MapPin className="h-4 w-4 mr-2" />
           {latitude ? 'GPS activo' : 'Activar GPS'}
         </GlassButton>
@@ -164,6 +165,7 @@ export default function MatchmakingPage() {
                     size="sm"
                     onClick={() => sendChallenge(player.userId)}
                     disabled={sendingChallenge === player.userId}
+                    aria-label={`Enviar desafio a ${player.displayName || 'jugador'}`}
                   >
                     {sendingChallenge === player.userId ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

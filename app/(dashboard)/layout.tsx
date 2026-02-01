@@ -29,7 +29,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   const sections = getNavigationSections(user, sportLabel)
 
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
+    <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menu de navegacion">
       <div
         className="fixed inset-0 bg-black/50"
         onClick={onClose}
@@ -62,14 +62,17 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
                   {section.label}
                 </p>
               )}
-              {section.items.map((item) => (
+              {section.items.map((item) => {
+                const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                return (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={onClose}
+                  aria-current={isActive ? 'page' : undefined}
                   className={cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                    (pathname === item.href || pathname.startsWith(item.href + '/'))
+                    isActive
                       ? 'bg-primary/10 text-primary'
                       : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
                   )}
@@ -77,7 +80,8 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
                   <item.icon className="h-5 w-5" />
                   {item.name}
                 </Link>
-              ))}
+                )
+              })}
             </div>
           ))}
         </nav>
@@ -110,6 +114,7 @@ export default function DashboardLayout({
       <SessionProvider>
         <SportProvider>
         <div className="min-h-screen bg-background">
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-background focus:border focus:border-glass focus:text-primary focus:shadow-lg">Saltar al contenido</a>
           {/* Desktop Sidebar */}
           <Sidebar />
 
@@ -119,7 +124,7 @@ export default function DashboardLayout({
           {/* Main content */}
           <div className="lg:pl-64">
             <Header onMenuClick={() => setMobileMenuOpen(true)} />
-            <main className="p-4 lg:p-6 pb-20 lg:pb-6">
+            <main id="main-content" className="p-4 lg:p-6 pb-20 lg:pb-6">
               <OnboardingWrapper>
                 {children}
               </OnboardingWrapper>

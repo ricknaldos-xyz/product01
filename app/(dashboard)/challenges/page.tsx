@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
+import { GlassBadge } from '@/components/ui/glass-badge'
 import { TierBadge } from '@/components/player/TierBadge'
 import { Flag, Check, X, Loader2, Clock, Swords, AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
@@ -95,13 +96,13 @@ export default function ChallengesPage() {
     EXPIRED: 'Expirado',
   }
 
-  const statusColor: Record<string, string> = {
-    PENDING: 'text-yellow-600 bg-yellow-100',
-    ACCEPTED: 'text-green-600 bg-green-100',
-    DECLINED: 'text-red-600 bg-red-100',
-    CANCELLED: 'text-slate-500 bg-slate-100',
-    COMPLETED: 'text-blue-600 bg-blue-100',
-    EXPIRED: 'text-slate-400 bg-slate-100',
+  const statusVariant: Record<string, 'warning' | 'success' | 'destructive' | 'primary' | 'default'> = {
+    PENDING: 'warning',
+    ACCEPTED: 'success',
+    DECLINED: 'destructive',
+    CANCELLED: 'destructive',
+    COMPLETED: 'primary',
+    EXPIRED: 'default',
   }
 
   return (
@@ -182,9 +183,9 @@ export default function ChallengesPage() {
                     <div className="flex items-center gap-2">
                       <p className="font-semibold truncate">{opponentName}</p>
                       <TierBadge tier={opponent.skillTier} size="sm" />
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColor[challenge.status]}`}>
+                      <GlassBadge variant={statusVariant[challenge.status] || 'default'} size="sm">
                         {statusLabel[challenge.status]}
-                      </span>
+                      </GlassBadge>
                     </div>
                     <div className="flex flex-wrap gap-3 mt-1 text-xs text-muted-foreground">
                       {challenge.proposedVenue && <span>{challenge.proposedVenue}</span>}

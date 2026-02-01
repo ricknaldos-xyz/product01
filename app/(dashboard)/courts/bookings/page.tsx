@@ -203,32 +203,38 @@ export default function BookingsPage() {
                 {(booking.status === 'PENDING' || booking.status === 'CONFIRMED') && (
                   <div className="flex sm:flex-col gap-2 shrink-0">
                     {confirmCancelId === booking.id ? (
-                      <div className="flex gap-2">
-                        <GlassButton
-                          variant="destructive"
-                          size="sm"
-                          disabled={cancellingId === booking.id}
-                          onClick={() => handleCancel(booking.id)}
-                        >
-                          {cancellingId === booking.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            'Confirmar'
-                          )}
-                        </GlassButton>
-                        <GlassButton
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setConfirmCancelId(null)}
-                        >
-                          No
-                        </GlassButton>
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-destructive">
+                          Cancelar esta reserva? No se puede deshacer.
+                        </p>
+                        <div className="flex gap-2">
+                          <GlassButton
+                            variant="destructive"
+                            size="sm"
+                            disabled={cancellingId === booking.id}
+                            onClick={() => handleCancel(booking.id)}
+                          >
+                            {cancellingId === booking.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              'Si, cancelar reserva'
+                            )}
+                          </GlassButton>
+                          <GlassButton
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setConfirmCancelId(null)}
+                          >
+                            No
+                          </GlassButton>
+                        </div>
                       </div>
                     ) : (
                       <GlassButton
                         variant="ghost"
                         size="sm"
                         onClick={() => setConfirmCancelId(booking.id)}
+                        aria-label="Cancelar reserva"
                       >
                         <XCircle className="h-4 w-4 mr-1" />
                         Cancelar
