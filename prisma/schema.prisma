@@ -455,6 +455,7 @@ model Sport {
   tournaments   Tournament[]
   matches       Match[]
   challenges    Challenge[]
+  feedItems     FeedItem[]
 
   configSchema Json?
 
@@ -1138,10 +1139,13 @@ model FeedItem {
   referenceId   String?
   referenceType String?
   metadata      Json?
+  sportId       String?
+  sport         Sport?        @relation(fields: [sportId], references: [id])
   createdAt     DateTime      @default(now())
 
   @@index([profileId, createdAt])
   @@index([createdAt])
+  @@index([sportId])
   @@map("feed_items")
 }
 

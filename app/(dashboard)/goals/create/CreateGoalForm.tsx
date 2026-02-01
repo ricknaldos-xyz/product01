@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSport } from '@/contexts/SportContext'
 import Link from 'next/link'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
@@ -85,6 +86,7 @@ const templateIcons: Record<string, React.ReactNode> = {
 
 export function CreateGoalForm() {
   const router = useRouter()
+  const { activeSport } = useSport()
   const [step, setStep] = useState(1)
   const [goalType, setGoalType] = useState<GoalType | null>(null)
   const [selectedTechniques, setSelectedTechniques] = useState<string[]>([])
@@ -114,34 +116,23 @@ export function CreateGoalForm() {
     fetchData()
   }, [])
 
-  // Fetch techniques when we go to step 2
+  // Fetch techniques when we go to step 2 (filtered by active sport)
   useEffect(() => {
-    if (step === 2 && techniques.length === 0) {
+    if (step === 2 && activeSport?.id) {
       fetchTechniques()
     }
-  }, [step])
+  }, [step, activeSport?.id])
 
   async function fetchTechniques() {
+    if (!activeSport) return
     try {
-      // First fetch available sports
-      const sportsRes = await fetch('/api/sports')
-      if (!sportsRes.ok) return
+      const techRes = await fetch(`/api/sports/${activeSport.id}/techniques`)
+      if (!techRes.ok) return
 
-      const sports: { id: string; name: string; slug: string }[] = await sportsRes.json()
-      const allTechniques: Technique[] = []
-
-      // Then fetch techniques for each sport
-      for (const sport of sports) {
-        const techRes = await fetch(`/api/sports/${sport.id}/techniques`)
-        if (techRes.ok) {
-          const techs: { id: string; name: string; slug: string }[] = await techRes.json()
-          allTechniques.push(
-            ...techs.map((t) => ({ ...t, sport: { id: sport.id, name: sport.name } }))
-          )
-        }
-      }
-
-      setTechniques(allTechniques)
+      const techs: { id: string; name: string; slug: string }[] = await techRes.json()
+      setTechniques(
+        techs.map((t) => ({ ...t, sport: { id: activeSport.id, name: activeSport.name } }))
+      )
     } catch {
       toast.error('Error al cargar las tecnicas')
     }

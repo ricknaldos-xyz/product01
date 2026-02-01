@@ -1769,6 +1769,7 @@ async function main() {
       hourlyRate: 60,
       amenities: ['Vestuarios', 'Duchas', 'Cafeteria', 'Estacionamiento', 'Iluminacion nocturna'],
       isActive: true,
+      sportId: tennis.id,
     },
     {
       name: 'Padel Lima Center',
@@ -1784,6 +1785,7 @@ async function main() {
       hourlyRate: 80,
       amenities: ['Vestuarios', 'Tienda', 'Academia', 'Estacionamiento'],
       isActive: true,
+      sportId: padel.id,
     },
     {
       name: 'Sport Center Miraflores',
@@ -1798,6 +1800,7 @@ async function main() {
       hourlyRate: 45,
       amenities: ['Iluminacion LED', 'Estacionamiento'],
       isActive: true,
+      sportId: tennis.id,
     },
     {
       name: 'Tennis Indoor Surco',
@@ -1811,6 +1814,7 @@ async function main() {
       hourlyRate: 90,
       amenities: ['Aire acondicionado', 'Vestuarios', 'Agua gratis'],
       isActive: true,
+      sportId: tennis.id,
     },
   ]
 
@@ -1887,6 +1891,7 @@ async function main() {
       endDate: new Date(Date.now() + 23 * 24 * 60 * 60 * 1000),
       venue: 'Club Tennis Las Terrazas',
       city: 'Lima',
+      sportId: tennis.id,
     },
   })
 

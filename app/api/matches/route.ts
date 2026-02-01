@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
 
     if (sport) {
       where.AND = [
-        { OR: [{ sportId: sport.id }, { sportId: null }] },
+        { sportId: sport.id },
       ]
     }
     const include = {

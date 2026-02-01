@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const where: Record<string, unknown> = { isActive: true }
 
     if (sport) {
-      where.OR = [{ sportId: sport.id }, { sportId: null }]
+      where.sportId = sport.id
     }
 
     if (city) {

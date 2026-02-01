@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 
 export const metadata: Metadata = {
   title: 'Dashboard | SportTek',
@@ -22,14 +23,20 @@ import { RecentBadgesCard } from '@/components/dashboard/RecentBadgesCard'
 import { ActivityHeatmap } from '@/components/gamification/ActivityHeatmap'
 import { DashboardRankingCard } from '@/components/dashboard/DashboardRankingCard'
 
-async function getStats(userId: string) {
-  const [analysesCount, plansCount, completedPlans, recentAnalyses, user, userSportsCount] =
+async function getStats(userId: string, sportSlug: string) {
+  const sportFilter = { technique: { sport: { slug: sportSlug } } }
+
+  const [analysesCount, plansCount, completedPlans, recentAnalyses, user, userSportsCount, userSports] =
     await Promise.all([
-      prisma.analysis.count({ where: { userId } }),
-      prisma.trainingPlan.count({ where: { userId } }),
-      prisma.trainingPlan.count({ where: { userId, status: 'COMPLETED' } }),
+      prisma.analysis.count({ where: { userId, ...sportFilter } }),
+      prisma.trainingPlan.count({
+        where: { userId, analysis: sportFilter },
+      }),
+      prisma.trainingPlan.count({
+        where: { userId, status: 'COMPLETED', analysis: sportFilter },
+      }),
       prisma.analysis.findMany({
-        where: { userId },
+        where: { userId, ...sportFilter },
         orderBy: { createdAt: 'desc' },
         take: 3,
         include: {
@@ -43,16 +50,29 @@ async function getStats(userId: string) {
         select: { emailVerified: true, email: true },
       }),
       prisma.userSport.count({ where: { userId } }),
+      prisma.userSport.findMany({
+        where: { userId },
+        include: {
+          sport: {
+            include: {
+              techniques: { select: { id: true } },
+            },
+          },
+        },
+      }),
     ])
 
-  return { analysesCount, plansCount, completedPlans, recentAnalyses, user, userSportsCount }
+  return { analysesCount, plansCount, completedPlans, recentAnalyses, user, userSportsCount, userSports, sportSlug }
 }
 
 export default async function DashboardPage() {
   const session = await auth()
   if (!session?.user) redirect('/login')
 
-  const stats = await getStats(session.user.id)
+  const cookieStore = await cookies()
+  const sportSlug = cookieStore.get('activeSportSlug')?.value || 'tennis'
+
+  const stats = await getStats(session.user.id, sportSlug)
 
   return (
     <div className="space-y-8">
@@ -224,65 +244,37 @@ export default async function DashboardPage() {
       <div>
         <h2 className="text-lg font-semibold mb-4">Deportes disponibles</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <GlassCard
-            intensity="light"
-            padding="md"
-            hover="glow"
-            className="flex items-center gap-4 cursor-pointer"
-            asChild
-          >
-            <Link href="/analyze?sport=tennis">
-              <div className="w-12 h-12 glass-primary border-glass rounded-xl flex items-center justify-center text-2xl">
-                🎾
-              </div>
-              <div>
-                <p className="font-medium">Tenis</p>
-                <p className="text-sm text-muted-foreground">4 tecnicas</p>
-              </div>
-            </Link>
-          </GlassCard>
-
-          <GlassCard
-            intensity="ultralight"
-            padding="md"
-            className="flex items-center gap-4 opacity-50"
-          >
-            <div className="w-12 h-12 glass-ultralight border-glass rounded-xl flex items-center justify-center text-2xl">
-              ⛳
-            </div>
-            <div>
-              <p className="font-medium">Golf</p>
-              <p className="text-sm text-muted-foreground">Proximamente</p>
-            </div>
-          </GlassCard>
-
-          <GlassCard
-            intensity="ultralight"
-            padding="md"
-            className="flex items-center gap-4 opacity-50"
-          >
-            <div className="w-12 h-12 glass-ultralight border-glass rounded-xl flex items-center justify-center text-2xl">
-              🏀
-            </div>
-            <div>
-              <p className="font-medium">Basketball</p>
-              <p className="text-sm text-muted-foreground">Proximamente</p>
-            </div>
-          </GlassCard>
-
-          <GlassCard
-            intensity="ultralight"
-            padding="md"
-            className="flex items-center gap-4 opacity-50"
-          >
-            <div className="w-12 h-12 glass-ultralight border-glass rounded-xl flex items-center justify-center text-2xl">
-              ⚽
-            </div>
-            <div>
-              <p className="font-medium">Futbol</p>
-              <p className="text-sm text-muted-foreground">Proximamente</p>
-            </div>
-          </GlassCard>
+          {stats.userSports.length > 0 ? (
+            stats.userSports.map((us) => (
+              <GlassCard
+                key={us.sport.id}
+                intensity={us.sport.slug === stats.sportSlug ? 'primary' : 'light'}
+                padding="md"
+                hover="glow"
+                className="flex items-center gap-4 cursor-pointer"
+                asChild
+              >
+                <Link href={`/analyze?sport=${us.sport.slug}`}>
+                  <div className={`w-12 h-12 ${us.sport.slug === stats.sportSlug ? 'glass-primary' : 'glass-ultralight'} border-glass rounded-xl flex items-center justify-center text-2xl`}>
+                    {us.sport.icon || us.sport.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="font-medium">{us.sport.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {us.sport.techniques.length} {us.sport.techniques.length === 1 ? 'tecnica' : 'tecnicas'}
+                    </p>
+                  </div>
+                </Link>
+              </GlassCard>
+            ))
+          ) : (
+            <GlassCard intensity="light" padding="md" className="col-span-full text-center">
+              <p className="text-muted-foreground text-sm">
+                No tienes deportes configurados.{' '}
+                <Link href="/settings" className="text-primary underline">Agrega uno</Link>
+              </p>
+            </GlassCard>
+          )}
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
@@ -37,9 +38,22 @@ export async function GET(request: NextRequest) {
 
     const profileIds = [profile.id, ...followingIds].filter(id => !blockedIds.includes(id))
 
+    // Resolve active sport from cookie for filtering
+    const cookieStore = await cookies()
+    const sportSlug = cookieStore.get('activeSportSlug')?.value
+    let sportFilter = {}
+    if (sportSlug) {
+      const sport = await prisma.sport.findUnique({ where: { slug: sportSlug }, select: { id: true } })
+      if (sport) {
+        sportFilter = { OR: [{ sportId: sport.id }, { sportId: null }] }
+      }
+    }
+
+    const whereClause = { profileId: { in: profileIds }, ...sportFilter }
+
     const [items, total] = await Promise.all([
       prisma.feedItem.findMany({
-        where: { profileId: { in: profileIds } },
+        where: whereClause,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
@@ -56,7 +70,7 @@ export async function GET(request: NextRequest) {
         },
       }),
       prisma.feedItem.count({
-        where: { profileId: { in: profileIds } },
+        where: whereClause,
       }),
     ])
 

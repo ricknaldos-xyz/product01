@@ -6,6 +6,7 @@ import { ActivityChart } from '@/components/charts/ActivityChart'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Loader2 } from 'lucide-react'
 import { logger } from '@/lib/logger'
+import { useSport } from '@/contexts/SportContext'
 
 interface ChartData {
   scoreData: Array<{ technique: string; score: number; date: string }>
@@ -16,11 +17,13 @@ interface ChartData {
 export function DashboardCharts() {
   const [data, setData] = useState<ChartData | null>(null)
   const [loading, setLoading] = useState(true)
+  const { activeSport } = useSport()
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('/api/stats')
+        const sportParam = activeSport?.slug || 'tennis'
+        const response = await fetch(`/api/stats?sport=${sportParam}`)
         if (response.ok) {
           const result = await response.json()
           setData(result)
@@ -33,7 +36,7 @@ export function DashboardCharts() {
     }
 
     fetchData()
-  }, [])
+  }, [activeSport?.slug])
 
   if (loading) {
     return (

@@ -12,6 +12,7 @@ export async function createFeedItem({
   referenceId,
   referenceType,
   metadata,
+  sportId,
 }: {
   userId: string
   type: FeedItemType
@@ -20,6 +21,7 @@ export async function createFeedItem({
   referenceId?: string
   referenceType?: string
   metadata?: Record<string, unknown>
+  sportId?: string
 }): Promise<void> {
   const profile = await prisma.playerProfile.findUnique({
     where: { userId },
@@ -37,6 +39,7 @@ export async function createFeedItem({
       referenceId,
       referenceType,
       metadata: metadata ? (metadata as Prisma.InputJsonValue) : undefined,
+      sportId,
     },
   })
 }

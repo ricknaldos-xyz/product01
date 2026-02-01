@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await auth()
     if (!session?.user) {
@@ -11,6 +11,10 @@ export async function GET() {
     }
 
     const userId = session.user.id
+    const { searchParams } = new URL(request.url)
+    const sportSlug = searchParams.get('sport') || 'tennis'
+
+    const sportFilter = { technique: { sport: { slug: sportSlug } } }
 
     // Get last 30 days of data
     const thirtyDaysAgo = new Date()
@@ -22,6 +26,7 @@ export async function GET() {
         userId,
         status: 'COMPLETED',
         overallScore: { not: null },
+        ...sportFilter,
       },
       select: {
         overallScore: true,
@@ -40,6 +45,7 @@ export async function GET() {
         userId,
         date: { gte: thirtyDaysAgo },
         completed: true,
+        exercise: { trainingPlan: { analysis: sportFilter } },
       },
       select: {
         date: true,
@@ -52,6 +58,7 @@ export async function GET() {
       where: {
         userId,
         createdAt: { gte: thirtyDaysAgo },
+        ...sportFilter,
       },
       select: {
         createdAt: true,

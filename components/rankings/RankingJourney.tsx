@@ -19,16 +19,28 @@ interface RankingJourneyProps {
   variant: 'full' | 'compact'
 }
 
-const RECOMMENDED_TECHNIQUES = [
-  { slug: 'saque', name: 'Saque' },
-  { slug: 'derecha', name: 'Derecha' },
-  { slug: 'reves', name: 'Reves' },
-]
-
 export function RankingJourney({ techniqueBreakdown, skillTier, variant }: RankingJourneyProps) {
   const { activeSport } = useSport()
   const sportSlug = activeSport?.slug || 'tennis'
   const [celebrated, setCelebrated] = useState(true) // default true to avoid flash
+  const [recommendedTechniques, setRecommendedTechniques] = useState<{ slug: string; name: string }[]>([])
+  const [loadingTechniques, setLoadingTechniques] = useState(false)
+
+  useEffect(() => {
+    if (!activeSport?.id) return
+    setLoadingTechniques(true)
+    fetch(`/api/sports/${activeSport.id}/techniques`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.techniques) {
+          setRecommendedTechniques(data.techniques.slice(0, 3))
+        }
+      })
+      .catch(() => {
+        setRecommendedTechniques([])
+      })
+      .finally(() => setLoadingTechniques(false))
+  }, [activeSport?.id])
 
   const analyzedCount = techniqueBreakdown.length
   const isRanked = skillTier !== 'UNRANKED'
@@ -129,18 +141,29 @@ export function RankingJourney({ techniqueBreakdown, skillTier, variant }: Ranki
         </p>
 
         <p className="text-sm font-medium mt-4 mb-3">Tecnicas recomendadas para empezar:</p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {RECOMMENDED_TECHNIQUES.map((t) => (
-            <GlassCard key={t.slug} intensity="light" padding="md" hover="lift">
-              <p className="font-medium text-sm mb-2">{t.name}</p>
-              <Link href="/analyze">
-                <GlassButton variant="solid" size="sm">
-                  Analizar
-                </GlassButton>
-              </Link>
-            </GlassCard>
-          ))}
-        </div>
+        {loadingTechniques ? (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {Array.from({ length: 3 }, (_, i) => (
+              <GlassCard key={i} intensity="light" padding="md">
+                <div className="h-4 w-24 bg-muted/40 rounded animate-pulse mb-2" />
+                <div className="h-8 w-20 bg-muted/40 rounded animate-pulse" />
+              </GlassCard>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {recommendedTechniques.map((t) => (
+              <GlassCard key={t.slug} intensity="light" padding="md" hover="lift">
+                <p className="font-medium text-sm mb-2">{t.name}</p>
+                <Link href={`/analyze/new?technique=${t.slug}`}>
+                  <GlassButton variant="solid" size="sm">
+                    Analizar
+                  </GlassButton>
+                </Link>
+              </GlassCard>
+            ))}
+          </div>
+        )}
 
         <Link href="/analyze" className="block mt-4">
           <GlassButton variant="solid" className="w-full">
@@ -157,7 +180,7 @@ export function RankingJourney({ techniqueBreakdown, skillTier, variant }: Ranki
 
   // Find next suggested technique
   const nextSuggested =
-    RECOMMENDED_TECHNIQUES.find((t) => !analyzedSlugs.includes(t.slug)) ||
+    recommendedTechniques.find((t) => !analyzedSlugs.includes(t.slug)) ||
     { slug: 'tecnica', name: 'Siguiente tecnica' }
 
   return (
@@ -217,7 +240,7 @@ export function RankingJourney({ techniqueBreakdown, skillTier, variant }: Ranki
       <GlassCard intensity="light" padding="md" hover="lift" className="mb-4">
         <div className="flex items-center justify-between">
           <p className="font-medium text-sm">{nextSuggested.name}</p>
-          <Link href="/analyze">
+          <Link href={`/analyze/new?technique=${nextSuggested.slug}`}>
             <GlassButton variant="solid" size="sm">
               Analizar {nextSuggested.name}
               <ArrowRight className="h-4 w-4 ml-1" />

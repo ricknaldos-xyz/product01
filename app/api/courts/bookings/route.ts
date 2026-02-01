@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     if (sportSlug) {
       const sport = await prisma.sport.findUnique({ where: { slug: sportSlug }, select: { id: true } })
       if (sport) {
-        where.court = { OR: [{ sportId: sport.id }, { sportId: null }] }
+        where.court = { sportId: sport.id }
       }
     }
 

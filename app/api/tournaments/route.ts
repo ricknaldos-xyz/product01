@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
       where.status = status as TournamentStatus
     }
     if (sport) {
-      where.OR = [{ sportId: sport.id }, { sportId: null }]
+      where.sportId = sport.id
     }
 
     const [tournaments, total] = await Promise.all([
