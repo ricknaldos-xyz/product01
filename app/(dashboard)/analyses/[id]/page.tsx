@@ -269,7 +269,12 @@ export default async function AnalysisDetailPage({
           </GlassCard>
 
           {/* Contextual Shop Recommendations */}
-          <ShopRecommendations sportName={analysis.technique.sport.name} techniqueName={analysis.technique.name} />
+          <ShopRecommendations
+            sportName={analysis.technique.sport.name}
+            techniqueName={analysis.technique.name}
+            issues={analysis.issues.map((i) => ({ category: i.category, severity: i.severity }))}
+            score={analysis.overallScore}
+          />
 
           {/* Post-Analysis Next Steps */}
           <div>

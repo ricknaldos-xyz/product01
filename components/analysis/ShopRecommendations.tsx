@@ -4,36 +4,91 @@ import { GlassButton } from '@/components/ui/glass-button'
 import { ShoppingBag } from 'lucide-react'
 import Link from 'next/link'
 
-// Map sport/technique to relevant product categories
-function getRelevantCategories(sportName: string, techniqueName: string): string[] {
+// Smart recommendation engine: uses sport, technique, issues, and score
+function getRecommendationStrategy(
+  sportName: string,
+  techniqueName: string,
+  issues: Array<{ category: string; severity: string }>,
+  score: number | null
+): { categories: string[]; reason: string } {
   const lower = techniqueName.toLowerCase()
+  const sportLower = sportName.toLowerCase()
   const categories: string[] = []
+  let reason = 'Para tu deporte'
 
-  // Racket-related techniques suggest rackets and strings
-  if (lower.includes('golpe') || lower.includes('drive') || lower.includes('reves') || lower.includes('saque') || lower.includes('volea') || lower.includes('smash')) {
-    categories.push('RACKETS', 'STRINGS', 'GRIPS')
+  // Analyze issues to determine categories
+  const issueCategories = issues.map((i) => i.category.toLowerCase())
+  const hasCritical = issues.some((i) => i.severity === 'CRITICAL' || i.severity === 'HIGH')
+
+  // Grip-related issues → grips
+  if (issueCategories.some((c) => c.includes('agarre') || c.includes('grip') || c.includes('mano'))) {
+    categories.push('GRIPS')
+    reason = 'Para mejorar tu agarre'
   }
 
-  // Footwork/movement techniques suggest shoes
-  if (lower.includes('movimiento') || lower.includes('pie') || lower.includes('desplazamiento')) {
+  // Power/impact issues → rackets, strings
+  if (issueCategories.some((c) => c.includes('potencia') || c.includes('impacto') || c.includes('fuerza'))) {
+    categories.push('RACKETS', 'STRINGS')
+    reason = 'Para maximizar tu potencia'
+  }
+
+  // Movement/footwork issues → shoes
+  if (issueCategories.some((c) => c.includes('movimiento') || c.includes('pie') || c.includes('balance') || c.includes('postura') || c.includes('equilibrio'))) {
     categories.push('SHOES')
+    reason = 'Para mejorar tu movilidad'
   }
 
-  // Default: show accessories and featured items
+  // Technique-based fallback
   if (categories.length === 0) {
-    categories.push('RACKETS', 'ACCESSORIES')
+    if (lower.includes('saque') || lower.includes('serve') || lower.includes('smash')) {
+      categories.push('RACKETS', 'STRINGS')
+      reason = 'Para potenciar tu saque'
+    } else if (lower.includes('drive') || lower.includes('golpe') || lower.includes('reves') || lower.includes('volea')) {
+      categories.push('RACKETS', 'GRIPS', 'STRINGS')
+      reason = 'Para tu tecnica de golpe'
+    } else if (lower.includes('movimiento') || lower.includes('desplazamiento')) {
+      categories.push('SHOES', 'ACCESSORIES')
+      reason = 'Para tu juego de pies'
+    }
   }
 
-  return categories
+  // Score-based strategy
+  if (score !== null && score < 5 && hasCritical) {
+    // Low score with critical issues → training aids and accessories
+    if (!categories.includes('ACCESSORIES')) categories.push('ACCESSORIES')
+    reason = 'Para ayudarte a mejorar'
+  } else if (score !== null && score >= 8) {
+    // High score → performance gear
+    if (!categories.includes('RACKETS')) categories.push('RACKETS')
+    reason = 'Equipamiento de rendimiento'
+  }
+
+  // Sport-specific defaults
+  if (categories.length === 0) {
+    if (sportLower.includes('padel')) {
+      categories.push('RACKETS', 'GRIPS', 'SHOES')
+      reason = 'Equipamiento de padel'
+    } else if (sportLower.includes('pickleball')) {
+      categories.push('RACKETS', 'ACCESSORIES')
+      reason = 'Equipamiento de pickleball'
+    } else {
+      categories.push('RACKETS', 'STRINGS', 'ACCESSORIES')
+      reason = `Equipamiento de ${sportName.toLowerCase()}`
+    }
+  }
+
+  return { categories, reason }
 }
 
 interface ShopRecommendationsProps {
   sportName: string
   techniqueName: string
+  issues?: Array<{ category: string; severity: string }>
+  score?: number | null
 }
 
-export async function ShopRecommendations({ sportName, techniqueName }: ShopRecommendationsProps) {
-  const categories = getRelevantCategories(sportName, techniqueName)
+export async function ShopRecommendations({ sportName, techniqueName, issues = [], score = null }: ShopRecommendationsProps) {
+  const { categories, reason } = getRecommendationStrategy(sportName, techniqueName, issues, score)
 
   const products = await prisma.product.findMany({
     where: {
@@ -50,6 +105,7 @@ export async function ShopRecommendations({ sportName, techniqueName }: ShopReco
       priceCents: true,
       comparePriceCents: true,
       thumbnailUrl: true,
+      category: true,
     },
   })
 
@@ -58,9 +114,12 @@ export async function ShopRecommendations({ sportName, techniqueName }: ShopReco
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <ShoppingBag className="h-5 w-5 text-primary" />
-          <h2 className="font-semibold">Equipamiento recomendado</h2>
+        <div>
+          <div className="flex items-center gap-2">
+            <ShoppingBag className="h-5 w-5 text-primary" />
+            <h2 className="font-semibold">Equipamiento recomendado</h2>
+          </div>
+          <p className="text-xs text-muted-foreground mt-0.5">{reason}</p>
         </div>
         <GlassButton variant="ghost" size="sm" asChild>
           <Link href="/tienda">Ver tienda</Link>

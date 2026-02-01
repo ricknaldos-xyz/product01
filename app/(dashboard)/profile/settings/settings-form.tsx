@@ -10,6 +10,7 @@ interface SettingsFormProps {
   userId: string
   initialData: {
     emailNotifications: boolean
+    weeklyDigestEnabled: boolean
     reminderTime: string | null
   }
 }
@@ -17,6 +18,9 @@ interface SettingsFormProps {
 export function SettingsForm({ userId, initialData }: SettingsFormProps) {
   const [emailNotifications, setEmailNotifications] = useState(
     initialData.emailNotifications
+  )
+  const [weeklyDigestEnabled, setWeeklyDigestEnabled] = useState(
+    initialData.weeklyDigestEnabled
   )
   const [reminderTime, setReminderTime] = useState(
     initialData.reminderTime || ''
@@ -33,6 +37,7 @@ export function SettingsForm({ userId, initialData }: SettingsFormProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           emailNotifications,
+          weeklyDigestEnabled,
           reminderTime: reminderTime || null,
         }),
       })
@@ -50,14 +55,14 @@ export function SettingsForm({ userId, initialData }: SettingsFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <Label htmlFor="emailNotifications" className="font-medium">
             Notificaciones por email
           </Label>
           <p className="text-sm text-muted-foreground">
-            Recibe emails sobre tu progreso y analisis
+            Recibe emails sobre tu progreso, analisis y recordatorios
           </p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
@@ -69,6 +74,28 @@ export function SettingsForm({ userId, initialData }: SettingsFormProps) {
             className="sr-only peer"
           />
           <div className="w-11 h-6 glass-ultralight border-glass rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-[var(--duration-normal)]" />
+        </label>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div>
+          <Label htmlFor="weeklyDigest" className="font-medium">
+            Resumen semanal
+          </Label>
+          <p className="text-sm text-muted-foreground">
+            Recibe un email cada lunes con tu resumen de la semana
+          </p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            id="weeklyDigest"
+            checked={weeklyDigestEnabled}
+            onChange={(e) => setWeeklyDigestEnabled(e.target.checked)}
+            disabled={!emailNotifications}
+            className="sr-only peer"
+          />
+          <div className={`w-11 h-6 glass-ultralight border-glass rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-[var(--duration-normal)] ${!emailNotifications ? 'opacity-50' : ''}`} />
         </label>
       </div>
 

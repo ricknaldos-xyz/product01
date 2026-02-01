@@ -6,6 +6,7 @@ import { z } from 'zod'
 
 const updateSettingsSchema = z.object({
   emailNotifications: z.boolean().optional(),
+  weeklyDigestEnabled: z.boolean().optional(),
   reminderTime: z.string().nullable().optional(),
   name: z.string().min(2).optional(),
 })
@@ -27,7 +28,7 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    const { emailNotifications, reminderTime, name } = validated.data
+    const { emailNotifications, weeklyDigestEnabled, reminderTime, name } = validated.data
 
     // Validate reminderTime format if provided
     if (reminderTime && !/^([01]\d|2[0-3]):([0-5]\d)$/.test(reminderTime)) {
@@ -41,6 +42,7 @@ export async function PATCH(request: NextRequest) {
       where: { id: session.user.id },
       data: {
         ...(emailNotifications !== undefined && { emailNotifications }),
+        ...(weeklyDigestEnabled !== undefined && { weeklyDigestEnabled }),
         ...(reminderTime !== undefined && { reminderTime }),
         ...(name && { name }),
       },
@@ -48,6 +50,7 @@ export async function PATCH(request: NextRequest) {
         id: true,
         name: true,
         emailNotifications: true,
+        weeklyDigestEnabled: true,
         reminderTime: true,
       },
     })
@@ -76,6 +79,7 @@ export async function GET() {
         name: true,
         email: true,
         emailNotifications: true,
+        weeklyDigestEnabled: true,
         reminderTime: true,
         subscription: true,
       },

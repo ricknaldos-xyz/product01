@@ -23,10 +23,12 @@ export async function POST(request: NextRequest) {
       const oneWeekAgo = new Date()
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
 
-      // Find users who have verified emails and have a player profile (active users)
+      // Find users who have opted in to weekly digest
       const activeUsers = await prisma.user.findMany({
         where: {
           emailVerified: { not: null },
+          emailNotifications: true,
+          weeklyDigestEnabled: true,
           playerProfile: { isNot: null },
         },
         select: {
@@ -203,6 +205,10 @@ function getWeeklyDigestHtml(data: {
 
     <p style="color: #a1a1aa; font-size: 12px; text-align: center; margin-top: 24px;">
       &copy; ${new Date().getFullYear()} SportTek. Todos los derechos reservados.
+      <br>
+      <a href="${process.env.NEXT_PUBLIC_APP_URL}/profile/settings" style="color: #a1a1aa; text-decoration: underline;">
+        Desactivar resumen semanal
+      </a>
     </p>
   </div>
 </body>

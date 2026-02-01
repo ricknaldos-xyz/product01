@@ -363,8 +363,9 @@ model User {
   culqiCurrentPeriodEnd DateTime?
 
   // Email notification preferences
-  emailNotifications Boolean @default(true)
-  reminderTime       String? // HH:mm format for daily reminders
+  emailNotifications  Boolean @default(true)
+  weeklyDigestEnabled Boolean @default(true)
+  reminderTime        String? // HH:mm format for daily reminders
 
   favoriteSports  UserSport[]
   preferredAngles String[]    @default([])

@@ -22,6 +22,7 @@ async function getUserSettings(userId: string) {
       name: true,
       email: true,
       emailNotifications: true,
+      weeklyDigestEnabled: true,
       reminderTime: true,
       subscription: true,
       culqiCustomerId: true,
@@ -67,6 +68,7 @@ export default async function SettingsPage() {
           userId={user.id}
           initialData={{
             emailNotifications: user.emailNotifications,
+            weeklyDigestEnabled: user.weeklyDigestEnabled,
             reminderTime: user.reminderTime,
           }}
         />

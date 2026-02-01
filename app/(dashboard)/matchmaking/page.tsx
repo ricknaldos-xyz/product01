@@ -32,8 +32,12 @@ export default function MatchmakingPage() {
   const [error, setError] = useState(false)
   const [sendingChallenge, setSendingChallenge] = useState<string | null>(null)
   const [tierFilter, setTierFilter] = useState('')
+  const [challengedRival, setChallengedRival] = useState<DiscoveredPlayer | null>(null)
   const { latitude, longitude, requestLocation } = useGeolocation()
   const { activeSport } = useSport()
+
+  // Collect unique cities from discovered players for fallback filter
+  const uniqueCities = [...new Set(players.map((p) => p.city).filter(Boolean))] as string[]
 
   useEffect(() => {
     fetchPlayers()
@@ -63,17 +67,18 @@ export default function MatchmakingPage() {
     }
   }
 
-  async function sendChallenge(userId: string) {
-    setSendingChallenge(userId)
+  async function sendChallenge(player: DiscoveredPlayer) {
+    setSendingChallenge(player.userId)
     try {
       const res = await fetch('/api/challenges', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ challengedUserId: userId, sportSlug: activeSport?.slug || 'tennis' }),
+        body: JSON.stringify({ challengedUserId: player.userId, sportSlug: activeSport?.slug || 'tennis' }),
       })
 
       if (res.ok) {
         toast.success('Desafio enviado!')
+        setChallengedRival(player)
       } else {
         const data = await res.json()
         toast.error(data.error || 'Error al enviar desafio')
@@ -98,27 +103,64 @@ export default function MatchmakingPage() {
         </GlassButton>
       </div>
 
-      {/* Filters + info when no GPS */}
-      <div className="flex flex-wrap items-center gap-3">
-        <select
-          value={tierFilter}
-          onChange={(e) => setTierFilter(e.target.value)}
-          className="bg-transparent border border-glass rounded-lg px-3 py-1.5 text-sm"
-        >
-          <option value="">Todas las categorias</option>
-          <option value="QUINTA_B">Quinta B</option>
-          <option value="QUINTA_A">Quinta A</option>
-          <option value="CUARTA_B">Cuarta B</option>
-          <option value="CUARTA_A">Cuarta A</option>
-          <option value="TERCERA_B">Tercera B</option>
-          <option value="TERCERA_A">Tercera A</option>
-        </select>
-        {!latitude && (
-          <p className="text-xs text-muted-foreground">
-            Sin GPS: mostrando jugadores de tu region. Activa GPS para buscar por distancia.
-          </p>
-        )}
-      </div>
+      {/* Filters */}
+      <GlassCard intensity="ultralight" padding="md">
+        <div className="flex flex-wrap items-center gap-3">
+          <select
+            value={tierFilter}
+            onChange={(e) => setTierFilter(e.target.value)}
+            className="bg-transparent border border-glass rounded-lg px-3 py-1.5 text-sm"
+          >
+            <option value="">Todas las categorias</option>
+            <option value="QUINTA_B">Quinta B</option>
+            <option value="QUINTA_A">Quinta A</option>
+            <option value="CUARTA_B">Cuarta B</option>
+            <option value="CUARTA_A">Cuarta A</option>
+            <option value="TERCERA_B">Tercera B</option>
+            <option value="TERCERA_A">Tercera A</option>
+            <option value="SEGUNDA_B">Segunda B</option>
+            <option value="SEGUNDA_A">Segunda A</option>
+            <option value="PRIMERA_B">Primera B</option>
+            <option value="PRIMERA_A">Primera A</option>
+          </select>
+          {!latitude && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <MapPin className="h-3 w-3" />
+              <span>Sin GPS: mostrando jugadores de tu region.</span>
+            </div>
+          )}
+          {!latitude && uniqueCities.length > 1 && (
+            <span className="text-xs text-muted-foreground">
+              Ciudades encontradas: {uniqueCities.join(', ')}
+            </span>
+          )}
+        </div>
+      </GlassCard>
+
+      {/* Challenge sent → book court CTA */}
+      {challengedRival && (
+        <GlassCard intensity="light" padding="md" className="bg-primary/5 border-primary/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Calendar className="h-5 w-5 text-primary" />
+              <div>
+                <p className="font-medium text-sm">
+                  Desafio enviado a {challengedRival.displayName || 'jugador'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Reserva una cancha para su partido
+                  {challengedRival.city && ` en ${challengedRival.city}`}
+                </p>
+              </div>
+            </div>
+            <GlassButton variant="solid" size="sm" asChild>
+              <Link href={`/courts${challengedRival.city ? `?district=${encodeURIComponent(challengedRival.city)}` : ''}`}>
+                Reservar cancha
+              </Link>
+            </GlassButton>
+          </div>
+        </GlassCard>
+      )}
 
       {error ? (
         <div className="flex items-center justify-center py-16">
@@ -140,7 +182,17 @@ export default function MatchmakingPage() {
           <div className="text-center text-muted-foreground">
             <Swords className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p className="text-lg font-medium">No se encontraron jugadores</p>
-            <p className="text-sm mt-1">Intenta activar GPS o ampliar tu busqueda</p>
+            <p className="text-sm mt-1">
+              {!latitude
+                ? 'Activa GPS para buscar por distancia, o intenta con otra categoria'
+                : 'Intenta con otra categoria o amplia el radio de busqueda'}
+            </p>
+            {!latitude && (
+              <GlassButton variant="outline" size="sm" className="mt-4" onClick={requestLocation}>
+                <MapPin className="h-4 w-4 mr-2" />
+                Activar GPS
+              </GlassButton>
+            )}
           </div>
         </GlassCard>
       ) : (
@@ -166,12 +218,17 @@ export default function MatchmakingPage() {
                     <TierBadge tier={player.skillTier} size="sm" />
                   </div>
                   <div className="flex flex-wrap gap-3 mt-1">
-                    {player.distance !== null && (
+                    {player.distance !== null ? (
                       <span className="text-xs text-muted-foreground flex items-center gap-1">
                         <MapPin className="h-3 w-3" />
                         {player.distance} km
                       </span>
-                    )}
+                    ) : player.city ? (
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        {player.city}
+                      </span>
+                    ) : null}
                     {player.playStyle && (
                       <span className="text-xs text-muted-foreground">{player.playStyle}</span>
                     )}
@@ -188,19 +245,31 @@ export default function MatchmakingPage() {
                       {player.compositeScore?.toFixed(1) || '--'}
                     </p>
                   </div>
-                  <GlassButton
-                    variant="solid"
-                    size="sm"
-                    onClick={() => sendChallenge(player.userId)}
-                    disabled={sendingChallenge === player.userId}
-                    aria-label={`Enviar desafio a ${player.displayName || 'jugador'}`}
-                  >
-                    {sendingChallenge === player.userId ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Send className="h-4 w-4" />
-                    )}
-                  </GlassButton>
+                  <div className="flex gap-1.5">
+                    <GlassButton
+                      variant="solid"
+                      size="sm"
+                      onClick={() => sendChallenge(player)}
+                      disabled={sendingChallenge === player.userId}
+                      aria-label={`Enviar desafio a ${player.displayName || 'jugador'}`}
+                    >
+                      {sendingChallenge === player.userId ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4" />
+                      )}
+                    </GlassButton>
+                    <GlassButton
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      aria-label="Reservar cancha"
+                    >
+                      <Link href={`/courts${player.city ? `?district=${encodeURIComponent(player.city)}` : ''}`}>
+                        <Calendar className="h-4 w-4" />
+                      </Link>
+                    </GlassButton>
+                  </div>
                 </div>
               </div>
             </GlassCard>
@@ -208,8 +277,8 @@ export default function MatchmakingPage() {
         </div>
       )}
 
-      {/* Quick action: book a court after finding a rival */}
-      {!loading && players.length > 0 && (
+      {/* General book court CTA */}
+      {!loading && players.length > 0 && !challengedRival && (
         <GlassCard intensity="ultralight" padding="md">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
