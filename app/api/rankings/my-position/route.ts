@@ -23,7 +23,20 @@ export async function GET(request: NextRequest) {
     })
 
     if (!profile) {
-      return NextResponse.json({ error: 'Perfil no encontrado' }, { status: 404 })
+      return NextResponse.json({
+        compositeScore: null,
+        effectiveScore: null,
+        skillTier: 'UNRANKED',
+        globalRank: null,
+        countryRank: null,
+        country: null,
+        totalInCountry: 0,
+        totalInTier: 0,
+        previousRank: null,
+        scoreVariance: null,
+        techniqueBreakdown: [],
+        hasProfile: false,
+      })
     }
 
     // Find SportProfile for the requested sport
@@ -64,6 +77,10 @@ export async function GET(request: NextRequest) {
         country: profile.country,
         totalInCountry: 0,
         totalInTier: 0,
+        previousRank: null,
+        scoreVariance: null,
+        techniqueBreakdown: [],
+        hasProfile: true,
       })
     }
 
@@ -148,6 +165,7 @@ export async function GET(request: NextRequest) {
         bestScore: ts.bestScore,
         lastAnalyzedAt: ts.lastAnalyzedAt?.toISOString() ?? null,
       })),
+      hasProfile: true,
     })
   } catch (error) {
     logger.error('Get my position error:', error)

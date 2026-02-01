@@ -27,6 +27,7 @@ interface MyPositionData {
   totalInTier: number
   previousRank?: number | null
   techniqueBreakdown?: { technique: { name: string; slug: string }; bestScore: number; lastAnalyzedAt?: string | null }[]
+  hasProfile?: boolean
 }
 
 export function RankingHero() {
@@ -63,6 +64,33 @@ export function RankingHero() {
   }
 
   if (!data) return null
+
+  // User has no player profile yet — show onboarding
+  if (data.hasProfile === false) {
+    return (
+      <GlassCard intensity="primary" padding="lg">
+        <div className="text-center space-y-4">
+          <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+            <TrendingUp className="h-7 w-7 text-primary" />
+          </div>
+          <div>
+            <p className="text-xl font-bold">Empieza tu camino al ranking</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Completa tu perfil de jugador y analiza tus tecnicas para obtener tu categoria y competir en el ranking nacional
+            </p>
+          </div>
+          <div className="flex gap-3 justify-center">
+            <Link href="/profile/player/edit">
+              <GlassButton variant="solid">Completar perfil</GlassButton>
+            </Link>
+            <Link href="/analyze">
+              <GlassButton variant="outline">Analizar video</GlassButton>
+            </Link>
+          </div>
+        </div>
+      </GlassCard>
+    )
+  }
 
   const isUnranked = data.skillTier === 'UNRANKED'
 
