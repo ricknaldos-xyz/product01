@@ -2,23 +2,26 @@ import Link from 'next/link'
 import { Target } from 'lucide-react'
 
 const footerLinks = {
-  producto: [
-    { label: 'Caracteristicas', href: '#features' },
+  plataforma: [
+    { label: 'Ecosistema', href: '#features' },
+    { label: 'Como funciona', href: '#how-it-works' },
     { label: 'Precios', href: '#pricing' },
     { label: 'Rankings', href: '/rankings' },
     { label: 'Torneos', href: '/tournaments' },
-    { label: 'Canchas', href: '/courts' },
     { label: 'FAQ', href: '#faq' },
   ],
   servicios: [
+    { label: 'Coach Marketplace', href: '/coaches' },
     { label: 'Tienda', href: '/tienda' },
     { label: 'Encordado', href: '/encordado' },
-    { label: 'Coaches', href: '/coaches' },
+    { label: 'Canchas', href: '/courts' },
     { label: 'Documentacion', href: '/docs' },
   ],
-  cuenta: [
+  comunidad: [
+    { label: 'Registrarme como jugador', href: '/register?type=player' },
+    { label: 'Registrarme como coach', href: '/register?type=coach' },
+    { label: 'Aplicar como proveedor', href: '/register?type=provider' },
     { label: 'Iniciar sesion', href: '/login' },
-    { label: 'Crear cuenta', href: '/register' },
   ],
 }
 
@@ -33,16 +36,16 @@ export function LandingFooter() {
               <Target className="h-6 w-6 text-primary" />
               <span className="text-lg font-bold">SportTek</span>
             </Link>
-            <p className="text-sm text-muted-foreground">
-              Analisis deportivo con IA para tenis, padel y pickleball.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              La plataforma integral para tu desarrollo en tenis, padel y pickleball. Analisis IA, rankings, torneos, coaches y comunidad.
             </p>
           </div>
 
-          {/* Product Links */}
+          {/* Platform Links */}
           <div>
-            <h4 className="font-semibold mb-4">Producto</h4>
+            <h4 className="font-semibold mb-4">Plataforma</h4>
             <ul className="space-y-2">
-              {footerLinks.producto.map((link) => (
+              {footerLinks.plataforma.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
@@ -72,11 +75,11 @@ export function LandingFooter() {
             </ul>
           </div>
 
-          {/* Account Links */}
+          {/* Community Links */}
           <div>
-            <h4 className="font-semibold mb-4">Cuenta</h4>
+            <h4 className="font-semibold mb-4">Unete</h4>
             <ul className="space-y-2">
-              {footerLinks.cuenta.map((link) => (
+              {footerLinks.comunidad.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}

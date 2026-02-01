@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, Swords, Trophy, Flame, Globe } from 'lucide-react'
+import { ArrowRight, Brain, Trophy, Swords, Zap } from 'lucide-react'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import { StatsCounter } from '@/components/landing/StatsCounter'
@@ -14,32 +14,47 @@ export function HeroSection() {
           {/* Trust Badges */}
           <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
             <GlassBadge variant="primary" size="lg">
+              <Brain className="h-3.5 w-3.5 mr-1.5" />
+              Analisis IA en 2 min
+            </GlassBadge>
+            <GlassBadge variant="primary" size="lg">
               <Trophy className="h-3.5 w-3.5 mr-1.5" />
-              Rankings nacionales en vivo
+              Rankings nacionales Peru
             </GlassBadge>
             <GlassBadge variant="primary" size="lg">
               <Swords className="h-3.5 w-3.5 mr-1.5" />
-              Encuentra rivales de tu nivel
-            </GlassBadge>
-            <GlassBadge variant="primary" size="lg">
-              <Globe className="h-3.5 w-3.5 mr-1.5" />
-              Tenis, Padel, Pickleball y mas
+              Torneos con brackets reales
             </GlassBadge>
           </div>
 
           {/* Headline */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-            Compite. Mejora.{' '}
+            Tu carrera deportiva en{' '}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary to-primary/60">
-              Domina.
+              una sola plataforma
             </span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-            La plataforma de analisis deportivo con IA para tenis, padel y pickleball.
-            Sube videos, recibe tu skill score, entrena con planes personalizados, sube en el ranking y encuentra rivales de tu nivel.
+            Analisis IA de tu tecnica, rankings en vivo, torneos, coaches certificados, matchmaking, tienda y todo lo que necesitas para tenis, padel y pickleball.
           </p>
+
+          {/* Value props */}
+          <div className="flex flex-wrap items-center justify-center gap-6 mb-10 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-primary" />
+              <span>Mejora con IA</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-primary" />
+              <span>Compite en rankings</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Swords className="h-4 w-4 text-primary" />
+              <span>Conecta con tu comunidad</span>
+            </div>
+          </div>
 
           {/* Dual CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">

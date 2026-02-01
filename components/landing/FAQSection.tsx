@@ -7,44 +7,49 @@ import { cn } from '@/lib/utils'
 
 const faqs = [
   {
-    question: 'Que tipo de videos puedo subir?',
+    question: 'Que es SportTek exactamente?',
     answer:
-      'Puedes subir videos en formato MP4, MOV o WebM. Recomendamos grabar en posicion horizontal, con buena iluminacion, y desde un angulo que muestre claramente tu tecnica. La duracion ideal es de 10-30 segundos.',
+      'SportTek es una plataforma integral para deportistas de tenis, padel y pickleball. Combina analisis de video con IA, planes de entrenamiento personalizados, rankings nacionales, torneos, matchmaking, coach marketplace, reserva de canchas, tienda deportiva y servicio de encordado. Todo en un solo lugar.',
   },
   {
-    question: 'Cuanto tiempo tarda el analisis?',
+    question: 'Como funciona el analisis con IA?',
     answer:
-      'El analisis con IA generalmente tarda entre 2-5 minutos dependiendo de la longitud del video y la complejidad de la tecnica analizada.',
+      'Subes un video de 10-30 segundos (MP4, MOV o WebM) de tu tecnica. La IA lo analiza en 2-5 minutos, identifica errores especificos con niveles de severidad (bajo, medio, alto, critico), te asigna un skill score y genera un plan de ejercicios para corregir cada error.',
   },
   {
     question: 'Que deportes estan disponibles?',
     answer:
-      'Actualmente ofrecemos analisis para Tenis (saque, derecha, reves, volea), Padel y Pickleball. El plan gratuito incluye acceso a Tenis, mientras que los planes Pro y Elite incluyen todos los deportes. Pronto agregaremos mas deportes como futbol.',
+      'Actualmente soportamos Tenis (saque, derecha, reves, volea), Padel (bandeja, vibora, smash) y Pickleball. Cada deporte tiene su propio perfil de jugador, ranking y tecnicas especificas. El plan gratuito incluye un deporte; Pro y Elite incluyen todos.',
   },
   {
-    question: 'Como funciona el ranking?',
+    question: 'Como funcionan los rankings y tiers?',
     answer:
-      'Cada analisis que completas contribuye a tu skill score, calculado por nuestra IA. Segun tu puntaje, subes de tier: Bronce, Plata, Oro, Platino y Diamante. El ranking nacional muestra a los mejores jugadores de Peru por deporte.',
+      'Cada analisis contribuye a tu skill score. Segun tu puntaje, estas en un tier: desde 5ta B (inicial) hasta 1ra A (elite). Los rankings se calculan por pais, tier, grupo de edad y globalmente, con periodos semanal, mensual e historico. Tu posicion se actualiza en tiempo real.',
   },
   {
-    question: 'Como encuentro rivales para jugar?',
+    question: 'Como encuentro rivales o participo en torneos?',
     answer:
-      'La seccion de Matchmaking te sugiere rivales de tu nivel basandose en tu ELO score y ubicacion. Puedes enviar desafios y coordinar partidos directamente desde la plataforma.',
+      'El matchmaking te sugiere rivales de tu nivel basandose en tu ELO score y ubicacion. Puedes enviar desafios y coordinar partidos. Los torneos tienen formatos de eliminacion simple, doble y round robin con brackets, seeding y restricciones por tier y edad.',
   },
   {
-    question: 'Que es el Coach Marketplace?',
+    question: 'Que ofrece el Coach Marketplace?',
     answer:
-      'Es un directorio de entrenadores verificados donde puedes encontrar coaches por deporte, ubicacion, especialidad y rango de precios. Los entrenadores pueden ofrecer sus servicios y los jugadores pueden contactarlos directamente.',
+      'Es un directorio de entrenadores verificados por deporte, ubicacion y especialidad. Los coaches tienen perfiles con certificaciones, reviews, tarifas y gestion de alumnos. Pueden asignar planes de entrenamiento basados en los analisis IA de sus alumnos.',
+  },
+  {
+    question: 'Puedo registrar mi cancha o taller de encordado?',
+    answer:
+      'Si. Los proveedores de canchas y talleres de encordado pueden aplicar desde la plataforma. Las canchas se publican con ubicacion, superficie, disponibilidad y pago integrado. Los talleres reciben pedidos con seleccion de cuerda, tension y tipo de servicio.',
   },
   {
     question: 'Puedo cancelar mi suscripcion en cualquier momento?',
     answer:
-      'Si, puedes cancelar tu suscripcion en cualquier momento desde tu perfil. No hay compromisos a largo plazo ni penalizaciones por cancelacion. Tu acceso continua hasta el final del periodo de facturacion.',
+      'Si, puedes cancelar en cualquier momento desde tu perfil. Sin compromisos ni penalizaciones. Tu acceso continua hasta el final del periodo de facturacion. El plan gratuito no requiere tarjeta de credito.',
   },
   {
-    question: 'Es seguro mi video?',
+    question: 'Mis videos son privados?',
     answer:
-      'Tus videos se almacenan de forma segura y privada. Solo tu puedes acceder a ellos. Nunca compartimos tu contenido con terceros.',
+      'Si. Tus videos se almacenan de forma segura y privada. Solo tu (y tu coach si decides compartirlos) pueden acceder a ellos. Nunca compartimos tu contenido con terceros. Ademas, contamos con deteccion de duplicados y verificacion de autenticidad.',
   },
 ]
 
@@ -62,7 +67,7 @@ export function FAQSection() {
             Preguntas frecuentes
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Encuentra respuestas a las preguntas mas comunes sobre la plataforma.
+            Todo lo que necesitas saber sobre la plataforma, desde el analisis IA hasta los servicios del ecosistema.
           </p>
         </div>
 

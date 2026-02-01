@@ -10,51 +10,58 @@ import { cn } from '@/lib/utils'
 const plans = [
   {
     id: 'FREE',
-    name: 'Free',
-    description: 'Para comenzar',
+    name: 'Descubre tu nivel',
+    tagline: 'Prueba el poder del analisis IA',
     price: 0,
     currency: '',
     features: [
-      '3 analisis por mes',
+      '3 analisis de video por mes',
       '1 plan de entrenamiento activo',
       'Acceso a Tenis',
-      'Ranking nacional',
+      'Ranking nacional basico',
+      'Perfil de jugador',
       'Soporte por email',
     ],
+    outcome: 'Ideal para descubrir tu skill score y entender tus errores tecnicos.',
     cta: 'Comenzar gratis',
     popular: false,
   },
   {
     id: 'PRO',
-    name: 'Pro',
-    description: 'Para deportistas serios',
+    name: 'Compite en serio',
+    tagline: 'Todo lo que necesitas para mejorar cada semana',
     price: 29.90,
     currency: 'S/',
     features: [
-      'Analisis ilimitados',
+      'Analisis ilimitados de video',
       'Planes de entrenamiento ilimitados',
-      'Acceso a todos los deportes',
-      'Historial completo de analisis',
-      'Estadisticas avanzadas',
+      'Tenis, Padel y Pickleball',
+      'Rankings multi-categoria completos',
+      'Historial de progreso y estadisticas',
+      'Matchmaking y desafios',
+      'Torneos y badges',
       'Soporte prioritario',
     ],
+    outcome: 'Para deportistas que entrenan varias veces por semana y quieren subir de tier.',
     cta: 'Elegir Pro',
     popular: true,
   },
   {
     id: 'ELITE',
-    name: 'Elite',
-    description: 'Para competidores',
+    name: 'Entrena como profesional',
+    tagline: 'Acceso total con herramientas avanzadas',
     price: 49.99,
     currency: 'S/',
     features: [
       'Todo en Pro',
       'Analisis en video HD',
-      'Comparacion de progreso avanzada',
-      'Exportar informes PDF',
+      'Comparacion de progreso entre analisis',
+      'Exportar informes PDF profesionales',
       'Sesiones de coaching virtual',
+      'Acceso anticipado a nuevas funciones',
       'Soporte 24/7',
     ],
+    outcome: 'Para competidores que buscan cada ventaja y quieren coaching personalizado.',
     cta: 'Elegir Elite',
     popular: false,
   },
@@ -69,11 +76,11 @@ export function PricingSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Planes y precios
+            Elige como quieres crecer
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Elige el plan que mejor se adapte a tus necesidades. Puedes cambiar
-            o cancelar en cualquier momento.
+            Cada plan esta disenado para un nivel de compromiso diferente.
+            Cambia o cancela cuando quieras.
           </p>
         </div>
 
@@ -102,18 +109,22 @@ export function PricingSection() {
                 <div className="mb-6">
                   <h3 className="text-xl font-bold">{plan.name}</h3>
                   <p className="text-muted-foreground text-sm">
-                    {plan.description}
+                    {plan.tagline}
                   </p>
                 </div>
 
-                <div className="mb-6">
+                <div className="mb-4">
                   <span className="text-4xl font-bold">
-                    {plan.currency}{plan.price.toFixed(2)}
+                    {plan.price === 0 ? 'Gratis' : `${plan.currency}${plan.price.toFixed(2)}`}
                   </span>
                   {plan.price > 0 && (
                     <span className="text-muted-foreground">/mes</span>
                   )}
                 </div>
+
+                <p className="text-sm text-muted-foreground mb-6 leading-relaxed border-b border-glass pb-6">
+                  {plan.outcome}
+                </p>
               </div>
 
               <div className="p-6 pt-0 flex-1 flex flex-col">

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, Sparkles } from 'lucide-react'
+import { ArrowRight, Sparkles, Trophy, Brain, Users } from 'lucide-react'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassCard } from '@/components/ui/glass-card'
 
@@ -27,18 +27,43 @@ export function CTASection() {
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Listo para mejorar tu tecnica?
+              Tu desarrollo deportivo empieza aqui
             </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-              Unete a la comunidad de deportistas que ya estan mejorando su
-              rendimiento con analisis de IA, planes personalizados y competencia real.
+              Analisis IA, rankings, torneos, coaches, canchas y comunidad.
+              Todo lo que necesitas para tenis, padel y pickleball en una sola plataforma.
             </p>
-            <GlassButton variant="solid" size="xl" asChild>
-              <Link href="/register">
-                Comenzar gratis ahora
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </GlassButton>
+
+            {/* Value reminder */}
+            <div className="flex flex-wrap items-center justify-center gap-6 mb-8 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Brain className="h-4 w-4 text-primary" />
+                <span>Mejora con IA</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-primary" />
+                <span>Compite en rankings</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" />
+                <span>Conecta con la comunidad</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <GlassButton variant="solid" size="xl" asChild>
+                <Link href="/register?type=player">
+                  Soy Jugador
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </GlassButton>
+              <GlassButton variant="outline" size="xl" asChild>
+                <Link href="/register?type=coach">
+                  Soy Entrenador
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </GlassButton>
+            </div>
             <p className="text-sm text-muted-foreground mt-6">
               Sin tarjeta de credito. Comienza en segundos.
             </p>
