@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { sanitizeZodError, validateId } from '@/lib/validation'
 import { ProductCategory } from '@prisma/client'
 
 const updateProductSchema = z.object({
@@ -42,6 +43,9 @@ export async function GET(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     const product = await prisma.product.findUnique({
       where: { id },
@@ -80,12 +84,15 @@ export async function PATCH(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
     const body = await request.json()
     const parsed = updateProductSchema.safeParse(body)
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }
@@ -121,6 +128,9 @@ export async function DELETE(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     const existing = await prisma.product.findUnique({ where: { id } })
     if (!existing) {

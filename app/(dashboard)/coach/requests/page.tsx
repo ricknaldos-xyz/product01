@@ -35,7 +35,8 @@ export default function CoachRequestsPage() {
       try {
         const res = await fetch('/api/coach/students')
         if (res.ok) {
-          const data: CoachStudentRequest[] = await res.json()
+          const json = await res.json()
+          const data: CoachStudentRequest[] = json.students ?? json
           setRequests(data.filter((r) => r.status === 'PENDING_REQUEST'))
         }
       } catch {

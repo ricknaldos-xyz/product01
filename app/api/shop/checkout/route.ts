@@ -6,6 +6,7 @@ import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { getCulqiClient } from '@/lib/culqi'
 import { Prisma } from '@prisma/client'
+import { sanitizeZodError } from '@/lib/validation'
 
 const checkoutSchema = z.object({
   shippingName: z.string().min(2, 'Nombre requerido').max(100),
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

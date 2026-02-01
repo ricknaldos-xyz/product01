@@ -25,6 +25,7 @@ export async function GET() {
     const availability = await prisma.playerAvailability.findMany({
       where: { profileId: profile.id },
       orderBy: [{ day: 'asc' }, { startTime: 'asc' }],
+      take: 100,
     })
 
     return NextResponse.json(availability)

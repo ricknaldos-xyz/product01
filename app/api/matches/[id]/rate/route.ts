@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
+import { validateId } from '@/lib/validation'
 import { z } from 'zod'
 
 const ratingSchema = z.object({
@@ -23,6 +24,10 @@ export async function POST(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
+
     const body = await request.json()
     const validated = ratingSchema.safeParse(body)
 
@@ -57,28 +62,32 @@ export async function POST(
 
     const ratedId = isPlayer1 ? match.player2Id : match.player1Id
 
-    const rating = await prisma.matchRating.create({
-      data: {
-        matchId: id,
-        raterId: profile.id,
-        ratedId,
-        ...validated.data,
-      },
-    })
+    const rating = await prisma.$transaction(async (tx) => {
+      const newRating = await tx.matchRating.create({
+        data: {
+          matchId: id,
+          raterId: profile.id,
+          ratedId,
+          ...validated.data,
+        },
+      })
 
-    // Update sportsmanship rating on rated player's profile using aggregate
-    const ratingAgg = await prisma.matchRating.aggregate({
-      where: { ratedId },
-      _avg: { sportsmanship: true, punctuality: true, skillAccuracy: true },
-      _count: { _all: true },
-    })
+      // Update sportsmanship rating on rated player's profile using aggregate
+      const ratingAgg = await tx.matchRating.aggregate({
+        where: { ratedId },
+        _avg: { sportsmanship: true, punctuality: true, skillAccuracy: true },
+        _count: { _all: true },
+      })
 
-    await prisma.playerProfile.update({
-      where: { id: ratedId },
-      data: {
-        sportsmanshipRating: ratingAgg._avg.sportsmanship ?? 0,
-        totalRatings: ratingAgg._count._all,
-      },
+      await tx.playerProfile.update({
+        where: { id: ratedId },
+        data: {
+          sportsmanshipRating: ratingAgg._avg.sportsmanship ?? 0,
+          totalRatings: ratingAgg._count._all,
+        },
+      })
+
+      return newRating
     })
 
     return NextResponse.json(rating, { status: 201 })

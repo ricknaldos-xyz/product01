@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { createNotification } from '@/lib/notifications'
 import { z } from 'zod'
+import { sanitizeZodError, validateId } from '@/lib/validation'
 
 const reviewSchema = z.object({
   status: z.enum(['APPROVED', 'REJECTED']),
@@ -24,12 +25,15 @@ export async function PATCH(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
     const body = await request.json()
     const parsed = reviewSchema.safeParse(body)
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

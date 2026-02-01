@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { isBlocked } from '@/lib/blocks'
 import { createNotification } from '@/lib/notifications'
+import { socialWriteLimiter } from '@/lib/rate-limit'
+import { validateId } from '@/lib/validation'
 
 // POST - Follow a player
 export async function POST(
@@ -16,7 +18,19 @@ export async function POST(
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
+    const { success } = await socialWriteLimiter.check(session.user.id)
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Demasiados intentos. Intenta de nuevo mas tarde.' },
+        { status: 429 }
+      )
+    }
+
     const { profileId: targetProfileId } = await params
+
+    if (!validateId(targetProfileId)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     const myProfile = await prisma.playerProfile.findUnique({
       where: { userId: session.user.id },
@@ -96,7 +110,19 @@ export async function DELETE(
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
+    const { success } = await socialWriteLimiter.check(session.user.id)
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Demasiados intentos. Intenta de nuevo mas tarde.' },
+        { status: 429 }
+      )
+    }
+
     const { profileId: targetProfileId } = await params
+
+    if (!validateId(targetProfileId)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     const myProfile = await prisma.playerProfile.findUnique({
       where: { userId: session.user.id },

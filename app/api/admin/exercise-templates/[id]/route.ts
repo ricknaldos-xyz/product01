@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { sanitizeZodError, validateId } from '@/lib/validation'
 
 const updateTemplateSchema = z.object({
   slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, 'Slug debe contener solo letras minusculas, numeros y guiones').optional(),
@@ -34,6 +35,9 @@ export async function GET(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     const template = await prisma.exerciseTemplate.findUnique({
       where: { id },
@@ -64,6 +68,9 @@ export async function PATCH(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     const existing = await prisma.exerciseTemplate.findUnique({
       where: { id },
@@ -78,7 +85,7 @@ export async function PATCH(
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten().fieldErrors },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }
@@ -118,6 +125,9 @@ export async function DELETE(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     const existing = await prisma.exerciseTemplate.findUnique({
       where: { id },

@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { createNotification } from '@/lib/notifications'
+import { validateId } from '@/lib/validation'
 import { z } from 'zod'
 
 const bookingSchema = z.object({
@@ -24,6 +25,10 @@ export async function POST(
     }
 
     const { id: courtId } = await params
+    if (!validateId(courtId)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
+
     const body = await request.json()
     const parsed = bookingSchema.safeParse(body)
 
@@ -64,51 +69,61 @@ export async function POST(
       return NextResponse.json({ error: 'Cancha no encontrada' }, { status: 404 })
     }
 
-    // Check for conflicting bookings (same court, same date, overlapping times)
-    const conflicting = await prisma.courtBooking.findFirst({
-      where: {
-        courtId,
-        date: bookingDate,
-        status: { not: 'CANCELLED' },
-        AND: [
-          { startTime: { lt: endTime } },
-          { endTime: { gt: startTime } },
-        ],
-      },
-    })
+    // Wrap conflict check + create in transaction to prevent TOCTOU race
+    try {
+      const booking = await prisma.$transaction(async (tx) => {
+        // Check for conflicting bookings (same court, same date, overlapping times)
+        const conflicting = await tx.courtBooking.findFirst({
+          where: {
+            courtId,
+            date: bookingDate,
+            status: { not: 'CANCELLED' },
+            AND: [
+              { startTime: { lt: endTime } },
+              { endTime: { gt: startTime } },
+            ],
+          },
+        })
 
-    if (conflicting) {
-      return NextResponse.json(
-        { error: 'Ya existe una reserva en ese horario' },
-        { status: 409 }
-      )
+        if (conflicting) {
+          throw new Error('BOOKING_CONFLICT')
+        }
+
+        return tx.courtBooking.create({
+          data: {
+            courtId,
+            userId: session.user.id!,
+            date: bookingDate,
+            startTime,
+            endTime,
+            status: 'PENDING',
+            notes,
+          },
+        })
+      })
+
+      // Notify court owner about new booking request
+      if (court.ownerId) {
+        await createNotification({
+          userId: court.ownerId,
+          type: 'BOOKING_REQUESTED',
+          title: 'Nueva reserva de cancha',
+          body: `Reserva para ${court.name} el ${bookingDate.toLocaleDateString('es-PE')} de ${startTime} a ${endTime}`,
+          referenceId: booking.id,
+          referenceType: 'court_booking',
+        }).catch((err) => logger.error('Failed to create booking notification:', err))
+      }
+
+      return NextResponse.json(booking, { status: 201 })
+    } catch (error) {
+      if (error instanceof Error && error.message === 'BOOKING_CONFLICT') {
+        return NextResponse.json(
+          { error: 'Ya existe una reserva en ese horario' },
+          { status: 409 }
+        )
+      }
+      throw error // re-throw for outer catch
     }
-
-    const booking = await prisma.courtBooking.create({
-      data: {
-        courtId,
-        userId: session.user.id!,
-        date: bookingDate,
-        startTime,
-        endTime,
-        status: 'PENDING',
-        notes,
-      },
-    })
-
-    // Notify court owner about new booking request
-    if (court.ownerId) {
-      await createNotification({
-        userId: court.ownerId,
-        type: 'BOOKING_REQUESTED',
-        title: 'Nueva reserva de cancha',
-        body: `Reserva para ${court.name} el ${bookingDate.toLocaleDateString('es-PE')} de ${startTime} a ${endTime}`,
-        referenceId: booking.id,
-        referenceType: 'court_booking',
-      }).catch((err) => logger.error('Failed to create booking notification:', err))
-    }
-
-    return NextResponse.json(booking, { status: 201 })
   } catch (error) {
     logger.error('Create booking error:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })

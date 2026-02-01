@@ -5,6 +5,8 @@ import { logger } from '@/lib/logger'
 import { isBlocked } from '@/lib/blocks'
 import { z } from 'zod'
 import { containsBannedWords } from '@/lib/moderation'
+import { socialWriteLimiter } from '@/lib/rate-limit'
+import { sanitizeZodError } from '@/lib/validation'
 
 const createCommentSchema = z.object({
   targetId: z.string().min(1),
@@ -20,12 +22,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
+    const { success } = await socialWriteLimiter.check(session.user.id)
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Demasiados intentos. Intenta de nuevo mas tarde.' },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     const parsed = createCommentSchema.safeParse(body)
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos inválidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

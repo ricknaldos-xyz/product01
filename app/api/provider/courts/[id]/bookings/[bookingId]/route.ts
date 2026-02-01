@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { createNotification } from '@/lib/notifications'
 import { z } from 'zod'
+import { sanitizeZodError, validateId } from '@/lib/validation'
 
 const actionSchema = z.object({
   action: z.enum(['confirm', 'reject']),
@@ -26,6 +27,9 @@ export async function PATCH(
     }
 
     const { id, bookingId } = await params
+    if (!validateId(id) || !validateId(bookingId)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     // Verify court ownership
     const court = await prisma.court.findUnique({ where: { id } })
@@ -55,7 +59,7 @@ export async function PATCH(
     const parsed = actionSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

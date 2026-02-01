@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { Prisma } from '@prisma/client'
+import { sanitizeSearchString } from '@/lib/validation'
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '20')))
     const skip = (page - 1) * limit
 
-    const search = searchParams.get('search')?.trim() || ''
+    const search = sanitizeSearchString(searchParams.get('search')) || ''
     const role = searchParams.get('role') || ''
     const accountType = searchParams.get('accountType') || ''
     const subscription = searchParams.get('subscription') || ''

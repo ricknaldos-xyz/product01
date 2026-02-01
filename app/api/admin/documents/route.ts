@@ -105,6 +105,7 @@ export async function GET(request: NextRequest) {
       const documents = await prisma.document.findMany({
         orderBy: { createdAt: 'desc' },
         include,
+        take: 200,
       })
       return NextResponse.json(documents)
     }

@@ -65,7 +65,7 @@ export default function CoachDashboardPage() {
 
         if (studentsRes.ok) {
           const studentsData = await studentsRes.json()
-          setStudents(studentsData)
+          setStudents(studentsData.students ?? studentsData)
         }
       } catch {
         logger.error('Failed to fetch coach data')

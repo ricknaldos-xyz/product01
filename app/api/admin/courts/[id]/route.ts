@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { sanitizeZodError, validateId } from '@/lib/validation'
 import { CourtSurface, CourtType } from '@prisma/client'
 
 const updateCourtSchema = z.object({
@@ -24,7 +25,7 @@ const updateCourtSchema = z.object({
   currency: z.string().optional(),
   amenities: z.array(z.string()).optional(),
   isActive: z.boolean().optional(),
-  operatingHours: z.any().optional(),
+  operatingHours: z.record(z.string(), z.string()).optional(),
   ownerId: z.string().nullable().optional(),
 })
 
@@ -43,12 +44,15 @@ export async function PATCH(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
     const body = await request.json()
     const parsed = updateCourtSchema.safeParse(body)
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }
@@ -85,6 +89,9 @@ export async function DELETE(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     const existing = await prisma.court.findUnique({ where: { id } })
     if (!existing) {

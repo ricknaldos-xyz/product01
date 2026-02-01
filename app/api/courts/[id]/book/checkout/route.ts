@@ -6,6 +6,7 @@ import { createNotification } from '@/lib/notifications'
 import { checkoutLimiter } from '@/lib/rate-limit'
 import { getCulqiClient } from '@/lib/culqi'
 import { z } from 'zod'
+import { sanitizeZodError } from '@/lib/validation'
 
 const checkoutSchema = z.object({
   bookingId: z.string(),
@@ -37,7 +38,7 @@ export async function POST(
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

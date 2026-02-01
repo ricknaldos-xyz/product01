@@ -3,6 +3,8 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { reviewLimiter } from '@/lib/rate-limit'
+import { sanitizeZodError } from '@/lib/validation'
 
 const reviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
@@ -64,13 +66,21 @@ export async function POST(
       )
     }
 
+    const { success } = await reviewLimiter.check(session.user.id)
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Demasiados intentos. Intenta de nuevo mas tarde.' },
+        { status: 429 }
+      )
+    }
+
     const { slug } = await params
     const body = await request.json()
     const parsed = reviewSchema.safeParse(body)
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

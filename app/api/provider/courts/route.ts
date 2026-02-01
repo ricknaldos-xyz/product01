@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { sanitizeZodError } from '@/lib/validation'
 import { CourtSurface, CourtType } from '@prisma/client'
 
 const createCourtSchema = z.object({
@@ -24,7 +25,7 @@ const createCourtSchema = z.object({
   currency: z.string().optional().default('PEN'),
   amenities: z.array(z.string()).optional().default([]),
   isActive: z.boolean().optional().default(true),
-  operatingHours: z.any().optional(),
+  operatingHours: z.record(z.string(), z.string()).optional(),
 })
 
 // GET - List courts owned by current user
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

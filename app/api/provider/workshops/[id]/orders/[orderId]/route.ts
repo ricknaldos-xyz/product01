@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { sanitizeZodError, validateId } from '@/lib/validation'
 import { StringingOrderStatus } from '@prisma/client'
 import { STRINGING_ORDER_TRANSITIONS, isValidTransition } from '@/lib/order-transitions'
 import { createNotification } from '@/lib/notifications'
@@ -26,6 +27,9 @@ export async function GET(
     }
 
     const { id, orderId } = await params
+    if (!validateId(id) || !validateId(orderId)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     // Verify workshop ownership
     const workshop = await prisma.workshop.findUnique({ where: { id } })
@@ -69,6 +73,9 @@ export async function PATCH(
     }
 
     const { id, orderId } = await params
+    if (!validateId(id) || !validateId(orderId)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     // Verify workshop ownership
     const workshop = await prisma.workshop.findUnique({ where: { id } })
@@ -84,7 +91,7 @@ export async function PATCH(
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

@@ -6,6 +6,8 @@ import { z } from 'zod'
 import { generateGoalRoadmap } from '@/lib/goals/roadmap'
 import { GoalType, GoalStatus, SkillTier } from '@prisma/client'
 import { getUserSubscription, checkActiveGoalsLimit } from '@/lib/subscription'
+import { goalLimiter } from '@/lib/rate-limit'
+import { sanitizeZodError } from '@/lib/validation'
 
 const TIER_LABELS: Record<string, string> = {
   QUINTA_B: '5ta B',
@@ -72,12 +74,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
+    const { success } = await goalLimiter.check(session.user.id)
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Demasiados intentos. Intenta de nuevo mas tarde.' },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     const validated = createGoalSchema.safeParse(body)
 
     if (!validated.success) {
       return NextResponse.json(
-        { error: validated.error.issues[0].message },
+        { error: sanitizeZodError(validated.error) },
         { status: 400 }
       )
     }

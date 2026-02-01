@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import { acquireCronLock, releaseCronLock } from '@/lib/cron-lock'
+import { timingSafeCompare } from '@/lib/validation'
 
 const STALE_THRESHOLD_MS = 5 * 60 * 1000 // 5 minutes
 
 export async function GET(request: NextRequest) {
   // Verify cron secret for security
   const authHeader = request.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const expected = `Bearer ${process.env.CRON_SECRET ?? ''}`
+  if (!authHeader || !timingSafeCompare(authHeader, expected)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

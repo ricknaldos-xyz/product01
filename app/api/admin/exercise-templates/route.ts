@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { sanitizeZodError } from '@/lib/validation'
 
 const createTemplateSchema = z.object({
   slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, 'Slug debe contener solo letras minusculas, numeros y guiones'),
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten().fieldErrors },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

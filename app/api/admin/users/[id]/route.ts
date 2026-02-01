@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { sanitizeZodError, validateId } from '@/lib/validation'
 
 const updateUserSchema = z.object({
   action: z.enum(['ban', 'unban', 'suspend', 'update']).optional(),
@@ -27,6 +28,9 @@ export async function GET(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     const user = await prisma.user.findUnique({
       where: { id },
@@ -68,12 +72,15 @@ export async function PATCH(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
     const body = await request.json()
 
     const parsed = updateUserSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos inválidos', details: parsed.error.flatten().fieldErrors },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

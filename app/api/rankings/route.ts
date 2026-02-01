@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { SkillTier } from '@prisma/client'
+import { sanitizeSearchString } from '@/lib/validation'
 
 // GET - Public rankings with filters, per sport
 export async function GET(request: NextRequest) {
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
     const skillTierParam = searchParams.get('skillTier')
     const ageGroup = searchParams.get('ageGroup')
     const sportSlug = searchParams.get('sport') || 'tennis'
-    const search = searchParams.get('search')
+    const search = sanitizeSearchString(searchParams.get('search'))
     const page = parseInt(searchParams.get('page') || '1')
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
     const skip = (page - 1) * limit

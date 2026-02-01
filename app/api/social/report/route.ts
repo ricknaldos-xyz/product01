@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import { reportLimiter } from '@/lib/rate-limit'
+import { sanitizeZodError } from '@/lib/validation'
 
 const reportSchema = z.object({
   targetId: z.string().min(1),
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos inválidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

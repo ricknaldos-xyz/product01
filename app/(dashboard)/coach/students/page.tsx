@@ -52,7 +52,7 @@ export default function CoachStudentsPage() {
       const res = await fetch('/api/coach/students')
       if (res.ok) {
         const data = await res.json()
-        setStudents(data)
+        setStudents(data.students ?? data)
       }
     } catch {
       logger.error('Failed to fetch students')

@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { acquireCronLock, releaseCronLock } from '@/lib/cron-lock'
 import { logger } from '@/lib/logger'
+import { timingSafeCompare } from '@/lib/validation'
 
 // POST - Expire old pending challenges
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    const expected = `Bearer ${process.env.CRON_SECRET ?? ''}`
+    if (!authHeader || !timingSafeCompare(authHeader, expected)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

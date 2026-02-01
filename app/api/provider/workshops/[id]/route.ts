@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { sanitizeZodError, validateId } from '@/lib/validation'
 
 const updateWorkshopSchema = z.object({
   name: z.string().min(1).optional(),
@@ -10,7 +11,7 @@ const updateWorkshopSchema = z.object({
   district: z.string().min(1).optional(),
   city: z.string().optional(),
   phone: z.string().nullable().optional(),
-  operatingHours: z.any().optional(),
+  operatingHours: z.record(z.string(), z.string()).optional(),
   isActive: z.boolean().optional(),
 })
 
@@ -28,6 +29,9 @@ export async function GET(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     const workshop = await prisma.workshop.findUnique({
       where: { id },
@@ -65,12 +69,15 @@ export async function PATCH(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
     const body = await request.json()
     const parsed = updateWorkshopSchema.safeParse(body)
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

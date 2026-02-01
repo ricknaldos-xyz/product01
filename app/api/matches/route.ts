@@ -3,6 +3,8 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { matchLimiter } from '@/lib/rate-limit'
+import { sanitizeZodError } from '@/lib/validation'
 
 const createMatchSchema = z.object({
   opponentUserId: z.string(),
@@ -20,12 +22,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
+    const { success } = await matchLimiter.check(session.user.id)
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Demasiados intentos. Intenta de nuevo mas tarde.' },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     const validated = createMatchSchema.safeParse(body)
 
     if (!validated.success) {
       return NextResponse.json(
-        { error: validated.error.issues[0].message },
+        { error: sanitizeZodError(validated.error) },
         { status: 400 }
       )
     }

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { createNotification } from '@/lib/notifications'
 import { z } from 'zod'
+import { sanitizeZodError, validateId } from '@/lib/validation'
 import { StringingOrderStatus } from '@prisma/client'
 import { STRINGING_ORDER_TRANSITIONS, isValidTransition } from '@/lib/order-transitions'
 
@@ -26,6 +27,9 @@ export async function GET(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
 
     const order = await prisma.stringingOrder.findUnique({
       where: { id },
@@ -60,12 +64,15 @@ export async function PATCH(
     }
 
     const { id } = await params
+    if (!validateId(id)) {
+      return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+    }
     const body = await request.json()
     const parsed = updateStringingOrderSchema.safeParse(body)
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

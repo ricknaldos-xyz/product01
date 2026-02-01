@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { sanitizeZodError } from '@/lib/validation'
 
 const broadcastSchema = z.object({
   title: z.string().min(1, 'El titulo es requerido').max(200),
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     const parsed = broadcastSchema.safeParse(json)
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten().fieldErrors },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 },
       )
     }

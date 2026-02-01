@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { sanitizeZodError } from '@/lib/validation'
 
 const createWorkshopSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -10,7 +11,7 @@ const createWorkshopSchema = z.object({
   district: z.string().min(1, 'El distrito es requerido'),
   city: z.string().default('Lima'),
   phone: z.string().optional(),
-  operatingHours: z.any().optional(),
+  operatingHours: z.record(z.string(), z.string()).optional(),
 })
 
 export async function GET(request: NextRequest) {
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Datos invalidos', details: parsed.error.flatten() },
+        { error: sanitizeZodError(parsed.error) },
         { status: 400 }
       )
     }

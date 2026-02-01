@@ -269,7 +269,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error)
-    logger.error('[detect] UNCAUGHT ERROR:', errorMsg)
+    logger.error('[detect] UNCAUGHT ERROR:', errorMsg, error)
 
     // Check for quota exhaustion vs temporary rate limit
     if (errorMsg.includes('429')) {
