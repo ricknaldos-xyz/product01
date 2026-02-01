@@ -8,6 +8,7 @@ import { TierBadge } from '@/components/player/TierBadge'
 import { Swords, MapPin, Loader2, Send, AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
 import { useGeolocation } from '@/hooks/useGeolocation'
+import { useSport } from '@/contexts/SportContext'
 import type { SkillTier } from '@prisma/client'
 
 interface DiscoveredPlayer {
@@ -30,10 +31,11 @@ export default function MatchmakingPage() {
   const [error, setError] = useState(false)
   const [sendingChallenge, setSendingChallenge] = useState<string | null>(null)
   const { latitude, longitude, requestLocation } = useGeolocation()
+  const { activeSport } = useSport()
 
   useEffect(() => {
     fetchPlayers()
-  }, [latitude, longitude])
+  }, [latitude, longitude, activeSport?.slug])
 
   async function fetchPlayers() {
     setLoading(true)
@@ -44,6 +46,7 @@ export default function MatchmakingPage() {
         params.set('lat', latitude.toString())
         params.set('lng', longitude.toString())
       }
+      params.set('sport', activeSport?.slug || 'tennis')
 
       const res = await fetch(`/api/matchmaking/discover?${params}`)
       if (!res.ok) throw new Error('Failed to fetch')
@@ -63,7 +66,7 @@ export default function MatchmakingPage() {
       const res = await fetch('/api/challenges', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ challengedUserId: userId }),
+        body: JSON.stringify({ challengedUserId: userId, sportSlug: activeSport?.slug || 'tennis' }),
       })
 
       if (res.ok) {

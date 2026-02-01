@@ -13,6 +13,7 @@ const createChallengeSchema = z.object({
   proposedTime: z.string().optional(),
   proposedVenue: z.string().optional(),
   message: z.string().max(500).optional(),
+  sportSlug: z.string().optional(),
 })
 
 // POST - Send a challenge
@@ -41,7 +42,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { challengedUserId, proposedDate, proposedTime, proposedVenue, message } = validated.data
+    const { challengedUserId, proposedDate, proposedTime, proposedVenue, message, sportSlug: challengeSportSlug } = validated.data
+
+    const sport = challengeSportSlug
+      ? await prisma.sport.findUnique({
+          where: { slug: challengeSportSlug },
+          select: { id: true },
+        })
+      : null
 
     // Get both profiles
     const [challengerProfile, challengedProfile] = await Promise.all([
@@ -92,6 +100,7 @@ export async function POST(request: NextRequest) {
         proposedVenue,
         message,
         expiresAt,
+        sportId: sport?.id ?? null,
       },
     })
 
@@ -113,6 +122,12 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type') || 'all' // 'sent', 'received', 'all'
 
+    const sportSlug = searchParams.get('sport') || 'tennis'
+    const sport = await prisma.sport.findUnique({
+      where: { slug: sportSlug },
+      select: { id: true },
+    })
+
     const profile = await prisma.playerProfile.findUnique({
       where: { userId: session.user.id },
       select: { id: true },
@@ -131,6 +146,12 @@ export async function GET(request: NextRequest) {
       where.OR = [
         { challengerId: profile.id },
         { challengedId: profile.id },
+      ]
+    }
+
+    if (sport) {
+      where.AND = [
+        { OR: [{ sportId: sport.id }, { sportId: null }] },
       ]
     }
 

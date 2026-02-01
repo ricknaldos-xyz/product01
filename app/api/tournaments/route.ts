@@ -19,6 +19,7 @@ const createTournamentSchema = z.object({
   venue: z.string().optional(),
   city: z.string().optional(),
   clubId: z.string().optional(),
+  sportSlug: z.string().optional().default('tennis'),
 })
 
 // POST - Create tournament
@@ -56,7 +57,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Perfil no encontrado' }, { status: 404 })
     }
 
-    const slug = validated.data.name
+    const { sportSlug: tournamentSportSlug, ...restData } = validated.data
+
+    const sport = await prisma.sport.findUnique({
+      where: { slug: tournamentSportSlug },
+      select: { id: true },
+    })
+
+    const slug = restData.name
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
       .replace(/\s+/g, '-')
@@ -64,14 +72,15 @@ export async function POST(request: NextRequest) {
 
     const tournament = await prisma.tournament.create({
       data: {
-        ...validated.data,
+        ...restData,
         slug,
         organizerId: profile.id,
         country: profile.country,
-        registrationEnd: new Date(validated.data.registrationEnd),
-        startDate: new Date(validated.data.startDate),
-        minTier: validated.data.minTier as SkillTier | undefined,
-        maxTier: validated.data.maxTier as SkillTier | undefined,
+        registrationEnd: new Date(restData.registrationEnd),
+        startDate: new Date(restData.startDate),
+        minTier: restData.minTier as SkillTier | undefined,
+        maxTier: restData.maxTier as SkillTier | undefined,
+        sportId: sport?.id ?? null,
       },
     })
 
@@ -92,9 +101,18 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 50)
     const skip = (page - 1) * limit
 
+    const sportSlug = searchParams.get('sport') || 'tennis'
+    const sport = await prisma.sport.findUnique({
+      where: { slug: sportSlug },
+      select: { id: true },
+    })
+
     const where: Prisma.TournamentWhereInput = { country }
     if (status && Object.values(TournamentStatus).includes(status as TournamentStatus)) {
       where.status = status as TournamentStatus
+    }
+    if (sport) {
+      where.OR = [{ sportId: sport.id }, { sportId: null }]
     }
 
     const [tournaments, total] = await Promise.all([

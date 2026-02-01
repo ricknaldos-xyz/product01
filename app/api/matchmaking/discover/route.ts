@@ -21,6 +21,12 @@ export async function GET(request: NextRequest) {
     const skillTier = searchParams.get('skillTier') as SkillTier | null
     const ageGroup = searchParams.get('ageGroup')
 
+    const sportSlug = searchParams.get('sport') || 'tennis'
+    const sport = await prisma.sport.findUnique({
+      where: { slug: sportSlug },
+      select: { id: true },
+    })
+
     const myProfile = await prisma.playerProfile.findUnique({
       where: { userId: session.user.id },
       select: {
@@ -49,7 +55,11 @@ export async function GET(request: NextRequest) {
       visibility: 'PUBLIC',
       country: myProfile.country,
       ...(blockedIds.length > 0 ? { id: { notIn: blockedIds } } : {}),
-      ...(skillTier ? { skillTier } : {}),
+      ...(sport && skillTier
+        ? { sportProfiles: { some: { sportId: sport.id, skillTier } } }
+        : sport
+          ? { sportProfiles: { some: { sportId: sport.id } } }
+          : {}),
       ...(ageGroup ? { ageGroup } : {}),
     }
 
@@ -65,7 +75,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const candidates = await prisma.playerProfile.findMany({
+    const allCandidates = await prisma.playerProfile.findMany({
       where,
       take: 50,
       orderBy: { effectiveScore: 'desc' },
@@ -90,8 +100,27 @@ export async function GET(request: NextRequest) {
         user: {
           select: { name: true, image: true },
         },
+        ...(sport
+          ? {
+              sportProfiles: {
+                where: { sportId: sport.id },
+                select: {
+                  effectiveScore: true,
+                  compositeScore: true,
+                  skillTier: true,
+                  matchElo: true,
+                  matchesPlayed: true,
+                },
+                take: 1,
+              },
+            }
+          : {}),
       },
     })
+
+    const candidates = sport
+      ? allCandidates.filter((p) => (p as typeof p & { sportProfiles: unknown[] }).sportProfiles?.length > 0)
+      : allCandidates
 
     // Add distance if GPS is available
     const results = candidates.map((p) => {
@@ -100,16 +129,18 @@ export async function GET(request: NextRequest) {
         distance = Math.round(haversineDistance(userLat, userLng, p.latitude, p.longitude))
       }
 
+      const sp = sport ? (p as typeof p & { sportProfiles: Array<{ effectiveScore: number | null; compositeScore: number | null; skillTier: string | null; matchElo: number | null; matchesPlayed: number }> }).sportProfiles?.[0] : null
+
       return {
         userId: p.userId,
         displayName: p.showRealName ? (p.displayName || p.user.name) : (p.displayName?.charAt(0) + '***'),
         avatarUrl: p.avatarUrl ?? p.user.image,
         region: p.showLocation ? p.region : null,
         city: p.showLocation ? p.city : null,
-        skillTier: p.skillTier,
-        compositeScore: p.compositeScore,
-        matchesPlayed: p.matchesPlayed,
-        matchElo: p.matchElo,
+        skillTier: sp?.skillTier ?? p.skillTier,
+        compositeScore: sp?.compositeScore ?? p.compositeScore,
+        matchesPlayed: sp?.matchesPlayed ?? p.matchesPlayed,
+        matchElo: sp?.matchElo ?? p.matchElo,
         playStyle: p.playStyle,
         ageGroup: p.ageGroup,
         distance,

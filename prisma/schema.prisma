@@ -451,6 +451,10 @@ model Sport {
   sportProfiles SportProfile[]
   rankings      Ranking[]
   addons        SportAddon[]
+  courts        Court[]
+  tournaments   Tournament[]
+  matches       Match[]
+  challenges    Challenge[]
 
   configSchema Json?
 
@@ -1036,12 +1040,16 @@ model Challenge {
   match           Match?
   expiresAt       DateTime
 
+  sportId String?
+  sport   Sport?  @relation(fields: [sportId], references: [id], onDelete: SetNull)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([challengerId, status])
   @@index([challengedId, status])
   @@index([expiresAt, status])
+  @@index([sportId])
   @@map("challenges")
 }
 
@@ -1068,6 +1076,9 @@ model Match {
   venue    String?
   playedAt DateTime?
 
+  sportId String?
+  sport   Sport?  @relation(fields: [sportId], references: [id], onDelete: SetNull)
+
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   ratings           MatchRating[]
@@ -1076,6 +1087,7 @@ model Match {
   @@index([player1Id])
   @@index([player2Id])
   @@index([playedAt])
+  @@index([sportId])
   @@map("matches")
 }
 
@@ -1265,6 +1277,9 @@ model Tournament {
   venue String?
   city  String?
 
+  sportId String?
+  sport   Sport?  @relation(fields: [sportId], references: [id], onDelete: SetNull)
+
   participants TournamentParticipant[]
   brackets     TournamentBracket[]
 
@@ -1274,6 +1289,7 @@ model Tournament {
   @@index([status, country])
   @@index([clubId])
   @@index([organizerId])
+  @@index([sportId])
   @@map("tournaments")
 }
 
@@ -1778,6 +1794,9 @@ model Court {
   ownerId String?
   owner   User?   @relation("OwnedCourts", fields: [ownerId], references: [id], onDelete: SetNull)
 
+  sportId String?
+  sport   Sport?  @relation(fields: [sportId], references: [id], onDelete: SetNull)
+
   bookings  CourtBooking[]
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
@@ -1785,6 +1804,7 @@ model Court {
   @@index([city, district, isActive])
   @@index([surface])
   @@index([ownerId])
+  @@index([sportId])
   @@map("courts")
 }
 

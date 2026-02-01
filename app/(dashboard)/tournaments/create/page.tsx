@@ -8,6 +8,7 @@ import { GlassButton } from '@/components/ui/glass-button'
 import { Trophy, ArrowLeft, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { SkillTier } from '@prisma/client'
+import { useSport } from '@/contexts/SportContext'
 
 const tierOptions: { value: SkillTier; label: string }[] = [
   { value: 'UNRANKED', label: 'Sin clasificar' },
@@ -25,6 +26,7 @@ const tierOptions: { value: SkillTier; label: string }[] = [
 
 export default function CreateTournamentPage() {
   const router = useRouter()
+  const { activeSport } = useSport()
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
     name: '',
@@ -66,6 +68,7 @@ export default function CreateTournamentPage() {
         venue: form.venue || undefined,
         city: form.city || undefined,
         description: form.description || undefined,
+        sportSlug: activeSport?.slug || 'tennis',
       }
 
       const res = await fetch('/api/tournaments', {

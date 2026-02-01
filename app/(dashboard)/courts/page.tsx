@@ -10,6 +10,7 @@ import { GlassBadge } from '@/components/ui/glass-badge'
 import { MapPin, Phone, ChevronLeft, ChevronRight, Search, AlertTriangle, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { DISTRICTS } from '@/lib/constants'
+import { useSport } from '@/contexts/SportContext'
 
 const SURFACE_LABELS: Record<string, string> = {
   HARD: 'Dura',
@@ -59,6 +60,7 @@ export default function CourtsPage() {
   const [surface, setSurface] = useState('')
   const [courtType, setCourtType] = useState('')
   const [page, setPage] = useState(1)
+  const { activeSport } = useSport()
 
   const hasActiveFilters = district !== '' || surface !== '' || courtType !== ''
 
@@ -73,6 +75,7 @@ export default function CourtsPage() {
       if (courtType) params.set('courtType', courtType)
       params.set('page', String(page))
       params.set('limit', '10')
+      params.set('sport', activeSport?.slug || 'tennis')
 
       const res = await fetch(`/api/courts?${params}`, { signal })
       if (res.ok) {
@@ -88,7 +91,7 @@ export default function CourtsPage() {
     } finally {
       setLoading(false)
     }
-  }, [district, surface, courtType, page])
+  }, [district, surface, courtType, page, activeSport?.slug])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -115,7 +118,7 @@ export default function CourtsPage() {
           <h1 className="text-2xl md:text-3xl font-bold">Canchas</h1>
         </div>
         <p className="text-muted-foreground">
-          Encuentra y reserva canchas de tenis cerca de ti
+          Encuentra y reserva canchas de {activeSport?.name?.toLowerCase() || 'tenis'} cerca de ti
         </p>
       </div>
 

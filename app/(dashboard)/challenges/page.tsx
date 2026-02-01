@@ -11,6 +11,7 @@ import { formatDate } from '@/lib/date-utils'
 import { Flag, Check, X, Loader2, Clock, Swords, AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
 import type { SkillTier } from '@prisma/client'
+import { useSport } from '@/contexts/SportContext'
 
 interface ChallengePlayer {
   userId: string
@@ -42,12 +43,13 @@ export default function ChallengesPage() {
   const [error, setError] = useState(false)
   const [tab, setTab] = useState<'received' | 'sent'>('received')
   const [actioning, setActioning] = useState<string | null>(null)
+  const { activeSport } = useSport()
 
   const fetchChallenges = useCallback(async (signal?: AbortSignal) => {
     setLoading(true)
     setError(false)
     try {
-      const res = await fetch(`/api/challenges?type=${tab}`, { signal })
+      const res = await fetch(`/api/challenges?type=${tab}&sport=${activeSport?.slug || 'tennis'}`, { signal })
       if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
       setChallenges(data)
@@ -57,7 +59,7 @@ export default function ChallengesPage() {
     } finally {
       setLoading(false)
     }
-  }, [tab])
+  }, [tab, activeSport?.slug])
 
   useEffect(() => {
     const controller = new AbortController()

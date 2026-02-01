@@ -8,6 +8,7 @@ import { logger } from '@/lib/logger'
 import { formatDate } from '@/lib/date-utils'
 import { Trophy, Calendar, MapPin, Users, Loader2, Plus } from 'lucide-react'
 import Link from 'next/link'
+import { useSport } from '@/contexts/SportContext'
 
 interface Tournament {
   id: string
@@ -43,6 +44,7 @@ export default function TournamentsPage() {
   const [tournaments, setTournaments] = useState<Tournament[]>([])
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('')
+  const { activeSport } = useSport()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -51,6 +53,7 @@ export default function TournamentsPage() {
       try {
         const params = new URLSearchParams({ country: 'PE' })
         if (tab) params.set('status', tab)
+        params.set('sport', activeSport?.slug || 'tennis')
 
         const res = await fetch(`/api/tournaments?${params}`, { signal: controller.signal })
         if (res.ok) {
@@ -66,7 +69,7 @@ export default function TournamentsPage() {
     }
     fetchTournaments()
     return () => controller.abort()
-  }, [tab])
+  }, [tab, activeSport?.slug])
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

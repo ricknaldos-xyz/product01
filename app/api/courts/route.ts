@@ -15,7 +15,17 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '20')))
     const skip = (page - 1) * limit
 
+    const sportSlug = searchParams.get('sport') || 'tennis'
+    const sport = await prisma.sport.findUnique({
+      where: { slug: sportSlug },
+      select: { id: true },
+    })
+
     const where: Record<string, unknown> = { isActive: true }
+
+    if (sport) {
+      where.OR = [{ sportId: sport.id }, { sportId: null }]
+    }
 
     if (city) {
       where.city = city
