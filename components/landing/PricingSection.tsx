@@ -15,7 +15,7 @@ const plans = [
     price: 0,
     currency: '',
     features: [
-      '3 analisis de video por mes',
+      '5 analisis de video por mes',
       '1 plan de entrenamiento activo',
       'Acceso a Tenis',
       'Ranking nacional basico',
@@ -30,7 +30,7 @@ const plans = [
     id: 'PRO',
     name: 'Compite en serio',
     tagline: 'Todo lo que necesitas para mejorar cada semana',
-    price: 29.90,
+    price: 24.90,
     currency: 'S/',
     features: [
       'Analisis ilimitados de video',
@@ -50,7 +50,7 @@ const plans = [
     id: 'ELITE',
     name: 'Entrena como profesional',
     tagline: 'Acceso total con herramientas avanzadas',
-    price: 49.99,
+    price: 39.90,
     currency: 'S/',
     features: [
       'Todo en Pro',

@@ -38,7 +38,7 @@ describe('getPlanLimits', () => {
   it('returns FREE limits for FREE subscription', () => {
     const limits = getPlanLimits('FREE')
     expect(limits).toEqual({
-      analysesPerMonth: 3,
+      analysesPerMonth: 5,
       activePlans: 1,
     })
   })
@@ -62,7 +62,7 @@ describe('getPlanLimits', () => {
   it('falls back to FREE limits for unknown subscription', () => {
     const limits = getPlanLimits('UNKNOWN')
     expect(limits).toEqual({
-      analysesPerMonth: 3,
+      analysesPerMonth: 5,
       activePlans: 1,
     })
   })
@@ -70,7 +70,7 @@ describe('getPlanLimits', () => {
   it('falls back to FREE limits for empty string', () => {
     const limits = getPlanLimits('')
     expect(limits).toEqual({
-      analysesPerMonth: 3,
+      analysesPerMonth: 5,
       activePlans: 1,
     })
   })
@@ -85,18 +85,18 @@ describe('checkAnalysisLimit', () => {
   })
 
   it('returns not allowed when at the FREE limit', async () => {
-    mockAnalysisCount.mockResolvedValue(3 as never)
+    mockAnalysisCount.mockResolvedValue(5 as never)
 
     const result = await checkAnalysisLimit('user1', 'FREE')
     expect(result.allowed).toBe(false)
     if (!result.allowed) {
-      expect(result.limit).toBe(3)
-      expect(result.current).toBe(3)
+      expect(result.limit).toBe(5)
+      expect(result.current).toBe(5)
     }
   })
 
   it('returns not allowed when over the FREE limit', async () => {
-    mockAnalysisCount.mockResolvedValue(5 as never)
+    mockAnalysisCount.mockResolvedValue(7 as never)
 
     const result = await checkAnalysisLimit('user1', 'FREE')
     expect(result.allowed).toBe(false)
@@ -116,7 +116,7 @@ describe('checkAnalysisLimit', () => {
   })
 
   it('uses FREE limits for unknown subscription', async () => {
-    mockAnalysisCount.mockResolvedValue(3 as never)
+    mockAnalysisCount.mockResolvedValue(5 as never)
 
     const result = await checkAnalysisLimit('user1', 'GARBAGE')
     expect(result.allowed).toBe(false)

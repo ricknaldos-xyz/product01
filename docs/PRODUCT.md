@@ -144,7 +144,7 @@ No somos una app de tracking ni una red social deportiva. Somos el **coach virtu
 - **Dolor**: Siente que llegó a un techo técnico, no puede pagar un coach fijo
 - **Motivación**: Quiere mejorar su revés y subir en rankings locales
 - **Uso**: Sube videos semanales, sigue su plan de entrenamiento, juega partidos por matchmaking
-- **Plan**: Pro (S/29.90/mes)
+- **Plan**: Pro (S/24.90/mes)
 
 ### Persona 2: El Principiante Entusiasta
 - **Nombre**: María, 35 años, Arequipa
@@ -152,7 +152,7 @@ No somos una app de tracking ni una red social deportiva. Somos el **coach virtu
 - **Dolor**: No sabe si su grip es correcto, no tiene referencia técnica
 - **Motivación**: Quiere aprender correctamente desde el inicio
 - **Uso**: Análisis ocasionales, ejercicios básicos, busca canchas cercanas
-- **Plan**: Free (3 análisis/mes)
+- **Plan**: Free (5 análisis/mes)
 
 ### Persona 3: El Coach Independiente
 - **Nombre**: Roberto, 45 años, Lima
@@ -168,7 +168,7 @@ No somos una app de tracking ni una red social deportiva. Somos el **coach virtu
 - **Dolor**: No encuentra rivales de su nivel fuera de su club
 - **Motivación**: Competir, subir en rankings, ganar torneos
 - **Uso**: Matchmaking activo, torneos semanales, desafíos
-- **Plan**: Pro (S/29.90/mes)
+- **Plan**: Pro (S/24.90/mes)
 
 ---
 
@@ -508,8 +508,8 @@ Entregado → Dejar review (opcional)
 
 | | Free | Pro | Elite |
 |--|------|-----|-------|
-| **Precio** | S/0 | S/29.90/mes | S/49.99/mes |
-| **Análisis/mes** | 3 | Ilimitados | Ilimitados |
+| **Precio** | S/0 | S/24.90/mes | S/39.90/mes |
+| **Análisis/mes** | 5 | Ilimitados | Ilimitados |
 | **Planes activos** | 1 | Ilimitados | Ilimitados |
 | **Deportes** | 1 | Todos | Todos |
 | **Historial** | Limitado | Completo | Completo |
@@ -1277,7 +1277,7 @@ Tamaños: `sm`, `default`, `lg`
 | **Webhook** | Notificaciones de pago en `/api/culqi/webhook` |
 
 **Usos:**
-- Suscripciones mensuales (Pro: S/29.90, Elite: S/49.99)
+- Suscripciones mensuales (Pro: S/24.90, Elite: S/39.90)
 - Checkout de tienda (productos deportivos)
 - Pago de encordado (servicio + delivery)
 
@@ -1478,8 +1478,8 @@ Variables requeridas (fail-fast al inicio):
 | Plan | Precio | Target | Margen |
 |------|--------|--------|--------|
 | Free | S/0 | Adquisición, prueba | N/A |
-| Pro | S/29.90/mes | Jugadores serios | ~85% |
-| Elite | S/49.99/mes | Profesionales, coaches | ~90% |
+| Pro | S/24.90/mes | Jugadores serios | ~85% |
+| Elite | S/39.90/mes | Profesionales, coaches | ~90% |
 
 **Métricas objetivo:**
 - Conversión Free → Pro: 5-8%
@@ -1512,7 +1512,7 @@ Variables requeridas (fail-fast al inicio):
 | Modelo | Comisión |
 |--------|---------|
 | Conexión coach-alumno | 10-15% de primera sesión |
-| Suscripción premium coach | S/49.99/mes (visibilidad prioritaria) |
+| Suscripción premium coach | S/39.90/mes (visibilidad prioritaria) |
 
 ---
 
@@ -1596,7 +1596,7 @@ Variables requeridas (fail-fast al inicio):
 
 ### Ventajas competitivas
 
-1. **Precio**: Desde gratis, Pro a S/29.90/mes vs $150+/año de competidores
+1. **Precio**: Desde gratis, Pro a S/24.90/mes vs $150+/año de competidores
 2. **Multi-deporte**: Una sola plataforma para tenis, pádel, pickleball
 3. **Ciclo completo**: Análisis → Entrenamiento → Competencia → Progresión
 4. **Localización**: Diseñado para Latinoamérica (español, PEN, Culqi, ubicaciones peruanas)

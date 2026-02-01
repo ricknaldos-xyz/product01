@@ -683,18 +683,18 @@ export default function DocsPage() {
               {
                 name: 'Free',
                 price: 'S/0',
-                features: ['3 análisis/mes', '1 plan activo', '1 deporte', 'Soporte email'],
+                features: ['5 análisis/mes', '1 plan activo', '1 deporte', 'Soporte email'],
                 highlight: false,
               },
               {
                 name: 'Pro',
-                price: 'S/29.90',
+                price: 'S/24.90',
                 features: ['Análisis ilimitados', 'Planes ilimitados', 'Todos los deportes', 'Historial completo', 'Soporte prioritario'],
                 highlight: true,
               },
               {
                 name: 'Elite',
-                price: 'S/49.99',
+                price: 'S/39.90',
                 features: ['Todo en Pro', 'Video HD', 'Comparación avanzada', 'Export PDF', 'Coaching virtual', 'Soporte 24/7'],
                 highlight: false,
               },
@@ -1062,7 +1062,7 @@ Prisma Gemini Culqi Resend Blob Redis
             <Table
               headers={['Fuente', 'Tipo', 'Ejemplo', 'Margen Est.']}
               rows={[
-                ['Suscripciones', 'SaaS recurrente', 'Pro S/29.90/mes, Elite S/49.99/mes', '~85-90%'],
+                ['Suscripciones', 'SaaS recurrente', 'Pro S/24.90/mes, Elite S/39.90/mes', '~85-90%'],
                 ['Tienda', 'E-commerce', 'Raquetas, cuerdas, accesorios', '15-50%'],
                 ['Encordado', 'Servicios', 'Estándar S/25, Express S/45', '~60%'],
                 ['Marketplace', 'Comisión', '10-15% primera sesión coach', 'Futuro'],
