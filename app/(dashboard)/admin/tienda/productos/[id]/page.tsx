@@ -131,7 +131,25 @@ export default function AdminEditProductoPage() {
       </GlassCard>
 
       <AdminProductForm
-        initialData={product as unknown as Parameters<typeof AdminProductForm>[0]['initialData']}
+        initialData={{
+          name: product.name as string | undefined,
+          slug: product.slug as string | undefined,
+          description: product.description as string | undefined,
+          shortDesc: product.shortDesc as string | undefined,
+          category: product.category as string | undefined,
+          brand: product.brand as string | undefined,
+          model: product.model as string | undefined,
+          priceCents: product.priceCents as number | undefined,
+          comparePriceCents: product.comparePriceCents as number | null | undefined,
+          costCents: product.costCents as number | null | undefined,
+          stock: product.stock as number | undefined,
+          sku: product.sku as string | undefined,
+          isActive: product.isActive as boolean | undefined,
+          isFeatured: product.isFeatured as boolean | undefined,
+          metaTitle: product.metaTitle as string | undefined,
+          metaDescription: product.metaDescription as string | undefined,
+          attributes: (product.attributes ?? undefined) as Record<string, string> | undefined,
+        }}
         onSubmit={handleSubmit}
         loading={saving}
       />

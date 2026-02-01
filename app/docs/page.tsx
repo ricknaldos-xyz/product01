@@ -129,7 +129,7 @@ function DocsSidebar({
               <h2 className="text-lg font-bold">SportTek</h2>
               <p className="text-xs text-muted-foreground">Documentación v1.0</p>
             </div>
-            <button onClick={onClose} className="lg:hidden p-2 rounded-lg hover:glass-light">
+            <button onClick={onClose} className="lg:hidden p-2 rounded-lg hover:glass-light" aria-label="Cerrar menu">
               <X className="h-5 w-5" />
             </button>
           </div>

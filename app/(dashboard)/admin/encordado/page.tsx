@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { GlassCard } from '@/components/ui/glass-card'
 import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
+import { GlassInput, GlassSelect } from '@/components/ui/glass-input'
 import AdminStringingTable from '@/components/admin/AdminStringingTable'
 import { Loader2, Wrench, CheckCircle, Clock, Search, Building2 } from 'lucide-react'
 
@@ -34,7 +35,7 @@ export default function AdminEncordadoPage() {
     pendingPickup: 0,
   })
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (signal?: AbortSignal) => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -42,7 +43,7 @@ export default function AdminEncordadoPage() {
       if (search) params.set('search', search)
       params.set('limit', '50')
 
-      const res = await fetch(`/api/admin/stringing/orders?${params}`)
+      const res = await fetch(`/api/admin/stringing/orders?${params}`, { signal })
       if (res.ok) {
         const data = await res.json()
         const allOrders = data.orders || []
@@ -66,6 +67,7 @@ export default function AdminEncordadoPage() {
         })
       }
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') return
       logger.error('Error al cargar ordenes:', error)
     } finally {
       setLoading(false)
@@ -73,7 +75,9 @@ export default function AdminEncordadoPage() {
   }, [statusFilter, search])
 
   useEffect(() => {
-    fetchData()
+    const controller = new AbortController()
+    fetchData(controller.signal)
+    return () => controller.abort()
   }, [fetchData])
 
   const handleSearch = (e: React.FormEvent) => {
@@ -128,24 +132,23 @@ export default function AdminEncordadoPage() {
       {/* Filters */}
       <GlassCard intensity="light">
         <div className="flex flex-col sm:flex-row gap-3">
-          <select
+          <GlassSelect
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="glass-input"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
             ))}
-          </select>
+          </GlassSelect>
           <form onSubmit={handleSearch} className="flex gap-2 flex-1">
-            <input
+            <GlassInput
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por numero de orden..."
-              className="glass-input flex-1"
+              className="flex-1"
             />
             <GlassButton type="submit" variant="primary" size="sm">
               <Search className="h-4 w-4" />

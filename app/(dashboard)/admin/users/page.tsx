@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
+import { GlassInput, GlassSelect } from '@/components/ui/glass-input'
 import { logger } from '@/lib/logger'
 import {
   Users, Loader2, Search, ChevronLeft, ChevronRight,
@@ -64,6 +65,7 @@ export default function AdminUsersPage() {
     role: string,
     accountType: string,
     subscription: string,
+    signal?: AbortSignal,
   ) => {
     setLoading(true)
     try {
@@ -75,12 +77,13 @@ export default function AdminUsersPage() {
       if (accountType) params.set('accountType', accountType)
       if (subscription) params.set('subscription', subscription)
 
-      const res = await fetch(`/api/admin/users?${params.toString()}`)
+      const res = await fetch(`/api/admin/users?${params.toString()}`, { signal })
       if (res.ok) {
         const json: UsersResponse = await res.json()
         setData(json)
       }
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') return
       logger.error('Error fetching users:', error)
     } finally {
       setLoading(false)
@@ -88,7 +91,9 @@ export default function AdminUsersPage() {
   }, [])
 
   useEffect(() => {
-    fetchUsers(page, search, roleFilter, accountTypeFilter, subscriptionFilter)
+    const controller = new AbortController()
+    fetchUsers(page, search, roleFilter, accountTypeFilter, subscriptionFilter, controller.signal)
+    return () => controller.abort()
   }, [fetchUsers, page, roleFilter, accountTypeFilter, subscriptionFilter]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSearchChange = (value: string) => {
@@ -122,49 +127,46 @@ export default function AdminUsersPage() {
           {/* Search */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
+            <GlassInput
               type="text"
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Buscar por nombre o email..."
-              className="glass-input w-full pl-10"
+              className="w-full pl-10"
             />
           </div>
 
           {/* Role filter */}
-          <select
+          <GlassSelect
             value={roleFilter}
             onChange={(e) => handleFilterChange(setRoleFilter, e.target.value)}
-            className="glass-input"
           >
             <option value="">Todos los roles</option>
             <option value="USER">Usuario</option>
             <option value="COACH">Coach</option>
             <option value="ADMIN">Admin</option>
-          </select>
+          </GlassSelect>
 
           {/* Account type filter */}
-          <select
+          <GlassSelect
             value={accountTypeFilter}
             onChange={(e) => handleFilterChange(setAccountTypeFilter, e.target.value)}
-            className="glass-input"
           >
             <option value="">Tipo de cuenta</option>
             <option value="PLAYER">Jugador</option>
             <option value="COACH">Coach</option>
-          </select>
+          </GlassSelect>
 
           {/* Subscription filter */}
-          <select
+          <GlassSelect
             value={subscriptionFilter}
             onChange={(e) => handleFilterChange(setSubscriptionFilter, e.target.value)}
-            className="glass-input"
           >
             <option value="">Suscripcion</option>
             <option value="FREE">Free</option>
             <option value="PRO">Pro</option>
             <option value="ELITE">Elite</option>
-          </select>
+          </GlassSelect>
         </div>
       </GlassCard>
 

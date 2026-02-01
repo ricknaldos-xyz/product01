@@ -70,7 +70,7 @@ export default function ProviderWorkshopOrdersPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  const fetchOrders = useCallback(async () => {
+  const fetchOrders = useCallback(async (signal?: AbortSignal) => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -84,14 +84,14 @@ export default function ProviderWorkshopOrdersPage() {
         params.set('status', tab.statuses[0])
       }
 
-      const res = await fetch(`/api/provider/workshops/${id}/orders?${params}`)
+      const res = await fetch(`/api/provider/workshops/${id}/orders?${params}`, { signal })
       if (res.ok) {
         const data = await res.json()
         let fetchedOrders: OrderSummary[] = data.orders || []
 
         // Client-side filter for multi-status tabs
         if (tab?.statuses && tab.statuses.length > 1) {
-          fetchedOrders = fetchedOrders.filter((o) => tab.statuses!.includes(o.status))
+          fetchedOrders = fetchedOrders.filter((o) => (tab.statuses ?? []).includes(o.status))
         }
 
         setOrders(fetchedOrders)
@@ -99,7 +99,8 @@ export default function ProviderWorkshopOrdersPage() {
       } else {
         toast.error('Error al cargar pedidos')
       }
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return
       toast.error('Error al cargar pedidos')
     } finally {
       setLoading(false)
@@ -107,7 +108,9 @@ export default function ProviderWorkshopOrdersPage() {
   }, [id, page, activeTab])
 
   useEffect(() => {
-    fetchOrders()
+    const controller = new AbortController()
+    fetchOrders(controller.signal)
+    return () => controller.abort()
   }, [fetchOrders])
 
   useEffect(() => {

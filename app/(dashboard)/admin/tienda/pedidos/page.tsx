@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { GlassCard } from '@/components/ui/glass-card'
 import { logger } from '@/lib/logger'
 import { GlassButton } from '@/components/ui/glass-button'
+import { GlassInput, GlassSelect } from '@/components/ui/glass-input'
 import AdminOrderTable from '@/components/admin/AdminOrderTable'
 import { ArrowLeft, ChevronLeft, ChevronRight, Search, Loader2 } from 'lucide-react'
 
@@ -28,7 +29,7 @@ export default function AdminPedidosPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  const fetchOrders = useCallback(async () => {
+  const fetchOrders = useCallback(async (signal?: AbortSignal) => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -37,13 +38,14 @@ export default function AdminPedidosPage() {
       params.set('page', page.toString())
       params.set('limit', '20')
 
-      const res = await fetch(`/api/admin/shop/orders?${params}`)
+      const res = await fetch(`/api/admin/shop/orders?${params}`, { signal })
       if (res.ok) {
         const data = await res.json()
         setOrders(data.orders || [])
         setTotalPages(data.pagination?.totalPages || 1)
       }
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') return
       logger.error('Error al cargar pedidos:', error)
     } finally {
       setLoading(false)
@@ -51,7 +53,9 @@ export default function AdminPedidosPage() {
   }, [statusFilter, search, page])
 
   useEffect(() => {
-    fetchOrders()
+    const controller = new AbortController()
+    fetchOrders(controller.signal)
+    return () => controller.abort()
   }, [fetchOrders])
 
   const handleSearch = (e: React.FormEvent) => {
@@ -75,27 +79,26 @@ export default function AdminPedidosPage() {
       {/* Filters */}
       <GlassCard intensity="light">
         <div className="flex flex-col sm:flex-row gap-3">
-          <select
+          <GlassSelect
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value)
               setPage(1)
             }}
-            className="glass-input"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
             ))}
-          </select>
+          </GlassSelect>
           <form onSubmit={handleSearch} className="flex gap-2 flex-1">
-            <input
+            <GlassInput
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por numero de pedido..."
-              className="glass-input flex-1"
+              className="flex-1"
             />
             <GlassButton type="submit" variant="primary" size="sm">
               <Search className="h-4 w-4" />

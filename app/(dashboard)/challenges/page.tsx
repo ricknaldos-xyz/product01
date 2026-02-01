@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -43,24 +43,27 @@ export default function ChallengesPage() {
   const [tab, setTab] = useState<'received' | 'sent'>('received')
   const [actioning, setActioning] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchChallenges()
-  }, [tab])
-
-  async function fetchChallenges() {
+  const fetchChallenges = useCallback(async (signal?: AbortSignal) => {
     setLoading(true)
     setError(false)
     try {
-      const res = await fetch(`/api/challenges?type=${tab}`)
+      const res = await fetch(`/api/challenges?type=${tab}`, { signal })
       if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
       setChallenges(data)
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return
       setError(true)
     } finally {
       setLoading(false)
     }
-  }
+  }, [tab])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetchChallenges(controller.signal)
+    return () => controller.abort()
+  }, [fetchChallenges])
 
   async function respondToChallenge(id: string, action: 'accept' | 'decline' | 'cancel') {
     setActioning(id)

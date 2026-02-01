@@ -1,5 +1,7 @@
 'use client'
 
+import { GlassButton } from '@/components/ui/glass-button'
+
 export default function OfflinePage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -9,12 +11,12 @@ export default function OfflinePage() {
         <p className="text-muted-foreground">
           No se pudo conectar al servidor. Verifica tu conexion a internet e intenta de nuevo.
         </p>
-        <button
+        <GlassButton
+          variant="solid"
           onClick={() => window.location.reload()}
-          className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
         >
           Reintentar
-        </button>
+        </GlassButton>
       </div>
     </div>
   )

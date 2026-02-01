@@ -196,7 +196,7 @@ export default function CoachStudentsPage() {
           <GlassCard intensity="medium" padding="lg" className="w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Invitar alumno</h2>
-              <button onClick={() => { setShowInviteModal(false); setSearchQuery(''); setSearchResults([]); setSelectedPlayer(null) }} className="text-muted-foreground hover:text-foreground">
+              <button onClick={() => { setShowInviteModal(false); setSearchQuery(''); setSearchResults([]); setSelectedPlayer(null) }} className="text-muted-foreground hover:text-foreground" aria-label="Cerrar">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -232,7 +232,7 @@ export default function CoachStudentsPage() {
                   <p className="font-medium text-sm truncate">{selectedPlayer.displayName || selectedPlayer.user.name}</p>
                   <p className="text-xs text-muted-foreground truncate">{selectedPlayer.user.email}</p>
                 </div>
-                <button onClick={() => setSelectedPlayer(null)} className="text-muted-foreground hover:text-foreground">
+                <button onClick={() => setSelectedPlayer(null)} className="text-muted-foreground hover:text-foreground" aria-label="Cerrar">
                   <X className="h-4 w-4" />
                 </button>
               </div>

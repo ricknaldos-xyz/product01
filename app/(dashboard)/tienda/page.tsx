@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { GlassButton } from '@/components/ui/glass-button'
 import { logger } from '@/lib/logger'
@@ -32,63 +32,67 @@ export default function TiendaPage() {
   const [cartCount, setCartCount] = useState(0)
 
   useEffect(() => {
+    const controller = new AbortController()
+    async function fetchProducts() {
+      setLoading(true)
+      try {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: '12',
+          sort,
+        })
+        if (category) params.set('category', category)
+        if (search) params.set('search', search)
+
+        const res = await fetch(`/api/shop/products?${params}`, { signal: controller.signal })
+        if (res.ok) {
+          const data = await res.json()
+          setProducts(data.products)
+          setTotalPages(data.totalPages)
+        }
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') return
+        logger.error('Failed to fetch products')
+      } finally {
+        setLoading(false)
+      }
+    }
     fetchProducts()
+    return () => controller.abort()
   }, [category, search, sort, page])
 
   useEffect(() => {
+    const controller = new AbortController()
+    async function fetchCartCount() {
+      try {
+        const res = await fetch('/api/shop/cart', { signal: controller.signal })
+        if (res.ok) {
+          const data = await res.json()
+          setCartCount(data.itemCount || 0)
+        }
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') return
+        // Not authenticated or error
+      }
+    }
     fetchCartCount()
+    return () => controller.abort()
   }, [])
 
-  async function fetchProducts() {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '12',
-        sort,
-      })
-      if (category) params.set('category', category)
-      if (search) params.set('search', search)
-
-      const res = await fetch(`/api/shop/products?${params}`)
-      if (res.ok) {
-        const data = await res.json()
-        setProducts(data.products)
-        setTotalPages(data.totalPages)
-      }
-    } catch {
-      logger.error('Failed to fetch products')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function fetchCartCount() {
-    try {
-      const res = await fetch('/api/shop/cart')
-      if (res.ok) {
-        const data = await res.json()
-        setCartCount(data.itemCount || 0)
-      }
-    } catch {
-      // Not authenticated or error
-    }
-  }
-
-  function handleCategoryChange(cat: string) {
+  const handleCategoryChange = useCallback((cat: string) => {
     setCategory(cat)
     setPage(1)
-  }
+  }, [])
 
-  function handleSearchChange(value: string) {
+  const handleSearchChange = useCallback((value: string) => {
     setSearch(value)
     setPage(1)
-  }
+  }, [])
 
-  function handleSortChange(value: string) {
+  const handleSortChange = useCallback((value: string) => {
     setSort(value)
     setPage(1)
-  }
+  }, [])
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">

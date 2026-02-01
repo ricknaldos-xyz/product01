@@ -29,20 +29,23 @@ export default function MarketplacePage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const controller = new AbortController()
     async function fetchCoaches() {
       try {
-        const res = await fetch('/api/marketplace/coaches')
+        const res = await fetch('/api/marketplace/coaches', { signal: controller.signal })
         if (res.ok) {
           const data = await res.json()
           setCoaches(data.coaches)
         }
-      } catch {
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') return
         logger.error('Failed to fetch coaches')
       } finally {
         setLoading(false)
       }
     }
     fetchCoaches()
+    return () => controller.abort()
   }, [])
 
   return (

@@ -62,7 +62,7 @@ export default function CourtsPage() {
 
   const hasActiveFilters = district !== '' || surface !== '' || courtType !== ''
 
-  const fetchCourts = useCallback(async () => {
+  const fetchCourts = useCallback(async (signal?: AbortSignal) => {
     setLoading(true)
     setError(false)
     try {
@@ -74,13 +74,14 @@ export default function CourtsPage() {
       params.set('page', String(page))
       params.set('limit', '10')
 
-      const res = await fetch(`/api/courts?${params}`)
+      const res = await fetch(`/api/courts?${params}`, { signal })
       if (res.ok) {
         const data = await res.json()
         setCourts(data.courts || [])
         setPagination(data.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 })
       }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return
       logger.error('Error fetching courts:', err)
       setError(true)
       toast.error('Error al cargar canchas')
@@ -90,18 +91,20 @@ export default function CourtsPage() {
   }, [district, surface, courtType, page])
 
   useEffect(() => {
-    fetchCourts()
+    const controller = new AbortController()
+    fetchCourts(controller.signal)
+    return () => controller.abort()
   }, [fetchCourts])
 
   useEffect(() => {
     setPage(1)
   }, [district, surface, courtType])
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setDistrict('')
     setSurface('')
     setCourtType('')
-  }
+  }, [])
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">

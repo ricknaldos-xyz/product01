@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { logger } from '@/lib/logger'
@@ -35,33 +35,52 @@ export default function CheckoutSuccessPage() {
   const orderId = searchParams.get('orderId')
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (orderId) {
-      fetchOrder()
-    } else {
+  const fetchOrder = useCallback(async (signal?: AbortSignal) => {
+    setError(null)
+    try {
+      const res = await fetch(`/api/shop/orders/${orderId}`, { signal })
+      if (res.ok) {
+        const data = await res.json()
+        setOrder(data.order)
+      } else {
+        setError('No se pudo cargar los datos')
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return
+      logger.error('Failed to fetch order')
+      setError('No se pudo cargar los datos')
+    } finally {
       setLoading(false)
     }
   }, [orderId])
 
-  async function fetchOrder() {
-    try {
-      const res = await fetch(`/api/shop/orders/${orderId}`)
-      if (res.ok) {
-        const data = await res.json()
-        setOrder(data.order)
-      }
-    } catch {
-      logger.error('Failed to fetch order')
-    } finally {
+  useEffect(() => {
+    if (orderId) {
+      const controller = new AbortController()
+      fetchOrder(controller.signal)
+      return () => controller.abort()
+    } else {
       setLoading(false)
     }
-  }
+  }, [orderId, fetchOrder])
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-destructive mb-4">{error}</p>
+        <GlassButton variant="outline" onClick={() => { setError(null); setLoading(true); fetchOrder() }}>
+          Reintentar
+        </GlassButton>
       </div>
     )
   }

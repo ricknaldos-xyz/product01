@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { GlassButton } from '@/components/ui/glass-button'
 import { logger } from '@/lib/logger'
@@ -105,7 +105,8 @@ export default function AnalyzePage() {
 
   // Fetch sports on mount and pre-select active sport
   useEffect(() => {
-    fetch('/api/sports')
+    const controller = new AbortController()
+    fetch('/api/sports', { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => {
         const activeSports = data.filter((s: Sport) => s.isActive)
@@ -117,10 +118,12 @@ export default function AnalyzePage() {
         }
         setLoadingSports(false)
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err instanceof Error && err.name === 'AbortError') return
         toast.error('Error al cargar deportes')
         setLoadingSports(false)
       })
+    return () => controller.abort()
   }, [activeSport])
 
   // Skip sport step when pre-selected from context
@@ -133,34 +136,38 @@ export default function AnalyzePage() {
 
   // Fetch techniques when sport is selected
   useEffect(() => {
-    if (selectedSport) {
-      setLoadingTechniques(true)
-      fetch(`/api/sports/${selectedSport.id}/techniques`)
-        .then((res) => res.json())
-        .then((data) => {
-          setTechniques(data.techniques || [])
-          setVariants([])
-          setLoadingTechniques(false)
-        })
-        .catch(() => {
-          toast.error('Error al cargar tecnicas')
-          setLoadingTechniques(false)
-        })
-    }
+    if (!selectedSport) return
+    const controller = new AbortController()
+    setLoadingTechniques(true)
+    fetch(`/api/sports/${selectedSport.id}/techniques`, { signal: controller.signal })
+      .then((res) => res.json())
+      .then((data) => {
+        setTechniques(data.techniques || [])
+        setVariants([])
+        setLoadingTechniques(false)
+      })
+      .catch((err) => {
+        if (err instanceof Error && err.name === 'AbortError') return
+        toast.error('Error al cargar tecnicas')
+        setLoadingTechniques(false)
+      })
+    return () => controller.abort()
   }, [selectedSport])
 
   // Set variants when technique is selected
   useEffect(() => {
-    if (selectedTechnique) {
-      fetch(`/api/sports/${selectedSport?.id}/techniques/${selectedTechnique.id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setVariants(data.variants || [])
-        })
-        .catch(() => {
-          setVariants([])
-        })
-    }
+    if (!selectedTechnique) return
+    const controller = new AbortController()
+    fetch(`/api/sports/${selectedSport?.id}/techniques/${selectedTechnique.id}`, { signal: controller.signal })
+      .then((res) => res.json())
+      .then((data) => {
+        setVariants(data.variants || [])
+      })
+      .catch((err) => {
+        if (err instanceof Error && err.name === 'AbortError') return
+        setVariants([])
+      })
+    return () => controller.abort()
   }, [selectedTechnique, selectedSport])
 
   // Route guard during uploading/processing
@@ -194,10 +201,10 @@ export default function AnalyzePage() {
     }
   }, [processing])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || [])
     addFiles(selectedFiles)
-  }
+  }, [])
 
   const addFiles = (selectedFiles: File[]) => {
     const validFiles = selectedFiles.filter((file) => {
@@ -223,25 +230,25 @@ export default function AnalyzePage() {
     setFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(true)
-  }
+  }, [])
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
-  }
+  }, [])
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
     const droppedFiles = Array.from(e.dataTransfer.files)
     addFiles(droppedFiles)
-  }
+  }, [])
 
   async function uploadFiles(): Promise<
     Array<{ url: string; type: string; filename: string; size: number }>

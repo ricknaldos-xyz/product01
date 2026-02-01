@@ -98,7 +98,7 @@ export default async function PublicPlayerProfilePage({
             <div className="relative h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
               {profile.avatarUrl || profile.user.image ? (
                 <Image
-                  src={(profile.avatarUrl || profile.user.image)!}
+                  src={profile.avatarUrl || profile.user.image || ''}
                   alt={displayName}
                   fill
                   className="object-cover"

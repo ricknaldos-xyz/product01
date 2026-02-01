@@ -45,24 +45,27 @@ export default function TournamentsPage() {
   const [tab, setTab] = useState('')
 
   useEffect(() => {
+    const controller = new AbortController()
     async function fetchTournaments() {
       setLoading(true)
       try {
         const params = new URLSearchParams({ country: 'PE' })
         if (tab) params.set('status', tab)
 
-        const res = await fetch(`/api/tournaments?${params}`)
+        const res = await fetch(`/api/tournaments?${params}`, { signal: controller.signal })
         if (res.ok) {
           const data = await res.json()
           setTournaments(data.tournaments)
         }
-      } catch {
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') return
         logger.error('Failed to fetch tournaments')
       } finally {
         setLoading(false)
       }
     }
     fetchTournaments()
+    return () => controller.abort()
   }, [tab])
 
   return (

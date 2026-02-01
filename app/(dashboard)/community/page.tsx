@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
@@ -40,24 +40,27 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  async function fetchFeed() {
+  const fetchFeed = useCallback(async (signal?: AbortSignal) => {
     setLoading(true)
     setError(false)
     try {
-      const res = await fetch('/api/social/feed?limit=30')
+      const res = await fetch('/api/social/feed?limit=30', { signal })
       if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
       setItems(data.items)
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return
       setError(true)
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    fetchFeed()
-  }, [])
+    const controller = new AbortController()
+    fetchFeed(controller.signal)
+    return () => controller.abort()
+  }, [fetchFeed])
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -112,7 +115,7 @@ export default function CommunityPage() {
                     <div className="relative h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                       {item.profile.avatarUrl || item.profile.user.image ? (
                         <Image
-                          src={(item.profile.avatarUrl || item.profile.user.image)!}
+                          src={item.profile.avatarUrl || item.profile.user.image || ''}
                           alt=""
                           fill
                           className="object-cover"
