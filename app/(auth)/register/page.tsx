@@ -9,7 +9,7 @@ import { GlassInput } from '@/components/ui/glass-input'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { Loader2, User, GraduationCap, CheckCircle2, Circle } from 'lucide-react'
+import { Loader2, User, GraduationCap, CheckCircle2, Circle, Target } from 'lucide-react'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -94,6 +94,12 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full max-w-md">
+      <Link href="/" className="flex items-center justify-center gap-2 mb-6">
+        <div className="glass-primary border-glass rounded-xl p-2 shadow-glass-glow">
+          <Target className="h-6 w-6 text-primary" />
+        </div>
+        <span className="text-2xl font-bold">SportTek</span>
+      </Link>
       <GlassCard intensity="medium" padding="xl">
         <h1 className="text-2xl font-bold text-center mb-2">Crear cuenta</h1>
         <p className="text-muted-foreground text-center mb-6">
