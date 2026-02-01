@@ -14,6 +14,7 @@ export default auth((req) => {
   const isPublicPattern = publicPatterns.some((pattern) => pathname.startsWith(pattern))
 
   // API routes that don't require authentication
+  // Public: courts listing available for unauthenticated browsing
   const publicApiRoutes = ['/api/auth', '/api/public', '/api/shop/products', '/api/stringing/workshops', '/api/stringing/coverage', '/api/cron', '/api/rankings', '/api/courts', '/api/culqi/webhook']
   const isPublicApiRoute = publicApiRoutes.some((route) => pathname.startsWith(route))
 

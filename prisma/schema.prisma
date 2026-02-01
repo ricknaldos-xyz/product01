@@ -333,6 +333,7 @@ model ProviderApplication {
 
   @@unique([userId, type])
   @@index([status, type])
+  @@index([userId])
   @@map("provider_applications")
 }
 
@@ -1040,6 +1041,7 @@ model Challenge {
 
   @@index([challengerId, status])
   @@index([challengedId, status])
+  @@index([expiresAt, status])
   @@map("challenges")
 }
 
@@ -1073,6 +1075,7 @@ model Match {
 
   @@index([player1Id])
   @@index([player2Id])
+  @@index([playedAt])
   @@map("matches")
 }
 
@@ -1179,14 +1182,14 @@ model Block {
 }
 
 model Report {
-  id          String        @id @default(cuid())
-  reporterId  String
-  reporter    PlayerProfile @relation("ReportsSent", fields: [reporterId], references: [id], onDelete: Cascade)
-  targetId    String
-  target      PlayerProfile @relation("ReportsReceived", fields: [targetId], references: [id], onDelete: Cascade)
-  targetType  String
-  reason      ReportReason
-  description String?
+  id             String        @id @default(cuid())
+  reporterId     String
+  reporter       PlayerProfile @relation("ReportsSent", fields: [reporterId], references: [id], onDelete: Cascade)
+  targetId       String
+  target         PlayerProfile @relation("ReportsReceived", fields: [targetId], references: [id], onDelete: Cascade)
+  targetType     String
+  reason         ReportReason
+  description    String?
   resolved       Boolean       @default(false)
   resolvedAction String?
   resolvedAt     DateTime?
@@ -1198,9 +1201,9 @@ model Report {
 }
 
 model Club {
-  id          String        @id @default(cuid())
+  id          String         @id @default(cuid())
   name        String
-  slug        String        @unique
+  slug        String         @unique
   description String?
   imageUrl    String?
   country     String?
@@ -1209,10 +1212,10 @@ model Club {
   owner       PlayerProfile? @relation("ClubOwner", fields: [ownerId], references: [id], onDelete: SetNull)
   members     ClubMember[]
   tournaments Tournament[]
-  isPublic    Boolean       @default(true)
-  maxMembers  Int           @default(50)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  isPublic    Boolean        @default(true)
+  maxMembers  Int            @default(50)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   @@map("clubs")
 }
@@ -1456,8 +1459,8 @@ model PeerReview {
 // ============================================
 
 model Product {
-  id          String          @id @default(cuid())
-  slug        String          @unique
+  id          String  @id @default(cuid())
+  slug        String  @unique
   name        String
   description String
   shortDesc   String?
@@ -1472,9 +1475,9 @@ model Product {
   costCents         Int? // internal cost
 
   // Inventory
-  stock             Int @default(0)
+  stock             Int     @default(0)
   sku               String? @unique
-  lowStockThreshold Int @default(5)
+  lowStockThreshold Int     @default(5)
 
   // Media
   images       String[] @default([])
@@ -1514,9 +1517,9 @@ model ProductReview {
   userId    String
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  rating            Int // 1-5
-  title             String?
-  comment           String?
+  rating             Int // 1-5
+  title              String?
+  comment            String?
   isVerifiedPurchase Boolean @default(false)
 
   createdAt DateTime @default(now())
@@ -1587,7 +1590,7 @@ model ShopOrder {
   shippingNotes    String?
 
   // Culqi
-  culqiChargeId   String?
+  culqiChargeId String?
 
   // Marketplace future
   vendorId String?
@@ -1603,7 +1606,7 @@ model ShopOrder {
   updatedAt DateTime @updatedAt
 
   @@index([userId, createdAt])
-  @@index([status])
+  @@index([status, createdAt])
   @@index([orderNumber])
   @@map("shop_orders")
 }
@@ -1616,7 +1619,7 @@ model ShopOrderItem {
   product   Product   @relation(fields: [productId], references: [id])
 
   quantity    Int
-  priceCents  Int    // snapshot at time of purchase
+  priceCents  Int // snapshot at time of purchase
   productName String // snapshot
   productSlug String // snapshot
 
@@ -1654,6 +1657,7 @@ model Workshop {
   updatedAt DateTime @updatedAt
 
   @@index([ownerId])
+  @@index([city, district, isActive])
   @@map("workshops")
 }
 
@@ -1702,7 +1706,7 @@ model StringingOrder {
   estimatedCompletionDate DateTime?
 
   // Culqi
-  culqiChargeId   String?
+  culqiChargeId String?
 
   // Tracking notes (admin sets these)
   internalNotes String?
@@ -1843,7 +1847,7 @@ model ImprovementGoal {
 
   baselineScore   Float?
   currentScore    Float?
-  progressPercent Float?    @default(0)
+  progressPercent Float? @default(0)
 
   roadmap Json?
 
@@ -1919,9 +1923,9 @@ model SportProfile {
   totalTechniques Int       @default(0)
   lastScoreUpdate DateTime?
 
-  matchElo      Int @default(1200)
-  matchesPlayed Int @default(0)
-  matchesWon    Int @default(0)
+  matchElo      Int  @default(1200)
+  matchesPlayed Int  @default(0)
+  matchesWon    Int  @default(0)
   globalRank    Int?
   countryRank   Int?
 
@@ -1937,13 +1941,13 @@ model SportProfile {
 }
 
 model SportAddon {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id      String @id @default(cuid())
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   sportId String
   sport   Sport  @relation(fields: [sportId], references: [id])
 
-  active               Boolean @default(true)
+  active              Boolean @default(true)
   culqiSubscriptionId String?
 
   createdAt DateTime @default(now())

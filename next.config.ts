@@ -33,6 +33,7 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
+              // 'unsafe-inline' required for Culqi payment SDK integration
               "script-src 'self' 'unsafe-inline' https://checkout.culqi.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' blob: data: *.public.blob.vercel-storage.com *.vercel-storage.com lh3.googleusercontent.com",
