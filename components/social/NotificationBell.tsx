@@ -26,7 +26,7 @@ export function NotificationBell() {
 
     fetchCount()
 
-    const interval = setInterval(fetchCount, 60000)
+    const interval = setInterval(fetchCount, 30000)
     return () => {
       controller.abort()
       clearInterval(interval)

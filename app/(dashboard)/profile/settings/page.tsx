@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 }
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
-import { ArrowLeft, Bell, Shield, CreditCard } from 'lucide-react'
+import { ArrowLeft, Bell, Shield, CreditCard, Download } from 'lucide-react'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassBadge } from '@/components/ui/glass-badge'
@@ -138,6 +138,27 @@ export default async function SettingsPage() {
               </GlassButton>
             )}
           </div>
+        </div>
+      </GlassCard>
+
+      {/* Data Export (GDPR) */}
+      <GlassCard intensity="light" padding="lg">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="glass-primary border-glass rounded-lg p-1.5">
+            <Download className="h-4 w-4 text-primary" />
+          </div>
+          <h2 className="font-semibold">Tus Datos</h2>
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-medium">Exportar todos mis datos</p>
+            <p className="text-sm text-muted-foreground">
+              Descarga una copia de toda tu informacion en formato JSON
+            </p>
+          </div>
+          <GlassButton variant="outline" asChild>
+            <a href="/api/user/export" download>Exportar</a>
+          </GlassButton>
         </div>
       </GlassCard>
 

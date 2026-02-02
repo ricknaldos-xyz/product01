@@ -74,6 +74,30 @@ export async function GET(request: Request) {
       date: a.createdAt.toISOString().split('T')[0],
     })).reverse()
 
+    // Score progression over time (up to 30 analyses for line chart)
+    const progressionAnalyses = await prisma.analysis.findMany({
+      where: {
+        userId,
+        status: 'COMPLETED',
+        overallScore: { not: null },
+        ...sportFilter,
+      },
+      select: {
+        overallScore: true,
+        createdAt: true,
+        technique: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'asc' },
+      take: 30,
+    })
+
+    const progressionData = progressionAnalyses.map((a) => ({
+      date: a.createdAt.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }),
+      fullDate: a.createdAt.toISOString().split('T')[0],
+      score: a.overallScore || 0,
+      technique: a.technique.name,
+    }))
+
     // Group progress by day
     const progressByDay: Record<string, number> = {}
     progressLogs.forEach((log) => {
@@ -131,6 +155,7 @@ export async function GET(request: Request) {
       scoreData,
       activityData,
       progressData,
+      progressionData,
     })
   } catch (error) {
     logger.error('Stats error:', error)

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { ScoreChart } from '@/components/charts/ScoreChart'
 import { ActivityChart } from '@/components/charts/ActivityChart'
+import { ScoreProgressionChart } from '@/components/charts/ScoreProgressionChart'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Loader2 } from 'lucide-react'
 import { logger } from '@/lib/logger'
@@ -12,6 +13,7 @@ interface ChartData {
   scoreData: Array<{ technique: string; score: number; date: string }>
   activityData: Array<{ date: string; analyses: number; exercises: number }>
   progressData: Array<{ date: string; completed: number; total: number }>
+  progressionData: Array<{ date: string; fullDate: string; score: number; technique: string }>
 }
 
 export function DashboardCharts() {
@@ -40,12 +42,7 @@ export function DashboardCharts() {
 
   if (loading) {
     return (
-      <div className="grid gap-6 md:grid-cols-2">
-        <GlassCard intensity="light" padding="lg">
-          <div className="h-[300px] flex items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        </GlassCard>
+      <div className="space-y-6">
         <GlassCard intensity="light" padding="lg">
           <div className="h-[300px] flex items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -56,19 +53,30 @@ export function DashboardCharts() {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <GlassCard intensity="light" padding="lg">
-        <ScoreChart
-          data={data?.scoreData || []}
-          title="Puntuaciones Recientes"
-        />
-      </GlassCard>
-      <GlassCard intensity="light" padding="lg">
-        <ActivityChart
-          data={data?.activityData || []}
-          title="Actividad Ultimos 14 Dias"
-        />
-      </GlassCard>
+    <div className="space-y-6">
+      {/* Score progression (full width) */}
+      {data?.progressionData && data.progressionData.length >= 2 && (
+        <GlassCard intensity="light" padding="lg">
+          <ScoreProgressionChart
+            data={data.progressionData}
+            title="Progreso de Scores"
+          />
+        </GlassCard>
+      )}
+      <div className="grid gap-6 md:grid-cols-2">
+        <GlassCard intensity="light" padding="lg">
+          <ScoreChart
+            data={data?.scoreData || []}
+            title="Puntuaciones Recientes"
+          />
+        </GlassCard>
+        <GlassCard intensity="light" padding="lg">
+          <ActivityChart
+            data={data?.activityData || []}
+            title="Actividad Ultimos 14 Dias"
+          />
+        </GlassCard>
+      </div>
     </div>
   )
 }
