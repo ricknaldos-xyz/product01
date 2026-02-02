@@ -62,9 +62,9 @@ export function ActivityChart({ data, title }: ActivityChartProps) {
             type="monotone"
             dataKey="analyses"
             name="Analisis"
-            stroke="#2563eb"
+            stroke="#E8632B"
             strokeWidth={2}
-            dot={{ fill: '#2563eb', strokeWidth: 2 }}
+            dot={{ fill: '#E8632B', strokeWidth: 2 }}
           />
           <Line
             type="monotone"

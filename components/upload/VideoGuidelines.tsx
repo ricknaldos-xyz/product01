@@ -91,7 +91,7 @@ export function VideoGuidelines() {
               {goodExamples.map((example) => (
                 <div
                   key={example.label}
-                  className="bg-success/5 border border-success/20 rounded-xl p-3 backdrop-blur-sm"
+                  className="bg-success/5 border border-success/20 rounded-xl p-3"
                 >
                   <p className="text-sm font-medium text-success">
                     {example.label}
@@ -114,7 +114,7 @@ export function VideoGuidelines() {
               {badExamples.map((example) => (
                 <div
                   key={example.label}
-                  className="bg-destructive/5 border border-destructive/20 rounded-xl p-3 backdrop-blur-sm"
+                  className="bg-destructive/5 border border-destructive/20 rounded-xl p-3"
                 >
                   <p className="text-sm font-medium text-destructive">
                     {example.label}

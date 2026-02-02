@@ -40,8 +40,8 @@ export function ProgressChart({ data, title }: ProgressChartProps) {
         >
           <defs>
             <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+              <stop offset="5%" stopColor="#E8632B" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#E8632B" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
@@ -68,7 +68,7 @@ export function ProgressChart({ data, title }: ProgressChartProps) {
             type="monotone"
             dataKey="completed"
             name="Ejercicios completados"
-            stroke="#2563eb"
+            stroke="#E8632B"
             fillOpacity={1}
             fill="url(#colorCompleted)"
             strokeWidth={2}

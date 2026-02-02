@@ -13,8 +13,7 @@ const GlassNavbar = React.forwardRef<HTMLElement, GlassNavbarProps>(
         className={cn(
           sticky && 'sticky top-0',
           'z-50 w-full',
-          'glass-medium border-b border-glass',
-          'supports-[backdrop-filter]:glass-light',
+          'bg-background/95 backdrop-blur-sm border-b border-border',
           className
         )}
         {...props}

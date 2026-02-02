@@ -29,7 +29,7 @@ export default function Image() {
             width: 400,
             height: 400,
             borderRadius: '50%',
-            background: 'rgba(37, 99, 235, 0.15)',
+            background: 'rgba(232, 99, 43, 0.15)',
             display: 'flex',
           }}
         />
@@ -41,7 +41,7 @@ export default function Image() {
             width: 300,
             height: 300,
             borderRadius: '50%',
-            background: 'rgba(37, 99, 235, 0.1)',
+            background: 'rgba(232, 99, 43, 0.1)',
             display: 'flex',
           }}
         />
@@ -60,7 +60,7 @@ export default function Image() {
               width: 64,
               height: 64,
               borderRadius: 16,
-              background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+              background: 'linear-gradient(135deg, #E8632B 0%, #F07B3F 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -108,9 +108,9 @@ export default function Image() {
               style={{
                 padding: '10px 24px',
                 borderRadius: 999,
-                background: 'rgba(37, 99, 235, 0.2)',
-                border: '1px solid rgba(37, 99, 235, 0.3)',
-                color: '#93c5fd',
+                background: 'rgba(232, 99, 43, 0.2)',
+                border: '1px solid rgba(232, 99, 43, 0.3)',
+                color: '#FDBA74',
                 fontSize: 18,
                 fontWeight: 600,
                 display: 'flex',

@@ -7,15 +7,15 @@ const glassBadgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'glass-light border-glass text-foreground',
-        primary: 'glass-primary border-glass text-primary',
+        default: 'bg-secondary text-foreground border border-border',
+        primary: 'bg-primary/10 text-primary border border-primary/20',
         success:
-          'bg-success/10 border border-success/20 text-success backdrop-blur-sm',
+          'bg-success/10 border border-success/20 text-success',
         warning:
-          'bg-warning/10 border border-warning/20 text-warning backdrop-blur-sm',
+          'bg-warning/10 border border-warning/20 text-warning',
         destructive:
-          'bg-destructive/10 border border-destructive/20 text-destructive backdrop-blur-sm',
-        outline: 'border-glass-strong bg-transparent',
+          'bg-destructive/10 border border-destructive/20 text-destructive',
+        outline: 'border border-border bg-transparent',
       },
       size: {
         sm: 'px-2.5 py-0.5 text-[11px]',

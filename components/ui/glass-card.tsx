@@ -4,15 +4,15 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const glassCardVariants = cva(
-  'rounded-2xl border transition-all duration-[var(--duration-normal)]',
+  'rounded-[var(--radius-card)] transition-all duration-[var(--duration-normal)]',
   {
     variants: {
       intensity: {
-        ultralight: 'glass-ultralight border-glass shadow-glass',
-        light: 'glass-light border-glass shadow-glass',
-        medium: 'glass-medium border-glass-strong shadow-glass-lg',
-        heavy: 'glass-heavy border-glass-strong shadow-glass-lg',
-        primary: 'glass-primary border-glass shadow-glass-glow',
+        ultralight: 'bg-background shadow-[var(--glass-shadow-sm)]',
+        light: 'bg-secondary/50 shadow-[var(--glass-shadow-sm)]',
+        medium: 'bg-secondary shadow-[var(--glass-shadow-md)]',
+        heavy: 'bg-secondary border border-border shadow-[var(--glass-shadow-md)]',
+        primary: 'bg-primary/5 border border-primary/10 shadow-[var(--glass-shadow-sm)]',
       },
       padding: {
         none: '',
@@ -23,8 +23,8 @@ const glassCardVariants = cva(
       },
       hover: {
         none: '',
-        lift: 'hover:translate-y-[-2px] hover:shadow-glass-lg cursor-pointer',
-        glow: 'hover:shadow-glass-glow hover:border-primary/30 cursor-pointer',
+        lift: 'hover:translate-y-[-2px] hover:shadow-[var(--glass-shadow-lg)] cursor-pointer',
+        glow: 'hover:shadow-[var(--glass-shadow-md)] hover:border-primary/20 cursor-pointer',
         scale: 'hover:scale-[1.02] cursor-pointer',
       },
     },

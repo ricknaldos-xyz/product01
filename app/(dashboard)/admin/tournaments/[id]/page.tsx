@@ -358,7 +358,7 @@ export default function AdminTournamentDetailPage() {
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-lg border border-glass bg-glass-light backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div className="space-y-1.5">
@@ -366,7 +366,7 @@ export default function AdminTournamentDetailPage() {
               <select
                 value={editStatus}
                 onChange={(e) => setEditStatus(e.target.value as TournamentStatus)}
-                className="w-full px-3 py-2 rounded-lg border border-glass bg-glass-light backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               >
                 <option value="REGISTRATION">Registro</option>
                 <option value="IN_PROGRESS">En Curso</option>
@@ -380,7 +380,7 @@ export default function AdminTournamentDetailPage() {
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 rounded-lg border border-glass bg-glass-light backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
               />
             </div>
             <div className="space-y-1.5">
@@ -390,7 +390,7 @@ export default function AdminTournamentDetailPage() {
                 value={editMaxPlayers}
                 onChange={(e) => setEditMaxPlayers(parseInt(e.target.value) || 0)}
                 min={2}
-                className="w-full px-3 py-2 rounded-lg border border-glass bg-glass-light backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div className="space-y-1.5">
@@ -399,7 +399,7 @@ export default function AdminTournamentDetailPage() {
                 type="text"
                 value={editVenue}
                 onChange={(e) => setEditVenue(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-glass bg-glass-light backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div className="space-y-1.5">
@@ -408,7 +408,7 @@ export default function AdminTournamentDetailPage() {
                 type="text"
                 value={editCity}
                 onChange={(e) => setEditCity(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-glass bg-glass-light backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div className="space-y-1.5">
@@ -417,7 +417,7 @@ export default function AdminTournamentDetailPage() {
                 type="datetime-local"
                 value={editStartDate}
                 onChange={(e) => setEditStartDate(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-glass bg-glass-light backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div className="space-y-1.5">
@@ -426,7 +426,7 @@ export default function AdminTournamentDetailPage() {
                 type="datetime-local"
                 value={editEndDate}
                 onChange={(e) => setEditEndDate(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-glass bg-glass-light backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div className="space-y-1.5">
@@ -435,7 +435,7 @@ export default function AdminTournamentDetailPage() {
                 type="datetime-local"
                 value={editRegistrationEnd}
                 onChange={(e) => setEditRegistrationEnd(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-glass bg-glass-light backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
           </div>

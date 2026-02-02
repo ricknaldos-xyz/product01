@@ -182,7 +182,7 @@ function MatchOverrideForm({
             {playerName(match.player1)} (J1)
           </label>
           <select
-            className="w-full rounded-lg border border-glass bg-background/50 px-3 py-2 text-sm backdrop-blur-sm"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
             value={p1Result || ''}
             onChange={(e) => setP1Result((e.target.value || null) as MatchResultType)}
           >
@@ -204,7 +204,7 @@ function MatchOverrideForm({
           <input
             type="number"
             placeholder="Cambio Elo J1"
-            className="w-full rounded-lg border border-glass bg-background/50 px-3 py-2 text-sm backdrop-blur-sm"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
             value={p1Elo}
             onChange={(e) => setP1Elo(e.target.value)}
           />
@@ -216,7 +216,7 @@ function MatchOverrideForm({
             {playerName(match.player2)} (J2)
           </label>
           <select
-            className="w-full rounded-lg border border-glass bg-background/50 px-3 py-2 text-sm backdrop-blur-sm"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
             value={p2Result || ''}
             onChange={(e) => setP2Result((e.target.value || null) as MatchResultType)}
           >
@@ -238,7 +238,7 @@ function MatchOverrideForm({
           <input
             type="number"
             placeholder="Cambio Elo J2"
-            className="w-full rounded-lg border border-glass bg-background/50 px-3 py-2 text-sm backdrop-blur-sm"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
             value={p2Elo}
             onChange={(e) => setP2Elo(e.target.value)}
           />
@@ -251,7 +251,7 @@ function MatchOverrideForm({
         <input
           type="text"
           placeholder="Ej: 6-3 7-5"
-          className="w-full rounded-lg border border-glass bg-background/50 px-3 py-2 text-sm backdrop-blur-sm"
+          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
           value={score}
           onChange={(e) => setScore(e.target.value)}
         />

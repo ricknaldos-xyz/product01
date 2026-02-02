@@ -83,7 +83,7 @@ export function getWelcomeEmailHtml(name: string) {
       </ul>
 
       <div style="text-align: center; margin-bottom: 32px;">
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" style="display: inline-block; background-color: #2563eb; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" style="display: inline-block; background-color: #E8632B; color: white; padding: 14px 32px; border-radius: 9999px; text-decoration: none; font-weight: 600;">
           Ir al Dashboard
         </a>
       </div>
@@ -141,7 +141,7 @@ export function getAnalysisCompleteEmailHtml(
       </div>
 
       <div style="text-align: center; margin-bottom: 32px;">
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/analyses/${analysisId}" style="display: inline-block; background-color: #2563eb; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/analyses/${analysisId}" style="display: inline-block; background-color: #E8632B; color: white; padding: 14px 32px; border-radius: 9999px; text-decoration: none; font-weight: 600;">
           Ver Analisis Completo
         </a>
       </div>
@@ -195,7 +195,7 @@ export function getTrainingReminderEmailHtml(
       <div style="background-color: #f4f4f5; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
         <p style="color: #71717a; font-size: 14px; margin: 0 0 12px 0;">Tu progreso</p>
         <div style="background-color: #e4e4e7; border-radius: 8px; height: 12px; overflow: hidden;">
-          <div style="background-color: #2563eb; height: 100%; width: ${progress}%;"></div>
+          <div style="background-color: #E8632B; height: 100%; width: ${progress}%;"></div>
         </div>
         <p style="color: #3f3f46; font-size: 14px; margin: 12px 0 0 0;">
           ${completedCount} de ${exerciseCount} ejercicios completados (${progress}%)
@@ -203,7 +203,7 @@ export function getTrainingReminderEmailHtml(
       </div>
 
       <div style="text-align: center; margin-bottom: 32px;">
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/training/${trainingPlanId}" style="display: inline-block; background-color: #2563eb; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/training/${trainingPlanId}" style="display: inline-block; background-color: #E8632B; color: white; padding: 14px 32px; border-radius: 9999px; text-decoration: none; font-weight: 600;">
           Continuar Entrenando
         </a>
       </div>
@@ -247,7 +247,7 @@ export function getPasswordResetEmailHtml(name: string, resetUrl: string) {
       </p>
 
       <div style="text-align: center; margin-bottom: 32px;">
-        <a href="${resetUrl}" style="display: inline-block; background-color: #2563eb; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+        <a href="${resetUrl}" style="display: inline-block; background-color: #E8632B; color: white; padding: 14px 32px; border-radius: 9999px; text-decoration: none; font-weight: 600;">
           Restablecer Contrasena
         </a>
       </div>
@@ -507,7 +507,7 @@ export function getOrderConfirmationEmailHtml(
       </div>
 
       <div style="text-align: center; margin-bottom: 32px;">
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/tienda/pedidos" style="display: inline-block; background-color: #2563eb; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/tienda/pedidos" style="display: inline-block; background-color: #E8632B; color: white; padding: 14px 32px; border-radius: 9999px; text-decoration: none; font-weight: 600;">
           Ver Mis Pedidos
         </a>
       </div>

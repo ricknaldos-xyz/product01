@@ -25,14 +25,14 @@ interface ScoreProgressionChartProps {
 }
 
 const TECHNIQUE_COLORS = [
-  '#2563eb', // blue
+  '#E8632B', // primary orange
   '#16a34a', // green
   '#d97706', // amber
-  '#9333ea', // purple
-  '#dc2626', // red
   '#0891b2', // cyan
+  '#dc2626', // red
+  '#B45309', // warm brown
   '#c026d3', // fuchsia
-  '#ea580c', // orange
+  '#ea580c', // deep orange
 ]
 
 export function ScoreProgressionChart({ data, title }: ScoreProgressionChartProps) {

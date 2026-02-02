@@ -10,11 +10,11 @@ const GlassInput = React.forwardRef<HTMLInputElement, GlassInputProps>(
       <input
         type={type}
         className={cn(
-          'flex h-11 w-full rounded-xl px-4 py-2 text-sm',
-          'glass-light border-glass',
+          'flex h-11 w-full rounded-[var(--radius-input)] px-4 py-2 text-sm',
+          'bg-background border border-border',
           'placeholder:text-muted-foreground/60',
           'transition-all duration-[var(--duration-normal)] ease-[var(--ease-liquid)]',
-          'focus:glass-medium focus:border-primary/40 focus:shadow-glass-glow focus:outline-none',
+          'focus:border-primary focus:ring-1 focus:ring-primary/20 focus:outline-none',
           'disabled:cursor-not-allowed disabled:opacity-50',
           'file:border-0 file:bg-transparent file:text-sm file:font-medium',
           className
@@ -35,11 +35,11 @@ const GlassTextarea = React.forwardRef<HTMLTextAreaElement, GlassTextareaProps>(
     return (
       <textarea
         className={cn(
-          'flex w-full rounded-xl px-4 py-2 text-sm resize-none',
-          'glass-light border-glass',
+          'flex w-full rounded-[var(--radius-input)] px-4 py-2 text-sm resize-none',
+          'bg-background border border-border',
           'placeholder:text-muted-foreground/60',
           'transition-all duration-[var(--duration-normal)] ease-[var(--ease-liquid)]',
-          'focus:glass-medium focus:border-primary/40 focus:shadow-glass-glow focus:outline-none',
+          'focus:border-primary focus:ring-1 focus:ring-primary/20 focus:outline-none',
           'disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
@@ -59,10 +59,10 @@ const GlassSelect = React.forwardRef<HTMLSelectElement, GlassSelectProps>(
     return (
       <select
         className={cn(
-          'flex h-11 w-full rounded-xl px-4 py-2 text-sm',
-          'glass-light border-glass',
+          'flex h-11 w-full rounded-[var(--radius-input)] px-4 py-2 text-sm',
+          'bg-background border border-border',
           'transition-all duration-[var(--duration-normal)] ease-[var(--ease-liquid)]',
-          'focus:glass-medium focus:border-primary/40 focus:shadow-glass-glow focus:outline-none',
+          'focus:border-primary focus:ring-1 focus:ring-primary/20 focus:outline-none',
           'disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}

@@ -38,13 +38,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
     borderBottomWidth: 2,
-    borderBottomColor: '#3b82f6',
+    borderBottomColor: '#E8632B',
     paddingBottom: 12,
   },
   logo: {
     fontSize: 22,
     fontFamily: 'Helvetica-Bold',
-    color: '#3b82f6',
+    color: '#E8632B',
   },
   headerRight: {
     alignItems: 'flex-end',
@@ -74,13 +74,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 20,
     padding: 16,
-    backgroundColor: '#f0f7ff',
+    backgroundColor: '#FFF7ED',
     borderRadius: 8,
   },
   scoreValue: {
     fontSize: 40,
     fontFamily: 'Helvetica-Bold',
-    color: '#3b82f6',
+    color: '#E8632B',
   },
   scoreMax: {
     fontSize: 16,
@@ -126,14 +126,14 @@ const styles = StyleSheet.create({
   },
   priorityBox: {
     padding: 10,
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#FFF7ED',
     borderRadius: 6,
     borderLeftWidth: 3,
-    borderLeftColor: '#3b82f6',
+    borderLeftColor: '#E8632B',
   },
   priorityText: {
     fontSize: 10,
-    color: '#1e40af',
+    color: '#9A3412',
     lineHeight: 1.5,
   },
   issueCard: {
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   drillLabel: {
     fontSize: 9,
     fontFamily: 'Helvetica-Bold',
-    color: '#9333ea',
+    color: '#B45309',
     marginBottom: 2,
   },
   drillItem: {
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
 
 function getScoreColor(score: number): string {
   if (score >= 8) return '#16a34a'
-  if (score >= 6) return '#3b82f6'
+  if (score >= 6) return '#E8632B'
   if (score >= 4) return '#d97706'
   return '#dc2626'
 }

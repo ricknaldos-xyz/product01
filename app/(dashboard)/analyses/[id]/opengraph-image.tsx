@@ -54,7 +54,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
             width: 300,
             height: 300,
             borderRadius: '50%',
-            background: 'rgba(37, 99, 235, 0.12)',
+            background: 'rgba(232, 99, 43, 0.12)',
             display: 'flex',
           }}
         />

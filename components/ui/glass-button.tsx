@@ -4,19 +4,19 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const glassButtonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-[var(--duration-normal)] ease-[var(--ease-liquid)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-full text-sm font-medium transition-all duration-[var(--duration-normal)] ease-[var(--ease-liquid)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
         default:
-          'glass-medium border-glass-strong text-foreground hover:glass-heavy hover:shadow-glass-lg active:scale-[0.98]',
+          'bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98]',
         primary:
-          'glass-primary border-glass shadow-glass-glow text-primary hover:bg-primary/20 active:scale-[0.98]',
+          'bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 active:scale-[0.98]',
         solid:
-          'bg-primary text-primary-foreground hover:bg-primary/90 shadow-glass-glow active:scale-[0.98]',
+          'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--glass-shadow-md)] active:scale-[0.98]',
         ghost:
-          'glass-ultralight border-transparent hover:glass-light hover:border-glass',
-        outline: 'border-glass-strong bg-transparent hover:glass-light',
+          'bg-transparent hover:bg-secondary',
+        outline: 'border border-border bg-transparent hover:bg-secondary',
         destructive:
           'bg-destructive/10 border border-destructive/20 text-destructive hover:bg-destructive/20 active:scale-[0.98]',
       },

@@ -144,7 +144,7 @@ export default function AdminTournamentsPage() {
             placeholder="Buscar por nombre..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-glass bg-glass-light backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
         </div>
         <GlassButton type="submit" variant="solid" size="sm">

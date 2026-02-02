@@ -60,7 +60,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
             width: 400,
             height: 400,
             borderRadius: '50%',
-            background: 'rgba(37, 99, 235, 0.1)',
+            background: 'rgba(232, 99, 43, 0.1)',
             display: 'flex',
           }}
         />
@@ -91,9 +91,9 @@ export default async function Image({ params }: { params: Promise<{ id: string }
               style={{
                 padding: '8px 20px',
                 borderRadius: 999,
-                background: 'rgba(37, 99, 235, 0.2)',
-                border: '1px solid rgba(37, 99, 235, 0.3)',
-                color: '#93c5fd',
+                background: 'rgba(232, 99, 43, 0.2)',
+                border: '1px solid rgba(232, 99, 43, 0.3)',
+                color: '#FDBA74',
                 fontSize: 18,
                 display: 'flex',
               }}

@@ -145,10 +145,10 @@ function getWeeklyDigestHtml(data: {
   const statsRows = []
 
   if (data.analysesCount > 0) {
-    statsRows.push(`<tr><td style="padding: 8px 0; color: #3f3f46;">Analisis completados</td><td style="padding: 8px 0; text-align: right; font-weight: bold; color: #2563eb;">${data.analysesCount}</td></tr>`)
+    statsRows.push(`<tr><td style="padding: 8px 0; color: #3f3f46;">Analisis completados</td><td style="padding: 8px 0; text-align: right; font-weight: bold; color: #E8632B;">${data.analysesCount}</td></tr>`)
   }
   if (data.matchesCount > 0) {
-    statsRows.push(`<tr><td style="padding: 8px 0; color: #3f3f46;">Partidos jugados</td><td style="padding: 8px 0; text-align: right; font-weight: bold; color: #2563eb;">${data.matchesCount}</td></tr>`)
+    statsRows.push(`<tr><td style="padding: 8px 0; color: #3f3f46;">Partidos jugados</td><td style="padding: 8px 0; text-align: right; font-weight: bold; color: #E8632B;">${data.matchesCount}</td></tr>`)
   }
   if (data.currentStreak > 0) {
     statsRows.push(`<tr><td style="padding: 8px 0; color: #3f3f46;">Racha actual</td><td style="padding: 8px 0; text-align: right; font-weight: bold; color: #f97316;">${data.currentStreak} dias 🔥</td></tr>`)
@@ -193,7 +193,7 @@ function getWeeklyDigestHtml(data: {
       ${tournamentsHtml}
 
       <div style="text-align: center; margin-top: 32px; margin-bottom: 32px;">
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" style="display: inline-block; background-color: #2563eb; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" style="display: inline-block; background-color: #E8632B; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">
           Ir a SportTek
         </a>
       </div>
