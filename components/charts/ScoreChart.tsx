@@ -24,7 +24,7 @@ interface ScoreChartProps {
 
 function getScoreColor(score: number) {
   if (score >= 8) return '#22c55e' // green
-  if (score >= 6) return '#E8632B' // orange
+  if (score >= 6) return '#256F50' // orange
   if (score >= 4) return '#eab308' // yellow
   return '#ef4444' // red
 }

@@ -38,13 +38,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
     borderBottomWidth: 2,
-    borderBottomColor: '#E8632B',
+    borderBottomColor: '#256F50',
     paddingBottom: 12,
   },
   logo: {
     fontSize: 22,
     fontFamily: 'Helvetica-Bold',
-    color: '#E8632B',
+    color: '#256F50',
   },
   headerRight: {
     alignItems: 'flex-end',
@@ -74,13 +74,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 20,
     padding: 16,
-    backgroundColor: '#FFF7ED',
+    backgroundColor: '#F0FFF4',
     borderRadius: 8,
   },
   scoreValue: {
     fontSize: 40,
     fontFamily: 'Helvetica-Bold',
-    color: '#E8632B',
+    color: '#256F50',
   },
   scoreMax: {
     fontSize: 16,
@@ -126,10 +126,10 @@ const styles = StyleSheet.create({
   },
   priorityBox: {
     padding: 10,
-    backgroundColor: '#FFF7ED',
+    backgroundColor: '#F0FFF4',
     borderRadius: 6,
     borderLeftWidth: 3,
-    borderLeftColor: '#E8632B',
+    borderLeftColor: '#256F50',
   },
   priorityText: {
     fontSize: 10,
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   drillLabel: {
     fontSize: 9,
     fontFamily: 'Helvetica-Bold',
-    color: '#B45309',
+    color: '#1A5038',
     marginBottom: 2,
   },
   drillItem: {
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
 
 function getScoreColor(score: number): string {
   if (score >= 8) return '#16a34a'
-  if (score >= 6) return '#E8632B'
+  if (score >= 6) return '#256F50'
   if (score >= 4) return '#d97706'
   return '#dc2626'
 }

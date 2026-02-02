@@ -35,7 +35,7 @@ export default async function Image({ params }: { params: Promise<{ userId: stri
     // Use defaults
   }
 
-  const scoreColor = compositeScore >= 80 ? '#22c55e' : compositeScore >= 60 ? '#f59e0b' : compositeScore >= 40 ? '#f97316' : '#E8632B'
+  const scoreColor = compositeScore >= 80 ? '#22c55e' : compositeScore >= 60 ? '#f59e0b' : compositeScore >= 40 ? '#f97316' : '#256F50'
 
   return new ImageResponse(
     (

@@ -93,7 +93,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
                 borderRadius: 999,
                 background: 'rgba(232, 99, 43, 0.2)',
                 border: '1px solid rgba(232, 99, 43, 0.3)',
-                color: '#FDBA74',
+                color: '#A4FF93',
                 fontSize: 18,
                 display: 'flex',
               }}
