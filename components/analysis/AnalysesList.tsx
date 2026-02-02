@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassBadge } from '@/components/ui/glass-badge'
-import { Video, ArrowRight, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, Loader2, AlertCircle, ArrowUpDown } from 'lucide-react'
+import { Video, ArrowRight, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, Loader2, AlertCircle, ArrowUpDown, GitCompareArrows } from 'lucide-react'
 import { formatRelativeTime } from '@/lib/date-utils'
 import { getScoreBorderColor, STATUS_LABELS, STATUS_VARIANTS } from '@/lib/analysis-constants'
 import { ScoreRing } from '@/components/analysis/ScoreRing'
@@ -58,6 +58,8 @@ export function AnalysesList({ analyses }: AnalysesListProps) {
   const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || '')
   const [sortBy, setSortBy] = useState<SortOption>((searchParams.get('sort') as SortOption) || 'recent')
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
+  const [compareMode, setCompareMode] = useState(false)
+  const [selected, setSelected] = useState<string[]>([])
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -194,6 +196,16 @@ export function AnalysesList({ analyses }: AnalysesListProps) {
               </GlassButton>
             ))}
           </div>
+          <div className="w-px h-5 bg-border mx-1 flex-shrink-0" />
+          <GlassButton
+            variant={compareMode ? 'solid' : 'ghost'}
+            size="sm"
+            onClick={() => { setCompareMode(!compareMode); setSelected([]) }}
+            className="h-7 px-3 text-xs rounded-full"
+          >
+            <GitCompareArrows className="h-3 w-3 mr-1" />
+            Comparar
+          </GlassButton>
         </div>
       </div>
 
@@ -201,6 +213,27 @@ export function AnalysesList({ analyses }: AnalysesListProps) {
       {stats && (
         <div className="glass-ultralight border-glass rounded-lg px-3 py-2 text-sm text-muted-foreground">
           {stats.count} analisis completados &bull; Promedio: {stats.avg.toFixed(1)}/10 &bull; Mejor: {stats.best.toFixed(1)}/10
+        </div>
+      )}
+
+      {/* Compare floating bar */}
+      {compareMode && selected.length === 2 && (
+        <div className="fixed bottom-20 lg:bottom-6 left-1/2 -translate-x-1/2 z-40">
+          <GlassButton
+            variant="solid"
+            size="lg"
+            onClick={() => router.push(`/analyses/compare?a=${selected[0]}&b=${selected[1]}`)}
+            className="shadow-glass-glow"
+          >
+            <GitCompareArrows className="h-4 w-4 mr-2" />
+            Comparar seleccionados
+          </GlassButton>
+        </div>
+      )}
+
+      {compareMode && selected.length > 0 && selected.length < 2 && (
+        <div className="glass-ultralight border-glass rounded-lg px-3 py-2 text-sm text-muted-foreground text-center">
+          Selecciona 1 analisis mas para comparar
         </div>
       )}
 
@@ -214,6 +247,111 @@ export function AnalysesList({ analyses }: AnalysesListProps) {
 
             const hasScore = analysis.overallScore != null
             const borderColor = hasScore ? getScoreBorderColor(analysis.overallScore!) : 'border-l-muted-foreground/30'
+            const isSelected = selected.includes(analysis.id)
+            const isCompleted = analysis.status === 'COMPLETED'
+
+            const cardContent = (
+              <>
+                {/* Compare checkbox */}
+                {compareMode && isCompleted && (
+                  <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => {
+                        setSelected((prev) =>
+                          prev.includes(analysis.id)
+                            ? prev.filter((id) => id !== analysis.id)
+                            : prev.length < 2
+                              ? [...prev, analysis.id]
+                              : prev
+                        )
+                      }}
+                      className="h-5 w-5 rounded border-border accent-primary cursor-pointer"
+                    />
+                  </div>
+                )}
+
+                {/* Left: Mini ScoreRing or status icon */}
+                <div className="flex-shrink-0 flex flex-col items-center gap-1">
+                  {hasScore ? (
+                    <ScoreRing score={analysis.overallScore!} size="sm" />
+                  ) : (
+                    <div className="w-[60px] h-[60px] glass-primary border-glass rounded-xl flex items-center justify-center">
+                      {analysis.status === 'PROCESSING' ? (
+                        <Loader2 className="h-6 w-6 text-yellow-500 animate-spin" />
+                      ) : analysis.status === 'FAILED' ? (
+                        <AlertCircle className="h-6 w-6 text-red-500" />
+                      ) : (
+                        <Video className="h-6 w-6 text-muted-foreground" />
+                      )}
+                    </div>
+                  )}
+                  {/* Delta indicator next to mini ring */}
+                  {scoreDelta !== null && scoreDelta !== 0 && (
+                    <div className={`hidden sm:flex items-center gap-0.5 text-xs font-medium ${scoreDelta > 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                      {scoreDelta > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                      {scoreDelta > 0 ? '+' : ''}{scoreDelta.toFixed(1)}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-sm sm:text-base truncate">
+                      {analysis.technique.name}
+                      {analysis.variant && (
+                        <span className="text-muted-foreground font-normal"> - {analysis.variant.name}</span>
+                      )}
+                    </h3>
+                    <span className="text-xs text-muted-foreground flex-shrink-0">
+                      {formatRelativeTime(new Date(analysis.createdAt))}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {analysis.technique.sport.name}
+                  </p>
+                  <div className="flex items-center gap-3 mt-2 text-sm flex-wrap">
+                    <GlassBadge
+                      variant={(STATUS_VARIANTS[analysis.status] ?? 'default') as 'default' | 'primary' | 'success' | 'warning' | 'destructive'}
+                      size="sm"
+                    >
+                      {STATUS_LABELS[analysis.status] ?? analysis.status}
+                    </GlassBadge>
+                    {analysis._count.issues > 0 && (
+                      <span className="text-muted-foreground text-xs">
+                        {analysis._count.issues} problema{analysis._count.issues > 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <ArrowRight className="h-5 w-5 text-muted-foreground hidden sm:block flex-shrink-0" />
+              </>
+            )
+
+            if (compareMode && isCompleted) {
+              return (
+                <GlassCard
+                  key={analysis.id}
+                  intensity="light"
+                  padding="lg"
+                  hover="lift"
+                  className={`flex items-center gap-4 cursor-pointer border-l-4 ${borderColor} ${isSelected ? 'ring-2 ring-primary' : ''}`}
+                  onClick={() => {
+                    setSelected((prev) =>
+                      prev.includes(analysis.id)
+                        ? prev.filter((id) => id !== analysis.id)
+                        : prev.length < 2
+                          ? [...prev, analysis.id]
+                          : prev
+                    )
+                  }}
+                >
+                  {cardContent}
+                </GlassCard>
+              )
+            }
 
             return (
               <GlassCard
@@ -225,61 +363,7 @@ export function AnalysesList({ analyses }: AnalysesListProps) {
                 asChild
               >
                 <Link href={`/analyses/${analysis.id}`}>
-                  {/* Left: Mini ScoreRing or status icon */}
-                  <div className="flex-shrink-0 flex flex-col items-center gap-1">
-                    {hasScore ? (
-                      <ScoreRing score={analysis.overallScore!} size="sm" />
-                    ) : (
-                      <div className="w-[60px] h-[60px] glass-primary border-glass rounded-xl flex items-center justify-center">
-                        {analysis.status === 'PROCESSING' ? (
-                          <Loader2 className="h-6 w-6 text-yellow-500 animate-spin" />
-                        ) : analysis.status === 'FAILED' ? (
-                          <AlertCircle className="h-6 w-6 text-red-500" />
-                        ) : (
-                          <Video className="h-6 w-6 text-muted-foreground" />
-                        )}
-                      </div>
-                    )}
-                    {/* Delta indicator next to mini ring */}
-                    {scoreDelta !== null && scoreDelta !== 0 && (
-                      <div className={`hidden sm:flex items-center gap-0.5 text-xs font-medium ${scoreDelta > 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                        {scoreDelta > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                        {scoreDelta > 0 ? '+' : ''}{scoreDelta.toFixed(1)}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-sm sm:text-base truncate">
-                        {analysis.technique.name}
-                        {analysis.variant && (
-                          <span className="text-muted-foreground font-normal"> - {analysis.variant.name}</span>
-                        )}
-                      </h3>
-                      <span className="text-xs text-muted-foreground flex-shrink-0">
-                        {formatRelativeTime(new Date(analysis.createdAt))}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {analysis.technique.sport.name}
-                    </p>
-                    <div className="flex items-center gap-3 mt-2 text-sm flex-wrap">
-                      <GlassBadge
-                        variant={(STATUS_VARIANTS[analysis.status] ?? 'default') as 'default' | 'primary' | 'success' | 'warning' | 'destructive'}
-                        size="sm"
-                      >
-                        {STATUS_LABELS[analysis.status] ?? analysis.status}
-                      </GlassBadge>
-                      {analysis._count.issues > 0 && (
-                        <span className="text-muted-foreground text-xs">
-                          {analysis._count.issues} problema{analysis._count.issues > 1 ? 's' : ''}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <ArrowRight className="h-5 w-5 text-muted-foreground hidden sm:block flex-shrink-0" />
+                  {cardContent}
                 </Link>
               </GlassCard>
             )

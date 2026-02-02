@@ -2,6 +2,7 @@
 
 import { signOut, useSession } from 'next-auth/react'
 import { Menu, LogOut, User, Settings } from 'lucide-react'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,6 +43,9 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {/* Spacer */}
         <div className="flex-1" />
+
+        {/* Theme toggle */}
+        <ThemeToggle />
 
         {/* User menu */}
         <DropdownMenu>

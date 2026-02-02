@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'sonner'
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister'
+import { ThemeProvider } from 'next-themes'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -56,10 +57,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body className={inter.className}>
-        {children}
-        <Toaster position="top-right" richColors />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          {children}
+          <Toaster position="top-right" richColors />
+        </ThemeProvider>
         <ServiceWorkerRegister />
       </body>
     </html>

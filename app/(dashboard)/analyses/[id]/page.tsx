@@ -37,6 +37,8 @@ import {
   Video,
   Swords,
   Users,
+  FileDown,
+  GitCompareArrows,
 } from 'lucide-react'
 import { formatDate } from '@/lib/date-utils'
 import { RetryAnalysisButton } from '@/components/analysis/RetryAnalysisButton'
@@ -124,6 +126,20 @@ export default async function AnalysisDetailPage({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          {analysis.status === 'COMPLETED' && (
+            <>
+              <GlassButton variant="ghost" size="icon" asChild title="Exportar PDF">
+                <a href={`/api/analyze/${analysis.id}/pdf`} download>
+                  <FileDown className="h-5 w-5" />
+                </a>
+              </GlassButton>
+              <GlassButton variant="ghost" size="icon" asChild title="Comparar con otro analisis">
+                <Link href={`/analyses/compare?a=${analysis.id}`}>
+                  <GitCompareArrows className="h-5 w-5" />
+                </Link>
+              </GlassButton>
+            </>
+          )}
           <ShareButton techniqueName={analysis.technique.name} score={analysis.overallScore} />
           {analysis.overallScore && <ScoreRing score={analysis.overallScore} size="sm" />}
         </div>
