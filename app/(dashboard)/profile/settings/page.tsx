@@ -7,12 +7,13 @@ export const metadata: Metadata = {
 }
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
-import { ArrowLeft, Bell, Shield, CreditCard, Download } from 'lucide-react'
+import { ArrowLeft, Bell, Shield, CreditCard, Download, Palette } from 'lucide-react'
 import { GlassButton } from '@/components/ui/glass-button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GlassBadge } from '@/components/ui/glass-badge'
 import Link from 'next/link'
 import { SettingsForm } from './settings-form'
+import { ThemeSelector } from './theme-selector'
 
 async function getUserSettings(userId: string) {
   return prisma.user.findUnique({
@@ -72,6 +73,17 @@ export default async function SettingsPage() {
             reminderTime: user.reminderTime,
           }}
         />
+      </GlassCard>
+
+      {/* Appearance */}
+      <GlassCard intensity="light" padding="lg">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="glass-primary border-glass rounded-lg p-1.5">
+            <Palette className="h-4 w-4 text-primary" />
+          </div>
+          <h2 className="font-semibold">Apariencia</h2>
+        </div>
+        <ThemeSelector />
       </GlassCard>
 
       {/* Security */}

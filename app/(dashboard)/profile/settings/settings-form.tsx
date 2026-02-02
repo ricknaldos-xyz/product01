@@ -73,7 +73,7 @@ export function SettingsForm({ userId, initialData }: SettingsFormProps) {
             onChange={(e) => setEmailNotifications(e.target.checked)}
             className="sr-only peer"
           />
-          <div className="w-11 h-6 glass-ultralight border-glass rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-[var(--duration-normal)]" />
+          <div className="w-11 h-6 glass-ultralight border-glass rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-background dark:after:bg-foreground after:rounded-full after:h-5 after:w-5 after:transition-all duration-[var(--duration-normal)]" />
         </label>
       </div>
 
@@ -95,7 +95,7 @@ export function SettingsForm({ userId, initialData }: SettingsFormProps) {
             disabled={!emailNotifications}
             className="sr-only peer"
           />
-          <div className={`w-11 h-6 glass-ultralight border-glass rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-[var(--duration-normal)] ${!emailNotifications ? 'opacity-50' : ''}`} />
+          <div className={`w-11 h-6 glass-ultralight border-glass rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-background dark:after:bg-foreground after:rounded-full after:h-5 after:w-5 after:transition-all duration-[var(--duration-normal)] ${!emailNotifications ? 'opacity-50' : ''}`} />
         </label>
       </div>
 

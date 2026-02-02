@@ -12,27 +12,27 @@ const statusConfig: Record<string, { label: string; icon: React.ElementType; col
   VERIFIED: {
     label: 'Verificado',
     icon: ShieldCheck,
-    color: 'text-green-600 bg-green-100',
+    color: 'text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-950',
   },
   PENDING_REVIEW: {
     label: 'En revision',
     icon: Clock,
-    color: 'text-yellow-600 bg-yellow-100',
+    color: 'text-yellow-700 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-950',
   },
   FLAGGED: {
     label: 'Reportado',
     icon: AlertTriangle,
-    color: 'text-orange-600 bg-orange-100',
+    color: 'text-orange-700 dark:text-orange-400 bg-orange-100 dark:bg-orange-950',
   },
   REJECTED: {
     label: 'Rechazado',
     icon: XCircle,
-    color: 'text-red-600 bg-red-100',
+    color: 'text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-950',
   },
   UNVERIFIED: {
     label: 'No verificado',
     icon: Shield,
-    color: 'text-gray-500 bg-gray-100',
+    color: 'text-muted-foreground bg-muted',
   },
 }
 

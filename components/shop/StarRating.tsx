@@ -38,7 +38,7 @@ export function StarRating({ value, onChange, size = 'md', readonly = false }: S
             className={`${iconSize} ${
               star <= displayValue
                 ? 'text-yellow-500 fill-yellow-500'
-                : 'text-gray-300'
+                : 'text-muted-foreground/40'
             }`}
           />
         </button>

@@ -109,7 +109,7 @@ function GlassToggle({
     >
       <span
         className={cn(
-          'inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform',
+          'inline-block h-5 w-5 rounded-full bg-background dark:bg-foreground shadow-sm transition-transform',
           checked ? 'translate-x-5' : 'translate-x-1'
         )}
       />

@@ -70,7 +70,7 @@ export function TensionInput({
           />
           {/* Marker dot */}
           <div
-            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-white border-2 border-primary shadow-md pointer-events-none"
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-background border-2 border-primary shadow-md pointer-events-none"
             style={{ left: `${Math.max(0, Math.min(100, markerPct))}%` }}
           />
         </div>

@@ -44,24 +44,25 @@ export function ProgressChart({ data, title }: ProgressChartProps) {
               <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="date"
-            tick={{ fill: '#71717a', fontSize: 12 }}
-            tickLine={{ stroke: '#e4e4e7' }}
+            tick={{ fill: 'var(--color-muted-foreground)', fontSize: 12 }}
+            tickLine={{ stroke: 'var(--color-border)' }}
           />
           <YAxis
-            tick={{ fill: '#71717a', fontSize: 12 }}
-            tickLine={{ stroke: '#e4e4e7' }}
+            tick={{ fill: 'var(--color-muted-foreground)', fontSize: 12 }}
+            tickLine={{ stroke: 'var(--color-border)' }}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'white',
-              border: '1px solid #e4e4e7',
+              backgroundColor: 'var(--color-card)',
+              border: '1px solid var(--color-border)',
               borderRadius: '8px',
               padding: '12px',
+              color: 'var(--color-foreground)',
             }}
-            labelStyle={{ color: '#18181b', fontWeight: 600 }}
+            labelStyle={{ color: 'var(--color-foreground)', fontWeight: 600 }}
           />
           <Area
             type="monotone"

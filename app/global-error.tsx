@@ -29,7 +29,7 @@ export default function GlobalError({
             <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
               Algo salio mal
             </h1>
-            <p style={{ color: '#666', marginBottom: '1.5rem' }}>
+            <p style={{ color: '#888', marginBottom: '1.5rem' }}>
               Ocurrio un error inesperado. Nuestro equipo ha sido notificado.
             </p>
             <button
@@ -37,9 +37,9 @@ export default function GlobalError({
               style={{
                 padding: '0.75rem 1.5rem',
                 borderRadius: '0.75rem',
-                border: 'none',
-                backgroundColor: '#000',
-                color: '#fff',
+                border: '1px solid #555',
+                backgroundColor: 'transparent',
+                color: 'inherit',
                 cursor: 'pointer',
                 fontSize: '0.875rem',
                 fontWeight: '500',
