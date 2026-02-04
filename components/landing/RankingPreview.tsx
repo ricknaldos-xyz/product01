@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { GlassCard } from '@/components/ui/glass-card'
-import { GlassButton } from '@/components/ui/glass-button'
 import { Trophy, Medal, ArrowRight } from 'lucide-react'
 
 interface RankedPlayer {
@@ -74,7 +72,7 @@ export function RankingPreview() {
         </div>
 
         <div className="max-w-2xl mx-auto">
-          <GlassCard intensity="light" padding="none">
+          <div className="rounded-[var(--radius-card)] bg-background border border-border/50 overflow-hidden">
             {/* Header */}
             <div className="px-6 py-4 border-b border-border/50 flex items-center gap-3">
               <Trophy className="h-5 w-5 text-yellow-500" />
@@ -83,7 +81,7 @@ export function RankingPreview() {
 
             {/* Table */}
             {players.length > 0 ? (
-              <div className="divide-y divide-border/50">
+              <div className="divide-y divide-border/30">
                 {players.map((player) => (
                   <div key={player.rank} className="flex items-center gap-4 px-6 py-3">
                     <div className="w-8 text-center flex-shrink-0">
@@ -122,14 +120,15 @@ export function RankingPreview() {
 
             {/* CTA */}
             <div className="px-6 py-4 border-t border-border/50">
-              <GlassButton variant="default" className="w-full" asChild>
-                <Link href="/rankings">
-                  Ver ranking completo
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </GlassButton>
+              <Link
+                href="/rankings"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-foreground text-background font-medium rounded-full hover:bg-foreground/90 transition-colors"
+              >
+                Ver ranking completo
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
-          </GlassCard>
+          </div>
         </div>
       </div>
     </section>
