@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
+import { GlassCard } from '@/components/ui/glass-card'
 import { cn } from '@/lib/utils'
 
 const faqs = [
@@ -57,13 +58,15 @@ export function FAQSection() {
 
         <div className="max-w-3xl mx-auto space-y-3">
           {faqs.map((faq, index) => (
-            <div
+            <GlassCard
               key={index}
-              className="rounded-[var(--radius-card)] bg-secondary/30 overflow-hidden"
+              intensity="ultralight"
+              padding="none"
+              className="overflow-hidden"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-secondary/50 transition-colors"
+                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-secondary/50 transition-colors rounded-[inherit]"
               >
                 <span className="font-medium pr-4">{faq.question}</span>
                 <ChevronDown
@@ -83,7 +86,7 @@ export function FAQSection() {
                   {faq.answer}
                 </p>
               </div>
-            </div>
+            </GlassCard>
           ))}
         </div>
       </div>

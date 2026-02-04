@@ -1,4 +1,5 @@
-import Link from 'next/link'
+'use client'
+
 import {
   Brain,
   Target,
@@ -7,78 +8,55 @@ import {
   Users,
   GraduationCap,
   MapPin,
-  ArrowUpRight,
+  TrendingUp,
+  Check,
 } from 'lucide-react'
 
-const features = [
+const pillars = [
   {
-    icon: Brain,
-    title: 'Análisis con IA',
+    number: '01',
+    badge: 'Mejora',
+    icon: TrendingUp,
+    title: 'Mejora tu técnica con IA',
     description:
       'Sube un video y en minutos sabrás exactamente qué corregir. La IA analiza tu golpe y te arma un plan paso a paso.',
-    href: '/register',
-    colSpan: 2,
-    dark: false,
+    features: [
+      { icon: Brain, text: 'Análisis de saque, derecha, revés, volea y bandeja' },
+      { icon: Target, text: 'Planes con ejercicios que avanzan cada semana' },
+    ],
+    color: 'primary',
   },
   {
-    icon: Target,
-    title: 'Planes personalizados',
-    description:
-      'Ejercicios que avanzan cada semana según tu progreso real.',
-    href: '/register',
-    colSpan: 1,
-    dark: false,
-  },
-  {
+    number: '02',
+    badge: 'Compite',
     icon: Trophy,
-    title: 'Rankings nacionales',
+    title: 'Sube en el ranking nacional',
     description:
-      'Compara tu nivel con otros jugadores de Perú. Rankings semanal, mensual e histórico.',
-    href: '/rankings',
-    colSpan: 1,
-    dark: true,
+      'Compara tu nivel con otros jugadores de Perú. Participa en torneos reales y gana badges por tus logros.',
+    features: [
+      { icon: Trophy, text: 'Rankings semanal, mensual e histórico' },
+      { icon: Medal, text: 'Torneos con brackets y premios' },
+    ],
+    color: 'dark',
   },
   {
-    icon: Medal,
-    title: 'Torneos y competencias',
-    description:
-      'Participa en torneos reales con brackets y premios. Gana badges por tus logros.',
-    href: '/tournaments',
-    colSpan: 1,
-    dark: false,
-  },
-  {
-    icon: GraduationCap,
-    title: 'Encuentra entrenadores',
-    description:
-      'Coaches certificados con reviews y precios claros. Agenda clases fácilmente.',
-    href: '/coaches',
-    colSpan: 1,
-    dark: false,
-  },
-  {
-    icon: MapPin,
-    title: 'Reserva canchas',
-    description:
-      'Canchas cerca de ti con disponibilidad en tiempo real.',
-    href: '/courts',
-    colSpan: 1,
-    dark: true,
-  },
-  {
+    number: '03',
+    badge: 'Conecta',
     icon: Users,
-    title: 'Comunidad activa',
+    title: 'Coaches, canchas y comunidad',
     description:
-      'Conoce jugadores de tu nivel y organiza partidos.',
-    href: '/register',
-    colSpan: 1,
-    dark: false,
+      'Encuentra entrenadores certificados, reserva canchas cerca de ti y conoce jugadores de tu nivel.',
+    features: [
+      { icon: GraduationCap, text: 'Coaches con reviews y precios claros' },
+      { icon: MapPin, text: 'Canchas con disponibilidad en tiempo real' },
+    ],
+    color: 'primary',
   },
 ]
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="py-20 lg:py-32">
+    <section id="features" className="py-20 lg:py-32 bg-secondary/30">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">
@@ -89,58 +67,70 @@ export function FeaturesSection() {
             Todo lo que necesitas para crecer
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Un ecosistema completo para tu desarrollo deportivo
+            Tres pilares para tu desarrollo deportivo completo
           </p>
         </div>
 
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
-          {features.map((feature, idx) => {
-            const isDark = feature.dark
+        {/* Pillars Grid */}
+        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {pillars.map((pillar) => {
+            const isDark = pillar.color === 'dark'
 
             return (
               <div
-                key={idx}
-                className={`group relative rounded-[var(--radius-card)] p-8 transition-all ${
-                  feature.colSpan === 2 ? 'lg:col-span-2' : ''
-                } ${
+                key={pillar.number}
+                className={`rounded-3xl p-8 transition-all hover:shadow-xl ${
                   isDark
                     ? 'bg-foreground text-background'
-                    : 'bg-secondary/50'
+                    : 'bg-white shadow-lg'
                 }`}
               >
-                {/* Icon */}
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 ${
-                    isDark ? 'bg-background/10' : 'bg-primary/10'
-                  }`}
-                >
-                  <feature.icon
-                    className={`h-6 w-6 ${isDark ? 'text-background' : 'text-primary'}`}
-                  />
+                {/* Number & Badge */}
+                <div className="flex items-center justify-between mb-6">
+                  <span className={`text-5xl font-bold ${isDark ? 'text-background/20' : 'text-foreground/10'}`}>
+                    {pillar.number}
+                  </span>
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                    isDark
+                      ? 'bg-background/10 text-background'
+                      : 'bg-primary/10 text-primary'
+                  }`}>
+                    {pillar.badge}
+                  </span>
                 </div>
 
-                {/* Content */}
-                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                <p
-                  className={`text-sm leading-relaxed ${
-                    isDark ? 'text-background/70' : 'text-muted-foreground'
-                  }`}
-                >
-                  {feature.description}
+                {/* Icon */}
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${
+                  isDark
+                    ? 'bg-background/10'
+                    : 'bg-primary/10'
+                }`}>
+                  <pillar.icon className={`h-6 w-6 ${isDark ? 'text-background' : 'text-primary'}`} />
+                </div>
+
+                {/* Title & Description */}
+                <h3 className="text-xl font-bold mb-2">{pillar.title}</h3>
+                <p className={`text-sm leading-relaxed mb-6 ${isDark ? 'text-background/70' : 'text-muted-foreground'}`}>
+                  {pillar.description}
                 </p>
 
-                {/* Arrow Button - Bottom Right */}
-                <Link
-                  href={feature.href}
-                  className={`absolute bottom-6 right-6 w-12 h-12 rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 ${
-                    isDark
-                      ? 'bg-background text-foreground'
-                      : 'bg-foreground text-background'
-                  }`}
-                >
-                  <ArrowUpRight className="h-5 w-5" />
-                </Link>
+                {/* Features List */}
+                <ul className="space-y-3">
+                  {pillar.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                        isDark
+                          ? 'bg-background/20'
+                          : 'bg-primary/10'
+                      }`}>
+                        <Check className={`h-3 w-3 ${isDark ? 'text-background' : 'text-primary'}`} />
+                      </div>
+                      <span className={`text-sm ${isDark ? 'text-background/80' : 'text-foreground'}`}>
+                        {feature.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )
           })}
