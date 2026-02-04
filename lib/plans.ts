@@ -23,8 +23,8 @@ export const PLANS = {
     features: [
       'Analisis ilimitados de video',
       'Planes de entrenamiento ilimitados',
-      'Tenis, Padel y Pickleball',
-      'Rankings multi-categoria completos',
+      'Tenis y Padel',
+      'Rankings completos (tier, edad, pais)',
       'Historial de progreso y estadisticas',
       'Matchmaking y desafios',
       'Torneos y badges',
@@ -41,12 +41,12 @@ export const PLANS = {
     price: 39.90,
     features: [
       'Todo en Pro',
-      'Analisis en video HD',
+      'Analisis en calidad HD',
       'Comparacion de progreso entre analisis',
-      'Exportar informes PDF profesionales',
-      'Sesiones de coaching virtual',
+      'Exportar informes para imprimir',
       'Acceso anticipado a nuevas funciones',
-      'Soporte 24/7',
+      'Badge Elite en tu perfil',
+      'Soporte prioritario',
     ],
     limits: {
       analysesPerMonth: -1,

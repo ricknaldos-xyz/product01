@@ -19,12 +19,12 @@ const faqs = [
   {
     question: '¿Qué deportes puedo analizar?',
     answer:
-      'Por ahora soportamos Tenis (saque, derecha, revés, volea) y Padel (bandeja, víbora, smash). Próximamente agregaremos Pickleball. Cada deporte tiene su propio perfil, ranking y técnicas. El plan gratuito incluye un deporte; Pro y Elite incluyen todos.',
+      'Soportamos Tenis (saque, derecha, revés, volea, slice) y Padel (bandeja, víbora, smash, globo, pared). Cada deporte tiene su propio perfil, ranking y técnicas. El plan gratuito incluye tenis; Pro y Elite incluyen tenis y padel.',
   },
   {
     question: '¿Cómo funcionan los rankings?',
     answer:
-      'Cada análisis contribuye a tu skill score. Según tu puntaje, estás en un tier: desde 5ta B (inicial) hasta 1ra A (elite). Los rankings son por país, tier y edad, con periodos semanal, mensual e histórico. Tu posición se actualiza en tiempo real.',
+      'Cada análisis contribuye a tu skill score. Según tu puntaje, estás en un tier: desde 5ta B (inicial) hasta 1ra A (elite). Los rankings son por país, tier y edad, con periodos semanal, mensual e histórico. Tu posición se actualiza automáticamente.',
   },
   {
     question: '¿Cómo encuentro rivales o torneos?',
