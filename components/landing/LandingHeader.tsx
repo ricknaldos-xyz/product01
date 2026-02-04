@@ -2,14 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Target, Menu, X } from 'lucide-react'
-import { GlassButton } from '@/components/ui/glass-button'
+import { Target, Menu, X, ArrowUpRight, Search } from 'lucide-react'
 
 const navLinks = [
-  { href: '#features', label: 'Ecosistema', mobile: true },
-  { href: '#services', label: 'Servicios', mobile: true },
-  { href: '#pricing', label: 'Precios', mobile: true },
-  { href: '#faq', label: 'FAQ', mobile: false },
+  { href: '#features', label: 'Ecosistema' },
+  { href: '#services', label: 'Servicios' },
+  { href: '#pricing', label: 'Precios' },
 ]
 
 export function LandingHeader() {
@@ -28,79 +26,103 @@ export function LandingHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border/40">
+    <header className="absolute top-0 left-0 right-0 z-50 w-full">
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo Pill */}
           <Link
             href="/"
-            className="flex items-center gap-2 transition-opacity hover:opacity-80"
+            className="flex items-center gap-2 bg-white rounded-full px-4 py-2.5 shadow-lg transition-all hover:shadow-xl"
           >
-            <Target className="h-7 w-7 text-primary" />
-            <span className="text-xl font-bold">SportTek</span>
+            <Target className="h-6 w-6 text-primary" />
+            <span className="text-lg font-bold text-foreground">SportTek</span>
           </Link>
 
-          {/* Desktop Navigation — Center Pill */}
-          <div className="hidden md:flex items-center gap-1 bg-secondary rounded-full px-2 py-1">
+          {/* Desktop Navigation — Individual Pills */}
+          <div className="hidden md:flex items-center gap-2">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={(e) => scrollToSection(e, link.href)}
-                className="px-4 py-1.5 text-muted-foreground hover:text-foreground transition-all text-sm font-medium rounded-full hover:bg-background"
+                className="px-5 py-2.5 bg-white/90 backdrop-blur-sm text-foreground hover:bg-white transition-all text-sm font-medium rounded-full shadow-md hover:shadow-lg"
               >
                 {link.label}
               </a>
             ))}
           </div>
 
-          {/* Desktop Auth — Single CTA */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          {/* Desktop Auth — Pills with arrow button */}
+          <div className="hidden md:flex items-center gap-2">
+            <button
+              className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all hover:bg-white"
+              aria-label="Buscar"
+            >
+              <Search className="h-4 w-4 text-foreground" />
+            </button>
+            <Link
+              href="/login"
+              className="px-5 py-2.5 bg-white/90 backdrop-blur-sm text-foreground hover:bg-white transition-all text-sm font-medium rounded-full shadow-md hover:shadow-lg"
+            >
               Iniciar sesion
             </Link>
-            <GlassButton variant="default" size="sm" asChild>
-              <Link href="/register">Comenzar gratis</Link>
-            </GlassButton>
+            <div className="flex items-center">
+              <Link
+                href="/register"
+                className="px-5 py-2.5 bg-primary text-white text-sm font-medium rounded-l-full shadow-md hover:bg-primary/90 transition-all"
+              >
+                Comenzar gratis
+              </Link>
+              <Link
+                href="/register"
+                className="w-10 h-10 bg-primary text-white rounded-r-full flex items-center justify-center shadow-md hover:bg-primary/90 transition-all border-l border-white/20"
+              >
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
-          <GlassButton
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
+          <button
+            className="md:hidden w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5 text-foreground" />
             ) : (
-              <Menu className="h-5 w-5" />
+              <Menu className="h-5 w-5 text-foreground" />
             )}
-          </GlassButton>
+          </button>
         </div>
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden pt-4 pb-2 border-t border-border/40 mt-4">
+          <div className="md:hidden mt-4 bg-white rounded-3xl shadow-xl p-4">
             <div className="flex flex-col gap-2">
-              {navLinks.filter((l) => l.mobile).map((link) => (
+              {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
                   onClick={(e) => scrollToSection(e, link.href)}
-                  className="text-muted-foreground hover:text-foreground transition-all py-3 px-4 rounded-full hover:bg-secondary"
+                  className="text-foreground hover:bg-secondary transition-all py-3 px-4 rounded-full text-center font-medium"
                 >
                   {link.label}
                 </a>
               ))}
               <hr className="border-border/40 my-2" />
-              <GlassButton variant="ghost" asChild className="justify-start">
-                <Link href="/login">Iniciar sesion</Link>
-              </GlassButton>
-              <GlassButton variant="default" asChild>
-                <Link href="/register">Comenzar gratis</Link>
-              </GlassButton>
+              <Link
+                href="/login"
+                className="text-foreground hover:bg-secondary transition-all py-3 px-4 rounded-full text-center font-medium"
+              >
+                Iniciar sesion
+              </Link>
+              <Link
+                href="/register"
+                className="bg-primary text-white py-3 px-4 rounded-full text-center font-medium"
+              >
+                Comenzar gratis
+              </Link>
             </div>
           </div>
         )}
