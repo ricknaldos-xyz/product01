@@ -74,6 +74,9 @@ export function PricingSection() {
     <section id="pricing" className="py-20 lg:py-32">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
+          <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-sm font-medium rounded-full mb-4">
+            Precios
+          </span>
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
             Elige como quieres crecer
           </h2>

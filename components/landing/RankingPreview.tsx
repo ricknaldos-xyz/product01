@@ -62,6 +62,9 @@ export function RankingPreview() {
     <section id="ranking" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center mb-12">
+          <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-sm font-medium rounded-full mb-4">
+            Rankings
+          </span>
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
             Ranking Nacional Peru
           </h2>

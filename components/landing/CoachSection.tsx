@@ -1,94 +1,77 @@
 'use client'
 
 import Link from 'next/link'
-import {
-  GraduationCap,
-  Users,
-  Star,
-  BadgeCheck,
-  TrendingUp,
-  ArrowRight,
-  DollarSign,
-  ClipboardList,
-} from 'lucide-react'
-import { GlassCard } from '@/components/ui/glass-card'
-import { GlassButton } from '@/components/ui/glass-button'
+import { GraduationCap, Users, Star, ArrowUpRight } from 'lucide-react'
 
 const benefits = [
   {
-    icon: BadgeCheck,
-    title: 'Perfil verificado',
-    description: 'Sistema de verificacion con certificaciones, anos de experiencia y especialidades visibles para los jugadores.',
-  },
-  {
     icon: Users,
-    title: 'Gestion de alumnos',
-    description: 'Administra invitaciones, solicitudes y el estado de cada alumno. Pausa o finaliza relaciones facilmente.',
-  },
-  {
-    icon: ClipboardList,
-    title: 'Asigna planes de entrenamiento',
-    description: 'Crea y asigna planes personalizados a tus alumnos basados en sus analisis de video con IA.',
+    title: 'Gestiona alumnos',
+    description: 'Asigna planes basados en análisis IA',
   },
   {
     icon: Star,
-    title: 'Reviews y reputacion',
-    description: 'Acumula resenas verificadas de tus alumnos. Tu rating promedio se muestra en tu perfil publico.',
+    title: 'Acumula reviews',
+    description: 'Rating visible en tu perfil público',
   },
   {
-    icon: DollarSign,
-    title: 'Define tus tarifas',
-    description: 'Establece tu precio por hora y recibe pagos directamente a traves de la plataforma.',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Llega a mas alumnos',
-    description: 'Los jugadores te encuentran por deporte, ubicacion, especialidad y rango de precios en el marketplace.',
+    icon: GraduationCap,
+    title: 'Perfil verificado',
+    description: 'Certificaciones y especialidades',
   },
 ]
 
 export function CoachSection() {
   return (
-    <section id="coaches" className="py-20 lg:py-32">
+    <section id="coaches" className="py-20 lg:py-32 bg-secondary/30">
       <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-12 items-start">
-            {/* Left: Main pitch */}
-            <div className="lg:w-5/12">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <GraduationCap className="h-5 w-5 text-primary" />
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-foreground rounded-3xl p-8 lg:p-12 text-background">
+            <div className="grid lg:grid-cols-2 gap-10 items-center">
+              {/* Left: Main pitch */}
+              <div>
+                <span className="inline-block px-4 py-1.5 bg-background/10 text-background text-sm font-medium rounded-full mb-4">
+                  Para coaches
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+                  Monetiza tu expertise deportivo
+                </h2>
+                <p className="text-background/70 leading-relaxed mb-8">
+                  Únete al marketplace de coaches verificados. Llega a deportistas que buscan mejorar.
+                </p>
+                <div className="flex items-center">
+                  <Link
+                    href="/register?type=coach"
+                    className="px-6 py-3 bg-white text-foreground font-semibold rounded-l-full hover:bg-white/90 transition-colors"
+                  >
+                    Registrarme como coach
+                  </Link>
+                  <Link
+                    href="/register?type=coach"
+                    className="w-12 h-12 bg-white text-foreground rounded-r-full flex items-center justify-center hover:bg-white/90 transition-colors border-l border-foreground/10"
+                  >
+                    <ArrowUpRight className="h-5 w-5" />
+                  </Link>
+                </div>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                Monetiza tu expertise deportivo
-              </h2>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Unete al marketplace de coaches verificados. Gestiona alumnos, asigna planes de entrenamiento basados en IA, acumula reviews y llega a deportistas que buscan mejorar.
-              </p>
-              <GlassButton variant="default" size="lg" asChild>
-                <Link href="/register?type=coach">
-                  Registrarme como coach
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </GlassButton>
-            </div>
 
-            {/* Right: Benefits grid */}
-            <div className="lg:w-7/12 grid sm:grid-cols-2 gap-4">
-              {benefits.map((benefit) => (
-                <GlassCard
-                  key={benefit.title}
-                  intensity="light"
-                  padding="lg"
-                >
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <benefit.icon className="h-5 w-5 text-primary" />
+              {/* Right: Benefits */}
+              <div className="space-y-4">
+                {benefits.map((benefit) => (
+                  <div
+                    key={benefit.title}
+                    className="flex items-start gap-4 bg-background/5 rounded-2xl p-4"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-background/10 flex items-center justify-center flex-shrink-0">
+                      <benefit.icon className="h-5 w-5 text-background" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-0.5">{benefit.title}</h4>
+                      <p className="text-sm text-background/60">{benefit.description}</p>
+                    </div>
                   </div>
-                  <h4 className="text-base font-semibold mb-2">{benefit.title}</h4>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {benefit.description}
-                  </p>
-                </GlassCard>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>

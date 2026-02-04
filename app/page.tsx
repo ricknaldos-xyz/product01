@@ -23,7 +23,6 @@ import { ServicesSection } from '@/components/landing/ServicesSection'
 import { HowItWorksSection } from '@/components/landing/HowItWorksSection'
 import { RankingPreview } from '@/components/landing/RankingPreview'
 import { CoachSection } from '@/components/landing/CoachSection'
-import { ProviderSection } from '@/components/landing/ProviderSection'
 import { PricingSection } from '@/components/landing/PricingSection'
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection'
 import { FAQSection } from '@/components/landing/FAQSection'
@@ -68,7 +67,6 @@ export default function Home() {
         <TestimonialsSection />
         <PricingSection />
         <CoachSection />
-        <ProviderSection />
         <FAQSection />
         <CTASection />
       </main>
